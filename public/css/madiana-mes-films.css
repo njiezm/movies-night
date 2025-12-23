@@ -1,0 +1,158 @@
+/* Importation des styles de base */
+body {
+    background-color: #000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+.main_view {
+    background-image:
+        url("/images/madiana/pattern.jpg"),
+        radial-gradient(
+            ellipse at center,
+            #222 0%,
+            #8B0000 50%,
+            #330000 100%
+        );
+
+    background-repeat: repeat, no-repeat;
+    background-size: contain, cover;
+    background-position: top left, center;
+
+    min-height: 100vh;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+    box-shadow: 0 0 25px rgba(139, 0, 0, 0.5);
+}
+
+.container .row > * {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.card_red {
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(229, 9, 20, 0.5);
+    border-radius: 15px;
+    margin: 20px 0;
+}
+
+.header-img, .footer-img {
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.footer-img {
+    margin-bottom: 20px;
+}
+
+/* Styles spécifiques à cette page */
+
+/* Barre de progression personnalisée */
+.custom-progress {
+    height: 30px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.custom-progress .progress-bar {
+    background-color: #e50914;
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, .15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, .15) 50%, rgba(255, 255, 255, .15) 75%, transparent 75%, transparent);
+    background-size: 1rem 1rem;
+    transition: width 0.6s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+/* Cartes des films vus */
+.seen-film-card {
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.seen-film-card:hover {
+    transform: scale(1.05);
+}
+
+.image-container {
+    position: relative;
+    width: 100%;
+}
+
+.film-poster {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #444;
+}
+
+.seen-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(40, 167, 69, 0.9); /* Vert pour "vu" */
+    color: white;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    border: 2px solid white;
+}
+
+.film-title h5 {
+    font-size: 0.9rem;
+    color: #f5f5f1;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Bouton */
+.btn-outline-light {
+    border-color: #fff;
+    color: #fff;
+    background-color: transparent;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background-color: #fff;
+    color: #000;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main_view {
+        min-height: auto;
+    }
+    
+    .header-img, .footer-img {
+        border-radius: 0;
+        margin-top: 0;
+    }
+    
+    .card_red {
+        margin: 10px 0;
+        border-radius: 10px;
+    }
+
+    .film-poster {
+        height: 150px;
+    }
+}

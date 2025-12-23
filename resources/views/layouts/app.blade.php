@@ -6,59 +6,29 @@
     <title>@yield('title','Marathon Films')</title>
     <link rel="stylesheet" href="{{ asset('css/public.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            border-radius: 15px;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .btn-primary {
+            border-radius: 10px;
+            padding: 12px;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <a href="{{ url('/') }}" class="logo">Madiana</a>
-            <nav>
-                <ul>
-                    <li><a href="{{ url('/') }}">Accueil</a></li>
-                    <li><a href="{{ route('rendez.vous') }}">Événement</a></li>
-                    <li><a href="{{ url('/inscription') }}">Inscription</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
     <main>
         @yield('content')
     </main>
-
-    <footer>
-        <div class="container">
-            <div>
-                <h3>Marathon de Films</h3>
-                <p>Participez à notre marathon de films d'horreur et gagnez des prix fantastiques !</p>
-            </div>
-            <div>
-                <h3>Liens utiles</h3>
-                <ul>
-                    <li><a href="{{ url('/') }}">Accueil</a></li>
-                    <li><a href="{{ route('rendez.vous') }}">Événement</a></li>
-                    <li><a href="{{ url('/inscription') }}">Inscription</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3>Contact</h3>
-                <p>Cinéma Madiana<br>
-                Martinique<br>
-                <a href="mailto:contact@madiana.com">contact@madiana.com</a></p>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        // Scripts communs
-        $(document).ready(function() {
-            // Animations simples
-            $('.card').on('mouseenter', function() {
-                $(this).addClass('hover');
-            }).on('mouseleave', function() {
-                $(this).removeClass('hover');
-            });
-        });
-    </script>
 </body>
 </html>

@@ -1,0 +1,134 @@
+/* Importation des styles de base depuis la page d'inscription */
+body {
+    background-color: #000;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+.main_view {
+    background-image:
+        url("/images/madiana/pattern.jpg"),
+        radial-gradient(
+            ellipse at center,
+            #222 0%,
+            #8B0000 50%,
+            #330000 100%
+        );
+
+    background-repeat: repeat, no-repeat;
+    background-size: contain, cover;
+    background-position: top left, center;
+
+    min-height: 100vh;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+    box-shadow: 0 0 25px rgba(139, 0, 0, 0.5);
+}
+
+.container .row > * {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.card_red {
+    background-color: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(229, 9, 20, 0.5);
+    border-radius: 15px;
+    margin: 20px 0;
+}
+
+.header-img, .footer-img {
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.footer-img {
+    margin-bottom: 20px;
+}
+
+/* Styles spécifiques à cette page */
+.event-info {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 1rem;
+}
+
+.film-card-custom {
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.film-card-custom:hover {
+    transform: scale(1.05);
+}
+
+.film-poster {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+.film-card-custom:hover .film-poster {
+    border-color: var(--primary-color); /* Utilisez la couleur primaire de votre thème */
+}
+
+.film-title h5 {
+    font-size: 0.9rem;
+    color: #f5f5f1;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.cta-block {
+    background-color: rgba(229, 9, 20, 0.2);
+    border-radius: 10px;
+}
+
+.btn-danger {
+    background-color: #e50914;
+    border-color: #e50914;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-danger:hover {
+    background-color: #c50812;
+    border-color: #c50812;
+    transform: translateY(-2px);
+}
+
+/* Classes utilitaires pour les marges */
+.mg-top-10 { margin-top: 10px; }
+.mg-top-20 { margin-top: 20px; }
+.mg-bottom-20 { margin-bottom: 20px; }
+.mg-bottom-40 { margin-bottom: 40px; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main_view {
+        min-height: auto;
+    }
+    
+    .header-img, .footer-img {
+        border-radius: 0;
+        margin-top: 0;
+    }
+    
+    .card_red {
+        margin: 10px 0;
+        border-radius: 10px;
+    }
+
+    .film-poster {
+        height: 150px;
+    }
+}

@@ -1,51 +1,96 @@
 @extends('layouts.app')
-@section('title','Mes Films')
-@section('content')
-<section class="hero">
-    <div class="container">
-        <h1>Bonjour {{ $participant->firstname }}</h1>
-        <p>Votre progression dans le marathon</p>
-    </div>
-</section>
 
-<section class="container mt-5">
+@section('title','Mes Films')
+
+@section('content')
+<link href="{{ asset('css/madiana-mes-films.css') }}" rel="stylesheet">
+
+<div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="text-center">Votre progression</h3>
+        <div class="col-md-8 col-xl-5 col-12 main_view">
+            <!-- Header -->
+            <div class="row justify-content-center">
+                <div class="col">
+                    <img src="{{ asset('images/madiana/header-mesfilms.jpg') }}" class="shadow img-fluid header-img" alt="Mon Marathon">
                 </div>
-                <div class="card-body">
-                    <div class="progress mb-4">
-                        <div class="progress-bar" role="progressbar" style="width: {{ ($total > 0) ? ($filmsVus->count() / $total) * 100 : 0 }}%;" aria-valuenow="{{ $filmsVus->count() }}" aria-valuemin="0" aria-valuemax="{{ $total }}">
-                            {{ $filmsVus->count() }} / {{ $total }}
+            </div>
+
+            <!-- Contenu principal -->
+            <div class="row justify-content-center">
+                <div class="col-10 card_red">
+                    <div class="p-4">
+                        <!-- Titre et accroche -->
+                        <div class="row justify-content-center">
+                            <div class="col-11 text-center mg-top-10">
+                                <h1 class="text-white mb-1">Bonjour {{ $participant->firstname }}</h1>
+                                <p class="text-warning lead">Votre progression dans le marathon</p>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <h4>Films que vous avez vus:</h4>
-                    <div class="film-grid">
-                        @foreach($filmsVus as $film)
-                            <div class="film-card">
-                                @if($film->vignette)
-                                    <img src="{{ asset('storage/'.$film->vignette) }}" alt="{{ $film->title }}">
-                                @else
-                                    <img src="https://via.placeholder.com/300x200?text={{ urlencode($film->title) }}" alt="{{ $film->title }}">
-                                @endif
-                                <div class="film-card-content">
-                                    <h5 class="film-card-title">{{ $film->title }}</h5>
-                                    <p class="film-card-description">{{ $film->description }}</p>
+
+                        <!-- Barre de progression -->
+                        <div class="row justify-content-center mb-4">
+                            <div class="col-12">
+                                <div class="custom-progress">
+                                    <div class="progress-bar" role="progressbar" style="width: {{ ($total > 0) ? ($filmsVus->count() / $total) * 100 : 0 }}%;" aria-valuenow="{{ $filmsVus->count() }}" aria-valuemin="0" aria-valuemax="{{ $total }}">
+                                        {{ $filmsVus->count() }} / {{ $total }} Films
+                                    </div>
+                                </div>
+                                <p class="text-center text-white mt-2">
+                                    @if($filmsVus->count() === $total && $total > 0)
+                                        <i class="fas fa-trophy text-warning"></i> Félicitations, vous avez terminé le marathon !
+                                    @else
+                                        Continuez votre quête de survie !
+                                    @endif
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Liste des films vus -->
+                        <div class="row justify-content-center">
+                            <div class="col-11">
+                                <h3 class="text-white mb-3 text-center">Films que vous avez vu :</h3>
+                                <div class="row">
+                                    @forelse($filmsVus as $film)
+                                        <div class="col-6 mb-3">
+                                            <div class="seen-film-card">
+                                                <div class="image-container">
+                                                    <img src="{{ asset('storage/'.$film->vignette) }}" class="film-poster" alt="{{ $film->title }}">
+                                                    <div class="seen-overlay">
+                                                        <i class="fas fa-check-circle"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="film-title mt-2">
+                                                    <h5>{{ $film->title }}</h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @empty
+                                        <div class="col-12">
+                                            <p class="text-center text-white-50">Vous n'avez pas encore scanné de film. Allez au cinéma pour commencer !</p>
+                                        </div>
+                                    @endforelse
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
+                        
+                        <!-- Appel à l'action final -->
+                        <div class="text-center mt-4">
+                            <p class="text-white">Bon film et bon courage !</p>
+                            <a href="{{ route('rendez.vous') }}" class="btn btn-outline-light btn-lg rounded-pill px-4">
+                                <i class="fas fa-home"></i> Retour à l'accueil
+                            </a>
+                        </div>
                     </div>
-                    
-                    <div class="text-center mt-4">
-                        <p class="lead">Bon film !</p>
-                        <a href="{{ route('rendez.vous') }}" class="btn btn-outline">Retour à l'accueil</a>
-                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="row justify-content-center">
+                <div class="col-12 text-center">
+                    <img src="{{ asset('images/madiana/footer-mesfilms.jpg') }}" class="img-fluid footer-img" alt="Cinéma Madiana">
                 </div>
             </div>
         </div>
     </div>
-</section>
+</div>
 @endsection

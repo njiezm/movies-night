@@ -29,6 +29,27 @@ class PublicController extends Controller
             'zipcode' => 'nullable',
         ]);
 
+        // Traitement des options de contact
+        $optin = $request->has('optin') ? $request->optin : 0;
+        $bysms = false;
+        $byemail = false;
+        
+        if ($optin == 1 && $request->has('contact_method')) {
+            $contactMethod = $request->contact_method;
+            $bysms = ($contactMethod == 1 || $contactMethod == 3);
+            $byemail = ($contactMethod == 2 || $contactMethod == 3);
+        }
+
+        // Détermination de la source
+        // Priorité : scan QR > source du formulaire > web par défaut
+        if ($request->has('from_qr_scan') && $request->from_qr_scan == 1) {
+            $source = 'salle';
+        } elseif ($request->has('source') && !empty($request->source)) {
+            $source = $request->source;
+        } else {
+            $source = 'web';
+        }
+
         // Générer un slug unique pour le participant
         $slug = Str::slug($request->firstname . '-' . $request->lastname . '-' . $request->telephone);
         $originalSlug = $slug;
@@ -46,6 +67,10 @@ class PublicController extends Controller
             'email' => $request->email,
             'zipcode' => $request->zipcode,
             'slug' => $slug,
+            'optin' => $optin,
+            'bysms' => $bysms,
+            'byemail' => $byemail,
+            'source' => $source,
         ]);
 
         // Si l'inscription vient d'un scan QR code, rediriger vers la page des films
@@ -58,10 +83,21 @@ class PublicController extends Controller
         return redirect()->route('rendez.vous');
     }
 
-    public function showConnexionExpress()
-    {
-        return view('public.connexion-express');
+    /**
+ * Affiche la page de connexion express.
+ */
+public function showConnexionExpress()
+{
+    $film = null;
+    // Si un film_slug est dans l'URL, on récupère le film correspondant
+    if (request('film_slug')) {
+        $film = Film::where('slug', request('film_slug'))->first();
     }
+
+    // On passe le film (qui peut être null) à la vue
+    return view('public.connexion-express', compact('film'));
+}
+
 
     public function connexionExpress(Request $request)
     {
@@ -117,8 +153,15 @@ class PublicController extends Controller
         return view('public.mes-films', compact('participant', 'filmsVus', 'total'));
     }
 
+    /**
+     * Affiche la page du rendez-vous avec la liste des films.
+     */
     public function rendezVous()
     {
-        return view('public.rendez-vous');
+        // On récupère tous les films, ordonnés par titre par exemple
+        $films = Film::orderBy('title', 'asc')->get();
+
+        // On passe les films à la vue
+        return view('public.rendez-vous', compact('films'));
     }
 }
