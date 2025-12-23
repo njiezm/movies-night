@@ -1,52 +1,47 @@
 @extends('layouts.admin')
 @section('title','Films')
 @section('content')
-<div class="content-body">
-    <div class="card">
-        <div class="card-header">
-            <h3><i class="fas fa-video"></i> Films</h3>
-            <button class="btn btn-success" onclick="showAddFilmModal()">
-                <i class="fas fa-plus"></i> Ajouter un film
-            </button>
-        </div>
-        <div class="card-body">
-            <div class="film-grid">
-                @foreach($films as $film)
-                    <div class="film-card">
-                        @if($film->vignette)
-                            <img src="{{ asset('storage/'.$film->vignette) }}" alt="{{ $film->title }}">
-                        @else
-                            <img src="https://via.placeholder.com/300x200?text=No+Image" alt="{{ $film->title }}">
-                        @endif
-                        <div class="film-card-content">
-                            <h4 class="film-card-title">{{ $film->title }}</h4>
-                            <p class="film-card-description">{{ $film->description }}</p>
-                            
-                            <!-- QR Code -->
-                            @if($film->qrcode)
-                                <div class="qr-code-container">
-                                    <img src="{{ asset($film->qrcode) }}" alt="QR Code pour {{ $film->title }}" onclick="showQrModal('{{ asset($film->qrcode) }}', '{{ route('scan', $film->slug) }}')">
-                                    <div class="qr-link">{{ route('scan', $film->slug) }}</div>
-                                </div>
-                            @endif
-                            
-                            <div class="film-card-footer">
-                                <span><i class="fas fa-users"></i> {{ $film->participants_count }} participants</span>
-                                <div>
-                                    <button class="btn btn-primary btn-sm" onclick="showEditFilmModal({{ $film->id }})">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-sm" onclick="deleteFilm({{ $film->id }})">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+<h3 class="text-white text-center mb-4"><i class="fas fa-video"></i> Gestion des Films</h3>
+
+<div class="text-center mb-4">
+    <button class="btn btn-danger" onclick="showAddFilmModal()">
+        <i class="fas fa-plus"></i> Ajouter un film
+    </button>
+</div>
+
+<div class="film-grid">
+    @foreach($films as $film)
+        <div class="film-card">
+            @if($film->vignette)
+                <img src="{{ asset('storage/'.$film->vignette) }}" alt="{{ $film->title }}">
+            @else
+                <img src="https://via.placeholder.com/300x180/333/fff?text=No+Image" alt="{{ $film->title }}">
+            @endif
+            <div class="film-card-content">
+                <h4 class="film-card-title">{{ $film->title }}</h4>
+                <p class="film-card-description">{{ Str::limit($film->description, 80) }}</p>
+                
+                @if($film->qrcode)
+                    <div class="qr-code-container">
+                        <img src="{{ asset($film->qrcode) }}" alt="QR Code" onclick="showQrModal('{{ asset($film->qrcode) }}', '{{ route('scan', $film->slug) }}')">
+                        <div class="qr-link">{{ route('scan', $film->slug) }}</div>
                     </div>
-                @endforeach
+                @endif
+                
+                <div class="film-card-footer">
+                    <span><i class="fas fa-users"></i> {{ $film->participants_count }}</span>
+                    <div>
+                        <button class="btn btn-primary btn-sm" onclick="showEditFilmModal({{ $film->id }})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteFilm({{ $film->id }})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    @endforeach
 </div>
 
 <!-- Modal Ajout/Modification Film -->
@@ -72,7 +67,7 @@
                 <input type="file" class="form-control" id="vignette" name="vignette">
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <button type="submit" class="btn btn-danger">Enregistrer</button>
             </div>
         </form>
     </div>

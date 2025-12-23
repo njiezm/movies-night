@@ -15,16 +15,11 @@
             <div class="row justify-content-center">
                 <div class="col-md-8 col-xl-5 col-12 main_view">
                     <div class="row justify-content-center">
-                        <div class="col">
-                            <img src="{{ asset('images/madiana/admin-header.jpg') }}" class="shadow img-fluid header-img" alt="Admin Madiana">
-                        </div>
-                    </div>
-                    <div class="row justify-content-center">
                         <div class="col-10 card_red">
                             <div class="p-4">
                                 <div class="row justify-content-center">
                                     <div class="col-11 text-center">
-                                        <h2 class="text-white mb-3">Connexion Admin</h2>
+                                        <h2 class="text-white mb-3"><i class="fas fa-film"></i> Madiana Admin</h2>
                                         <p class="text-white">Entrez votre code d'accès pour continuer</p>
                                     </div>
                                 </div>
@@ -51,11 +46,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row justify-content-center">
-                        <div class="col-12 text-center">
-                            <img src="{{ asset('images/madiana/admin-footer.jpg') }}" class="img-fluid footer-img" alt="Cinéma Madiana">
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -64,13 +54,6 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-12 col-xl-10 main_view">
-                    <!-- Header -->
-                    <div class="row justify-content-center">
-                        <div class="col">
-                            <img src="{{ asset('images/madiana/admin-header.jpg') }}" class="shadow img-fluid header-img" alt="Admin Madiana">
-                        </div>
-                    </div>
-
                     <!-- Navigation -->
                     <div class="row justify-content-center">
                         <div class="col-10 nav-admin">
@@ -112,13 +95,6 @@
                                 
                                 @yield('content')
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Footer -->
-                    <div class="row justify-content-center">
-                        <div class="col-12 text-center">
-                            <img src="{{ asset('images/madiana/admin-footer.jpg') }}" class="img-fluid footer-img" alt="Cinéma Madiana">
                         </div>
                     </div>
                 </div>

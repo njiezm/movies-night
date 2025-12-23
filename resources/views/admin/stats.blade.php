@@ -1,6 +1,8 @@
 @extends('layouts.admin')
 @section('title','Statistiques')
 @section('content')
+<h3 class="text-white text-center mb-4"><i class="fas fa-chart-bar"></i> Tableau de bord</h3>
+
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-value">{{ $totalParticipants }}</div>
@@ -20,11 +22,9 @@
     </div>
 </div>
 
-<div class="card mt-4">
-    <div class="card-header">
-        <h3><i class="fas fa-chart-bar"></i> Films les plus populaires</h3>
-    </div>
-    <div class="card-body">
+<div class="mt-4">
+    <h4 class="text-white mb-3"><i class="fas fa-video"></i> Films les plus populaires</h4>
+    <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>
@@ -60,11 +60,9 @@
     </div>
 </div>
 
-<div class="card mt-4">
-    <div class="card-header">
-        <h3><i class="fas fa-trophy"></i> Classement des participants</h3>
-    </div>
-    <div class="card-body">
+<div class="mt-4">
+    <h4 class="text-white mb-3"><i class="fas fa-trophy"></i> Classement des participants</h4>
+    <div class="table-responsive">
         <table class="table">
             <thead>
                 <tr>

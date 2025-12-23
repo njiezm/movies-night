@@ -1,55 +1,55 @@
 @extends('layouts.admin')
 @section('title','Tirages au sort')
 @section('content')
-<div class="card">
-    <div class="card-header">
-        <h3><i class="fas fa-gift"></i> Tirages au sort</h3>
-        <button class="btn btn-success" onclick="showAddTirageModal()">
-            <i class="fas fa-plus"></i> Ajouter un tirage
-        </button>
-    </div>
-    <div class="card-body">
-        <table class="table">
-            <thead>
+<h3 class="text-white text-center mb-4"><i class="fas fa-gift"></i> Gestion des Tirages</h3>
+
+<div class="text-center mb-4">
+    <button class="btn btn-danger" onclick="showAddTirageModal()">
+        <i class="fas fa-plus"></i> Ajouter un tirage
+    </button>
+</div>
+
+<div class="table-responsive">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Titre</th>
+                <th>Dotation</th>
+                <th>Date</th>
+                <th>Gagnant</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($tirages as $tirage)
                 <tr>
-                    <th>Titre</th>
-                    <th>Dotation</th>
-                    <th>Date</th>
-                    <th>Gagnant</th>
-                    <th>Actions</th>
+                    <td>{{ $tirage->title }}</td>
+                    <td>{{ $tirage->dotation->title }}</td>
+                    <td>{{ $tirage->date }}</td>
+                    <td>
+                        @if($tirage->winner)
+                            {{ $tirage->winner->firstname }} {{ $tirage->winner->lastname }}
+                        @else
+                            <span class="text-muted">Non défini</span>
+                        @endif
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="showEditTirageModal({{ $tirage->id }})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        @if(!$tirage->winner_id)
+                            <button class="btn btn-warning btn-sm" onclick="drawTirage({{ $tirage->id }})">
+                                <i class="fas fa-dice"></i> Tirer
+                            </button>
+                        @endif
+                        <button class="btn btn-danger btn-sm" onclick="deleteTirage({{ $tirage->id }})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach($tirages as $tirage)
-                    <tr>
-                        <td>{{ $tirage->title }}</td>
-                        <td>{{ $tirage->dotation->title }}</td>
-                        <td>{{ $tirage->date }}</td>
-                        <td>
-                            @if($tirage->winner)
-                                {{ $tirage->winner->firstname }} {{ $tirage->winner->lastname }}
-                            @else
-                                <span class="text-muted">Non défini</span>
-                            @endif
-                        </td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="showEditTirageModal({{ $tirage->id }})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            @if(!$tirage->winner_id)
-                                <button class="btn btn-warning btn-sm" onclick="drawTirage({{ $tirage->id }})">
-                                    <i class="fas fa-dice"></i> Tirer
-                                </button>
-                            @endif
-                            <button class="btn btn-danger btn-sm" onclick="deleteTirage({{ $tirage->id }})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+            @endforeach
+        </tbody>
+    </table>
 </div>
 
 <!-- Modal Ajout/Modification Tirage -->
@@ -80,7 +80,7 @@
                 <input type="date" class="form-control" id="date" name="date" required>
             </div>
             <div class="form-group">
-                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                <button type="submit" class="btn btn-danger">Enregistrer</button>
             </div>
         </form>
     </div>
