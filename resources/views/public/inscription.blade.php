@@ -94,11 +94,11 @@
                                     </div>
                                 </div>
 
-                                <div class="row p-2">
+                                <!--div class="row p-2">
                                     <div class="col mg-top-5">
                                         <input type="text" class="form-control text-center mg-top-5 rounded-pill" name="zipcode" placeholder="Code postal"/>
                                     </div>
-                                </div>
+                                </!--div-->
 
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
@@ -115,9 +115,9 @@
                                         <label class="text-white">Comment souhaitez-vous être contacté ?</label>
                                         <select class="form-select text-center rounded-pill" name="contact_method" id="contactMethod">
                                             <option value="">Sélectionnez une option</option>
-                                            <option value="1">Par SMS</option>
-                                            <option value="2">Par Email</option>
-                                            <option value="3">Par les deux</option>
+                                            <option value="1">SMS</option>
+                                            <option value="2">Email</option>
+                                            <option value="3">Email & SMS</option>
                                         </select>
                                     </div>
                                 </div>
