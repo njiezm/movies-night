@@ -22,4 +22,5 @@ class Participant extends Model
     return $this->belongsToMany(Dotation::class, 'participant_dotation');
 }
 
+
 }

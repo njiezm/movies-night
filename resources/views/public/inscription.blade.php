@@ -11,36 +11,36 @@
             <!-- Header -->
             <div class="row justify-content-center">
                 <div class="col">
-                    <img src="{{ asset('images/madiana/header.jpg') }}" class="shadow img-fluid header-img" alt="Marathon de Films d'Horreur">
+                    <img src="{{ asset('images/madiana/header.png') }}" class="img-fluid header-img" alt="Marathon de Films d'Horreur">
                 </div>
             </div>
 
             <!-- Contenu principal -->
             <div class="row justify-content-center">
-                <div class="col-10 card_red">
+                <div class="col-10">
                     <div class="p-4">
                         <!-- Titre et accroche -->
-                        <div class="row justify-content-center">
+                        <!--div class="row justify-content-center">
                             <div class="col-11 text-center mg-top-10">
                                 <h2 class="text-white mb-3">Marathon de Films d'Horreur</h2>
                                 <p class="text-white">Rejoignez-nous pour une nuit de frissons et de suspense !</p>
                             </div>
-                        </div>
+                        </!--div-->
 
                         <!-- Image de dotation -->
                         <div class="row justify-content-center">
                             <div class="col-12 text-center mg-top-20 mg-bottom-20">
-                                <img src="{{ asset('images/madiana/dotation.jpg') }}" class="img-fluid rounded" alt="Dotation">
+                                <img src="{{ asset('images/madiana/dotation.png') }}" class="img-fluid rounded" alt="Dotation">
                             </div>
                         </div>
 
                         <!-- Formulaire -->
-                        <div style="border-radius: 50px; background: rgba(0, 0, 0, 0.7); padding:40px;" class="row justify-content-center">
-                            <div class="row justify-content-center">
+                        <div style="" class="row justify-content-center">
+                            <!--div class="row justify-content-center">
                                 <div class="col-12 text-center mg-top-10 mg-bottom-20">
                                     <h3 class="text-white">Inscrivez-vous maintenant</h3>
                                 </div>
-                            </div>
+                            </!--div-->
 
                             <form method="POST" action="{{ route('inscription.store') }}">
                                 @csrf
@@ -72,25 +72,25 @@
 
                                 <div class="row p-2 mg-top-10">
                                     <div class="col mg-top-5">
-                                        <input type="text" class="form-control text-center mg-top-5 rounded-pill" name="firstname" placeholder="Prénom" required/>
+                                        <input type="text" style="background: rgba(255, 255, 255, 0.20); color:white;" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="firstname" placeholder="Prénom" required/>
                                     </div>
                                 </div>
 
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <input type="text" class="form-control text-center mg-top-5 rounded-pill" name="lastname" placeholder="Nom" required/>
+                                        <input type="text" style="background: rgba(255, 255, 255, 0.20);" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="lastname" placeholder="Nom" required/>
                                     </div>
                                 </div>
 
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <input type="email" class="form-control text-center mg-top-5 rounded-pill" name="email" placeholder="Email"/>
+                                        <input type="email" style="background: rgba(255, 255, 255, 0.20);" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="email" placeholder="Email"/>
                                     </div>
                                 </div>
 
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <input type="tel" class="form-control text-center mg-top-5 rounded-pill" name="telephone" placeholder="Numéro de téléphone" required/>
+                                        <input type="tel" style="background: rgba(255, 255, 255, 0.20);" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="telephone" placeholder="Numéro de téléphone" required/>
                                     </div>
                                 </div>
 
@@ -100,31 +100,42 @@
                                     </div>
                                 </!--div-->
 
-                                <div class="row p-2">
-                                    <div class="col mg-top-5">
-                                        <label class="text-white">Souhaitez-vous être recontacté ?</label>
-                                        <select class="form-select text-center rounded-pill" name="optin" id="optinSelect">
-                                            <option value="0">Non</option>
-                                            <option value="1">Oui</option>
-                                        </select>
-                                    </div>
-                                </div>
+                            <div class="row p-2">
+    <div class="col mg-top-5">
+        <label style="font-size: 1.8rem; " class="text-white">Souhaitez-vous être recontacté ?</label>
+        <select
+            class="form-select text-center rounded-pill input-white-big"
+            name="optin"
+            id="optinSelect"
+            required
+        >
+            <!-- option neutre par défaut -->
+            <option value="" selected disabled hidden>
+                — Choisissez une réponse —
+            </option>
+
+            <option style="background: black" value="0">Non</option>
+            <option style="background: black" value="1">Oui</option>
+        </select>
+    </div>
+</div>
+
 
                                 <div class="row p-2 justify-content-center blockOptincanal" style="display: none;">
                                     <div class="col-12 mg-top-5">
-                                        <label class="text-white">Comment souhaitez-vous être contacté ?</label>
-                                        <select class="form-select text-center rounded-pill" name="contact_method" id="contactMethod">
+                                        <label style="font-size: 1.8rem; " class="text-white">Comment souhaitez-vous être contacté ?</label>
+                                        <select style="background: rgba(255, 255, 255, 0.20);" class="form-select text-center rounded-pill input-white-big" name="contact_method" id="contactMethod">
                                             <option value="">Sélectionnez une option</option>
-                                            <option value="1">SMS</option>
-                                            <option value="2">Email</option>
-                                            <option value="3">Email & SMS</option>
+                                            <option style="background: black" value="1">SMS</option>
+                                            <option style="background: black" value="2">Email</option>
+                                            <option style="background: black" value="3">Email & SMS</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div class="row justify-content-center mt-4">
                                     <div class="col-8 col-sm-4 mg-top-5 text-center mg-bottom-40">
-                                        <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4">S'inscrire</button>
+                                        <img src="{{ asset('images/madiana/valider_btn.png') }}" class="img-fluid btn-submit" alt="S'inscrire" style="cursor: pointer;" onclick="this.closest('form').submit();">
                                     </div>
                                 </div>
                             </form>
@@ -146,7 +157,7 @@
             <!-- Footer -->
             <div class="row justify-content-center">
                 <div class="col-12 text-center">
-                    <img src="{{ asset('images/madiana/footer.jpg') }}" class="img-fluid footer-img" alt="Cinéma Madiana">
+                    <img src="{{ asset('images/madiana/footer.png') }}" class="img-fluid" alt="Cinéma Madiana">
                 </div>
             </div>
         </div>

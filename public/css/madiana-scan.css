@@ -1,23 +1,22 @@
 /* Importation des styles de base */
+@font-face {
+    font-family: 'Marykate';
+    src: url('../font/FontsFree-Net-Marykate-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     background-color: #000;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Marykate', Arial, sans-serif;
     line-height: 1.6;
-    color: #fff;
+    color: var(--text-color);
     margin: 0;
     padding: 0;
 }
 
 .main_view {
-    background-image:
-        url("/images/madiana/pattern.jpg"),
-        radial-gradient(
-            ellipse at center,
-            #222 0%,
-            #8B0000 50%,
-            #330000 100%
-        );
-
+    background: var(--Radial, radial-gradient(64.56% 50% at 50% 50%, #870F0F 0%, #4D0000 100%));
     background-repeat: repeat, no-repeat;
     background-size: contain, cover;
     background-position: top left, center;
@@ -119,4 +118,30 @@ body {
         margin: 10px 0;
         border-radius: 10px;
     }
+}
+
+/* Bouton image */
+.image-btn {
+    display: block;
+    width: 100%;
+    border-radius: 999px; /* effet pillule */
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.image-btn img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Hover */
+.image-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.3);
+}
+
+/* Variante rouge (inscription) */
+.image-btn-danger:hover {
+    box-shadow: 0 8px 25px rgba(229, 9, 20, 0.6);
 }

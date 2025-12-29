@@ -11,13 +11,13 @@
             <!-- Header -->
             <div class="row justify-content-center">
                 <div class="col">
-                    <img src="{{ asset('images/madiana/header-connexion.jpg') }}" class="shadow img-fluid header-img" alt="Connexion Marathon">
+                    <img src="{{ asset('images/madiana/header.png') }}" class="img-fluid" alt="Connexion Marathon">
                 </div>
             </div>
 
             <!-- Contenu principal -->
             <div class="row justify-content-center">
-                <div class="col-10 card_red">
+                <div class="col-10">
                     <div class="p-4">
                         <!-- Titre et accroche -->
                         <div class="row justify-content-center">
@@ -96,7 +96,7 @@
             <!-- Footer -->
             <div class="row justify-content-center">
                 <div class="col-12 text-center">
-                    <img src="{{ asset('images/madiana/footer-connexion.jpg') }}" class="img-fluid footer-img" alt="Cinéma Madiana">
+                    <img src="{{ asset('images/madiana/footer.png') }}" class="img-fluid" alt="Cinéma Madiana">
                 </div>
             </div>
         </div>

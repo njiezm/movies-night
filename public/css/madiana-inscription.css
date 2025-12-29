@@ -1,4 +1,11 @@
 /* Variables CSS */
+@font-face {
+    font-family: 'Marykate';
+    src: url('../font/FontsFree-Net-Marykate-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 :root {
     --primary-color: #e50914;
     --secondary-color: #141414;
@@ -13,7 +20,7 @@
 /* Styles généraux */
 body {
     background-color: #000;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Marykate', Arial, sans-serif;
     line-height: 1.6;
     color: var(--text-color);
     margin: 0;
@@ -21,22 +28,15 @@ body {
 }
 
 .main_view {
-    background-image:
-        url("/images/madiana/pattern.jpg"),
-        radial-gradient(
-            441.42% 100% at 50.04% 100%,
-            #222 0%,
-            #8B0000 17.79%,
-            #660000 53.37%,
-            #330000 100%
-        );
+    background: var(--Radial, radial-gradient(64.56% 50% at 50% 50%, #870F0F 0%, #4D0000 100%));
 
     background-repeat: repeat, no-repeat;
     background-size: contain, cover;
     background-position: top left, center;
 
     min-height: 100vh;
-    font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+    font-family: 'Marykate', sans-serif;
+
     color: #fff;
     overflow-x: hidden;
 
@@ -57,7 +57,6 @@ body {
 
 .header-img {
     border-radius: 15px 15px 0 0;
-    margin-top: 20px;
 }
 
 .footer-img {
@@ -154,4 +153,18 @@ body {
         margin: 10px 0;
         border-radius: 10px;
     }
+}
+
+.input-white-big {
+    background: rgba(255, 255, 255, 0.20) !important;
+    color: #fff !important;
+    font-size: 1.8rem; /* taille du texte */
+    font-weight: 600;
+    height: 55px; /* input plus haut */
+}
+
+/* Placeholder en blanc */
+.input-white-big::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.8rem;
 }

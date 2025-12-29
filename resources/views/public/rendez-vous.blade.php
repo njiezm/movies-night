@@ -11,37 +11,43 @@
             <!-- Header -->
             <div class="row justify-content-center">
                 <div class="col">
-                    <img src="{{ asset('images/madiana/header-rendezvous.jpg') }}" class="shadow img-fluid header-img" alt="Marathon de Films d'Horreur">
+                    <img src="{{ asset('images/madiana/header.png') }}" class="img-fluid" alt="Marathon de Films d'Horreur">
                 </div>
             </div>
 
             <!-- Contenu principal -->
             <div class="row justify-content-center">
-                <div class="col-10 card_red">
+                <div class="col-10">
                     <div class="p-4">
                         <!-- Titre et accroche -->
                         <div class="row justify-content-center">
                             <div class="col-11 text-center mg-top-10">
-                                <h2 class="text-white mb-3">Rendez-vous dans votre cinéma Madiana</h2>
-                                <p class="text-white">Pour le marathon de films d'horreur !</p>
+                                  <!-- Image de dotation -->
+                        <div class="row justify-content-center">
+                            <div class="col-12 text-center mg-top-20 mg-bottom-20">
+                                <img src="{{ asset('images/madiana/dotation-rdv.png') }}" class="img-fluid rounded" alt="Dotation">
+                            </div>
+                        </div>
+                                <!--h2 class="text-white mb-3">Rendez-vous dans votre cinéma Madiana</-h2-->
+                                <!--p class="text-white">Pour le marathon de films d'horreur !</!--p-->
                             </div>
                         </div>
 
                         <!-- Informations clés de l'événement -->
                         <div class="row text-center mb-4 event-info">
                             <div class="col-12">
-                                <h3 class="h5 text-warning">Une nuit de frissons vous attend !</h3>
+                                <!--h3 class="h5 text-warning">Une nuit de frissons vous attend !</-h3-->
                                 <p>Scannez les QR codes dans le cinéma pour participer à la course.</p>
                             </div>
                             <div class="col-4 mt-3">
                                 <i class="fas fa-calendar-alt fa-2x text-warning mb-2"></i>
                                 <h5>Date</h5>
-                                <p class="text-white">31 Octobre</p>
+                                <p class="text-white">du 18 Janvier au 20 Juin 2026</p>
                             </div>
                             <div class="col-4 mt-3">
                                 <i class="fas fa-clock fa-2x text-warning mb-2"></i>
                                 <h5>Heure</h5>
-                                <p class="text-white">20:00 - 02:00</p>
+                                <p class="text-white">Tous les soirs</p>
                             </div>
                             <div class="col-4 mt-3">
                                 <i class="fas fa-map-marker-alt fa-2x text-warning mb-2"></i>
@@ -87,7 +93,7 @@
             <!-- Footer -->
             <div class="row justify-content-center">
                 <div class="col-12 text-center">
-                    <img src="{{ asset('images/madiana/footer-rendezvous.jpg') }}" class="img-fluid footer-img" alt="Cinéma Madiana">
+                    <img src="{{ asset('images/madiana/footer.png') }}" class="img-fluid" alt="Cinéma Madiana">
                 </div>
             </div>
         </div>

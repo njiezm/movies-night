@@ -11,7 +11,7 @@
             <!-- Header -->
             <div class="row justify-content-center">
                 <div class="col">
-                    <img src="{{ asset('images/madiana/header-mesfilms.jpg') }}" class="shadow img-fluid header-img" alt="Mon Marathon">
+                    <img src="{{ asset('images/madiana/header.png') }}" class="img-fluid header-img" alt="Mon Marathon">
                 </div>
             </div>
 
@@ -87,7 +87,7 @@
             <!-- Footer -->
             <div class="row justify-content-center">
                 <div class="col-12 text-center">
-                    <img src="{{ asset('images/madiana/footer-mesfilms.jpg') }}" class="img-fluid footer-img" alt="Cinéma Madiana">
+                    <img src="{{ asset('images/madiana/footer.png') }}" class="img-fluid" alt="Cinéma Madiana">
                 </div>
             </div>
         </div>

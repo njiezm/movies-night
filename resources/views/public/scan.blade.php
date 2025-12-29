@@ -11,19 +11,25 @@
             <!-- Header -->
             <div class="row justify-content-center">
                 <div class="col">
-                    <img src="{{ asset('images/madiana/header-scan.jpg') }}" class="shadow img-fluid header-img" alt="Scan Marathon">
+                    <img src="{{ asset('images/madiana/header.png') }}" class="img-fluid header-img" alt="Scan Marathon">
                 </div>
             </div>
 
             <!-- Contenu principal -->
             <div class="row justify-content-center">
-                <div class="col-10 card_red">
+                <div class="col-10">
                     <div class="p-4">
                         <!-- Message de bienvenue -->
                         <div class="row justify-content-center">
                             <div class="col-11 text-center">
-                                <h1 class="text-white mb-3">Bienvenue dans le monde de l'horreur !</h1>
-                                <p class="lead text-warning mb-4">Vous venez de scanner le film :</p>
+                                <!-- Image de dotation -->
+                        <div class="row justify-content-center">
+                            <div class="col-12 text-center mg-top-20 mg-bottom-20">
+                                <img src="{{ asset('images/madiana/dotation-express.png') }}" class="img-fluid rounded" alt="Dotation">
+                            </div>
+                        </div>
+                                <p class="lead text-warning mb-4 mt-4">Vous venez de scanner le film :</p>
+                                
                             </div>
                         </div>
 
@@ -45,19 +51,24 @@
                             </div>
                         </div>
                         
-                        <div class="row justify-content-center gx-2">
-                            <div class="col-12 col-sm-6 mb-2">
-                                <a href="{{ route('connexion.express') }}?film_slug={{ $film->slug }}" class="btn btn-outline-light btn-lg w-100 rounded-pill">
-                                    <i class="fas fa-sign-in-alt"></i> J'ai déjà un compte
-                                </a>
-                            </div>
-                            <div class="col-12 col-sm-6 mb-2">
-                                {{-- IMPORTANT: On force la source à 'salle' car l'inscription vient d'un scan --}}
-                                <a href="{{ route('inscription', ['source' => 'salle']) }}?from_qr_scan=1&film_slug={{ $film->slug }}" class="btn btn-danger btn-lg w-100 rounded-pill">
-                                    <i class="fas fa-user-plus"></i> Je m'inscris
-                                </a>
-                            </div>
+                       <div class="row justify-content-center gx-2">
+                        <div class="col-12 col-sm-6 mb-2">
+                            <a href="{{ route('connexion.express') }}?film_slug={{ $film->slug }}"
+                            class="image-btn">
+                                <img src="{{ asset('images/madiana/icon-connexion.png') }}"
+                                    alt="Bouton Connexion">
+                            </a>
                         </div>
+
+                        <div class="col-12 col-sm-6 mb-2">
+                            <a href="{{ route('inscription', ['source' => 'salle']) }}?from_qr_scan=1&film_slug={{ $film->slug }}"
+                            class="image-btn image-btn-danger">
+                                <img src="{{ asset('images/madiana/icon-inscription.png') }}"
+                                    alt="Bouton Inscription">
+                            </a>
+                        </div>
+                    </div>
+
                     </div>
                 </div>
             </div>
@@ -65,7 +76,7 @@
             <!-- Footer -->
             <div class="row justify-content-center">
                 <div class="col-12 text-center">
-                    <img src="{{ asset('images/madiana/footer-scan.jpg') }}" class="img-fluid footer-img" alt="Cinéma Madiana">
+                    <img src="{{ asset('images/madiana/footer.png') }}" class="img-fluid" alt="Cinéma Madiana">
                 </div>
             </div>
         </div>
