@@ -135,8 +135,12 @@
 
                                 <div class="row justify-content-center mt-4">
                                     <div class="col-8 col-sm-4 mg-top-5 text-center mg-bottom-40">
-                                        <img src="{{ asset('images/madiana/valider_btn.png') }}" class="img-fluid btn-submit" alt="S'inscrire" style="cursor: pointer;" onclick="this.closest('form').submit();">
-                                    </div>
+                                <button type="submit" class="btn-submit-img">
+                                    <img src="{{ asset('images/madiana/valider_btn.png') }}"
+                                        class="img-fluid"
+                                        alt="S'inscrire">
+                                </button>
+                                   </div>
                                 </div>
                             </form>
                         </div>
@@ -165,17 +169,46 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const optinSelect = document.getElementById('optinSelect');
-    const contactMethodDiv = document.querySelector('.blockOptincanal');
-    
-    optinSelect.addEventListener('change', function() {
-        if (this.value === '1') {
-            contactMethodDiv.style.display = 'block';
+$(document).ready(function () {
+
+    const $form = $('form');
+    const $optin = $('#optinSelect');
+    const $contactMethod = $('#contactMethod');
+    const $blockOptin = $('.blockOptincanal');
+
+    // Affichage / masquage du choix du canal
+    $optin.on('change', function () {
+        if ($(this).val() === '1') {
+            $blockOptin.slideDown(200);
+            $contactMethod.prop('required', true);
         } else {
-            contactMethodDiv.style.display = 'none';
+            $blockOptin.slideUp(200);
+            $contactMethod.prop('required', false).val('');
         }
     });
+
+    // Validation à la soumission
+    $form.on('submit', function (e) {
+
+        // Opt-in non sélectionné
+        if (!$optin.val()) {
+            e.preventDefault();
+            alert('Veuillez choisir si vous souhaitez être recontacté.');
+            $optin.focus();
+            return false;
+        }
+
+        // Opt-in = oui mais aucun canal choisi
+        if ($optin.val() === '1' && !$contactMethod.val()) {
+            e.preventDefault();
+            alert('Veuillez choisir un moyen de contact.');
+            $contactMethod.focus();
+            return false;
+        }
+
+    });
+
 });
 </script>
+
 @endsection
