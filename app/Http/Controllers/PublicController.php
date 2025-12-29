@@ -9,9 +9,9 @@ use Illuminate\Support\Str;
 
 class PublicController extends Controller
 {
-    public function accueil()
+    public function accueil($source = null)
     {
-        return view('public.accueil');
+        return view('public.inscription', compact('source'));
     }
 
     public function showInscription($source = null)
