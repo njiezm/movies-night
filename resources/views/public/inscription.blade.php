@@ -11,7 +11,7 @@
             <!-- Header -->
             <div class="row justify-content-center">
                 <div class="col">
-                    <img src="{{ asset('images/madiana/header.png') }}" class="img-fluid header-img" alt="Marathon de Films d'Horreur">
+                    <img src="{{ asset('images/madiana/header.png') }}" class="img-fluid" alt="Marathon de Films d'Horreur">
                 </div>
             </div>
 
