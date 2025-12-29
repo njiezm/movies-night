@@ -170,21 +170,47 @@ class AdminController extends Controller
         return view('admin.dotations.create');
     }
 
-    public function storeDotation(Request $request)
-    {
-        // Vérifier si l'utilisateur a accès à cette section
-        if (!session('show_dotations')) {
-            return redirect()->route('admin.stats')->with('error', 'Vous n\'avez pas accès à cette section');
-        }
-        
-        $request->validate([
-            'title'=>'required',
-            'dotationdate'=>'required|date'
-        ]);
-
-        Dotation::create($request->all());
-        return redirect()->route('admin.dotations')->with('success','Dotation ajoutée !');
+   public function storeDotation(Request $request)
+{
+    // Vérifier si l'utilisateur a accès à cette section
+    if (!session('show_dotations')) {
+        return redirect()->route('admin.stats')->with('error', 'Vous n\'avez pas accès à cette section');
     }
+    
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'dotationdate' => 'required|date|after_or_equal:today'
+    ], [
+        'title.required' => 'Le titre est obligatoire',
+        'title.max' => 'Le titre ne doit pas dépasser 255 caractères',
+        'dotationdate.required' => 'La date est obligatoire',
+        'dotationdate.after_or_equal' => 'La date doit être aujourd\'hui ou dans le futur'
+    ]);
+
+    Dotation::create($request->all());
+    return redirect()->route('admin.dotations')->with('success', 'Dotation ajoutée avec succès !');
+}
+
+public function updateDotation(Request $request, Dotation $dotation)
+{
+    // Vérifier si l'utilisateur a accès à cette section
+    if (!session('show_dotations')) {
+        return redirect()->route('admin.stats')->with('error', 'Vous n\'avez pas accès à cette section');
+    }
+    
+    $request->validate([
+        'title' => 'required|string|max:255',
+        'dotationdate' => 'required|date|after_or_equal:today'
+    ], [
+        'title.required' => 'Le titre est obligatoire',
+        'title.max' => 'Le titre ne doit pas dépasser 255 caractères',
+        'dotationdate.required' => 'La date est obligatoire',
+        'dotationdate.after_or_equal' => 'La date doit être aujourd\'hui ou dans le futur'
+    ]);
+
+    $dotation->update($request->all());
+    return redirect()->route('admin.dotations')->with('success', 'Dotation mise à jour avec succès !');
+}
 
     public function editDotation(Dotation $dotation)
     {
@@ -196,7 +222,7 @@ class AdminController extends Controller
         return view('admin.dotations.edit', compact('dotation'));
     }
 
-    public function updateDotation(Request $request, Dotation $dotation)
+    public function updateDotationold(Request $request, Dotation $dotation)
     {
         // Vérifier si l'utilisateur a accès à cette section
         if (!session('show_dotations')) {
@@ -213,15 +239,20 @@ class AdminController extends Controller
     }
 
     public function deleteDotation(Dotation $dotation)
-    {
-        // Vérifier si l'utilisateur a accès à cette section
-        if (!session('show_dotations')) {
-            return redirect()->route('admin.stats')->with('error', 'Vous n\'avez pas accès à cette section');
-        }
-        
-        $dotation->delete();
-        return redirect()->route('admin.dotations')->with('success','Dotation supprimée !');
+{
+    // Vérifier si l'utilisateur a accès à cette section
+    if (!session('show_dotations')) {
+        return redirect()->route('admin.stats')->with('error', 'Vous n\'avez pas accès à cette section');
     }
+    
+    // Vérifier si des tirages sont associés à cette dotation
+    if ($dotation->tirages()->count() > 0) {
+        return redirect()->route('admin.dotations')->with('error', 'Impossible de supprimer cette dotation car elle est associée à des tirages. Supprimez d\'abord les tirages associés.');
+    }
+    
+    $dotation->delete();
+    return redirect()->route('admin.dotations')->with('success', 'Dotation supprimée !');
+}
 
     // --- STATISTIQUES ---
     public function stats()

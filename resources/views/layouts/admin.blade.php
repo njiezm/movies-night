@@ -10,95 +10,158 @@
 </head>
 <body>
     @if(!session('admin_authenticated'))
-        <!-- Page de connexion avec le design Madiana -->
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-8 col-xl-5 col-12 main_view">
-                    <div class="row justify-content-center">
-                        <div class="col-10 card_red">
-                            <div class="p-4">
-                                <div class="row justify-content-center">
-                                    <div class="col-11 text-center">
-                                        <h2 class="text-white mb-3"><i class="fas fa-film"></i> Madiana Admin</h2>
-                                        <p class="text-white">Entrez votre code d'accès pour continuer</p>
-                                    </div>
+        <!-- Page de connexion avec le design Madiana amélioré -->
+        <div class="login-wrapper">
+            <div class="login-container">
+                <div class="login-card">
+                    <div class="login-header">
+                        <div class="logo-container">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <h2>Madiana Admin</h2>
+                        <p>Entrez votre code d'accès pour continuer</p>
+                    </div>
+
+                    <form action="{{ route('admin.login') }}" method="POST" class="login-form">
+                        @csrf
+                        <div class="form-group">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="access_code" placeholder="Code à 6 chiffres" maxlength="6" pattern="[0-9]{6}" required>
+                                <div class="input-icon">
+                                    <i class="fas fa-lock"></i>
                                 </div>
-
-                                <form action="{{ route('admin.login') }}" method="POST">
-                                    @csrf
-                                    <div class="row p-2">
-                                        <div class="col">
-                                            <input type="text" class="form-control text-center rounded-pill" name="access_code" placeholder="Code à 6 chiffres" maxlength="6" pattern="[0-9]{6}" required>
-                                        </div>
-                                    </div>
-                                    <div class="row justify-content-center mt-4">
-                                        <div class="col-8 col-sm-4">
-                                            <button type="submit" class="btn btn-danger btn-lg rounded-pill w-100">Se connecter</button>
-                                        </div>
-                                    </div>
-                                </form>
-
-                                @if(session('error'))
-                                    <div class="alert alert-danger mt-3 text-center">
-                                        {{ session('error') }}
-                                    </div>
-                                @endif
                             </div>
                         </div>
-                    </div>
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <span>Se connecter</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle"></i>
+                            {{ session('error') }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     @else
         <!-- Interface d'administration -->
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 col-xl-10 main_view">
-                    <!-- Navigation -->
-                    <div class="row justify-content-center">
-                        <div class="col-10 nav-admin">
-                            <a href="{{ route('admin.stats') }}" class="{{ request()->routeIs('admin.stats') ? 'active' : '' }}">
-                                <i class="fas fa-chart-bar"></i> Statistiques
-                            </a>
-                            <a href="{{ route('admin.films') }}" class="{{ request()->routeIs('admin.films*') ? 'active' : '' }}">
-                                <i class="fas fa-video"></i> Films
-                            </a>
-                            <a href="{{ route('admin.tirages') }}" class="{{ request()->routeIs('admin.tirages*') ? 'active' : '' }}">
-                                <i class="fas fa-gift"></i> Tirages
-                            </a>
-                            @if(session('show_dotations'))
-                                <a href="{{ route('admin.dotations') }}" class="{{ request()->routeIs('admin.dotations*') ? 'active' : '' }}">
-                                    <i class="fas fa-trophy"></i> Dotations
-                                </a>
-                            @endif
-                            <a href="{{ route('admin.logout') }}" class="logout-link">
-                                <i class="fas fa-sign-out-alt"></i> Déconnexion
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Contenu principal -->
-                    <div class="row justify-content-center">
-                        <div class="col-10 card_red">
-                            <div class="p-4">
-                                @if(session('success'))
-                                    <div class="alert alert-success">
-                                        {{ session('success') }}
-                                    </div>
-                                @endif
-                                
-                                @if(session('error'))
-                                    <div class="alert alert-danger">
-                                        {{ session('error') }}
-                                    </div>
-                                @endif
-                                
-                                @yield('content')
-                            </div>
-                        </div>
-                    </div>
+        <div class="admin-wrapper">
+            <!-- Header pour mobile -->
+            <header class="admin-header-mobile">
+                <div class="header-left">
+                    <button class="menu-toggle" id="mobileMenuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="admin-title-mobile">Madiana Admin</h1>
                 </div>
-            </div>
+                <a href="{{ route('admin.logout') }}" class="logout-mobile">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </header>
+
+            <!-- Navigation latérale pour mobile -->
+            <nav class="admin-nav-mobile" id="mobileNav">
+                <div class="nav-header">
+                    <h3>Menu</h3>
+                    <button class="close-nav" id="closeMobileNav">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <ul class="nav-list">
+                    <li>
+                        <a href="{{ route('admin.stats') }}" class="{{ request()->routeIs('admin.stats') ? 'active' : '' }}">
+                            <i class="fas fa-chart-bar"></i> Statistiques
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.films') }}" class="{{ request()->routeIs('admin.films*') ? 'active' : '' }}">
+                            <i class="fas fa-video"></i> Films
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{{ route('admin.tirages') }}" class="{{ request()->routeIs('admin.tirages*') ? 'active' : '' }}">
+                            <i class="fas fa-gift"></i> Tirages
+                        </a>
+                    </li>
+                    @if(session('show_dotations'))
+                        <li>
+                            <a href="{{ route('admin.dotations') }}" class="{{ request()->routeIs('admin.dotations*') ? 'active' : '' }}">
+                                <i class="fas fa-trophy"></i> Dotations
+                            </a>
+                        </li>
+                    @endif
+                    <li>
+                        <a href="{{ route('admin.logout') }}" class="logout-link">
+                            <i class="fas fa-sign-out-alt"></i> Déconnexion
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Contenu principal -->
+            <main class="admin-main">
+                <div class="admin-container">
+                    <!-- Navigation desktop -->
+                    <nav class="admin-nav-desktop">
+                        <div class="nav-brand">
+                            <i class="fas fa-film"></i>
+                            <span>Madiana Admin</span>
+                        </div>
+                        <ul class="nav-list">
+                            <li>
+                                <a href="{{ route('admin.stats') }}" class="{{ request()->routeIs('admin.stats') ? 'active' : '' }}">
+                                    <i class="fas fa-chart-bar"></i> Statistiques
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.films') }}" class="{{ request()->routeIs('admin.films*') ? 'active' : '' }}">
+                                    <i class="fas fa-video"></i> Films
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('admin.tirages') }}" class="{{ request()->routeIs('admin.tirages*') ? 'active' : '' }}">
+                                    <i class="fas fa-gift"></i> Tirages
+                                </a>
+                            </li>
+                            @if(session('show_dotations'))
+                                <li>
+                                    <a href="{{ route('admin.dotations') }}" class="{{ request()->routeIs('admin.dotations*') ? 'active' : '' }}">
+                                        <i class="fas fa-trophy"></i> Dotations
+                                    </a>
+                                </li>
+                            @endif
+                            <li>
+                                <a href="{{ route('admin.logout') }}" class="logout-link">
+                                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <!-- Contenu de la page -->
+                    <section class="admin-content">
+                        @if(session('success'))
+                            <div class="alert alert-success">
+                                <i class="fas fa-check-circle"></i>
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        
+                        @if(session('error'))
+                            <div class="alert alert-danger">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ session('error') }}
+                            </div>
+                        @endif
+                        
+                        @yield('content')
+                    </section>
+                </div>
+            </main>
         </div>
 
         <!-- Modal pour afficher le QR code en grand -->
@@ -127,6 +190,32 @@
     @endif
 
     <script>
+        // Menu mobile
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const mobileNav = document.getElementById('mobileNav');
+            const closeMobileNav = document.getElementById('closeMobileNav');
+            
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    mobileNav.classList.add('active');
+                });
+            }
+            
+            if (closeMobileNav) {
+                closeMobileNav.addEventListener('click', function() {
+                    mobileNav.classList.remove('active');
+                });
+            }
+            
+            // Fermer le menu en cliquant à l'extérieur
+            document.addEventListener('click', function(event) {
+                if (!mobileNav.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                    mobileNav.classList.remove('active');
+                }
+            });
+        });
+
         // Fermer les modals
         $(document).on('click', '.close', function() {
             $(this).closest('.modal').hide();
