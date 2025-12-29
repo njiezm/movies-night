@@ -78,19 +78,19 @@
 
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <input type="text" style="background: rgba(255, 255, 255, 0.20);" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="lastname" placeholder="Nom" required/>
+                                        <input type="text" style="background: rgba(255, 255, 255, 0.20); color:white;" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="lastname" placeholder="Nom" required/>
                                     </div>
                                 </div>
 
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <input type="email" style="background: rgba(255, 255, 255, 0.20);" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="email" placeholder="Email"/>
+                                        <input type="email" style="background: rgba(255, 255, 255, 0.20); color:white;" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="email" placeholder="Email"/>
                                     </div>
                                 </div>
 
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <input type="tel" style="background: rgba(255, 255, 255, 0.20);" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="telephone" placeholder="Numéro de téléphone" required/>
+                                        <input type="tel" style="background: rgba(255, 255, 255, 0.20); color:white;" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="telephone" placeholder="Numéro de téléphone" required/>
                                     </div>
                                 </div>
 
