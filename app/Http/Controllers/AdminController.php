@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Support\Facades\Cookie;
+
 
 class AdminController extends Controller
 {
@@ -17,7 +19,7 @@ class AdminController extends Controller
     private $fullAccessCode = '123456';  // Accès complet avec dotations
     private $limitedAccessCode = '654321'; // Accès limité sans dotations
     
-    public function login(Request $request)
+    public function loginold(Request $request)
     {
         $request->validate([
             'access_code' => 'required|digits:6'
@@ -35,6 +37,48 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Code d\'accès incorrect');
         }
     }
+
+    public function login(Request $request)
+{
+    $request->validate([
+        'access_code' => 'required|digits:6'
+    ]);
+
+    $accessCode = $request->input('access_code');
+    $remember = $request->has('remember'); // 👈 case cochée ou non
+
+    if ($accessCode === $this->fullAccessCode) {
+
+        session([
+            'admin_authenticated' => true,
+            'show_dotations' => true
+        ]);
+
+        // 🍪 Cookie si "se souvenir de moi"
+        if ($remember) {
+            Cookie::queue('admin_remember', 'full', 60 * 24 * 7); // 7 jours
+        }
+
+        return redirect()->route('admin.stats');
+
+    } elseif ($accessCode === $this->limitedAccessCode) {
+
+        session([
+            'admin_authenticated' => true,
+            'show_dotations' => false
+        ]);
+
+        if ($remember) {
+            Cookie::queue('admin_remember', 'limited', 60 * 24 * 7);
+        }
+
+        return redirect()->route('admin.stats');
+
+    } else {
+        return back()->with('error', 'Code d\'accès incorrect');
+    }
+}
+
     
     public function logout(Request $request)
     {
