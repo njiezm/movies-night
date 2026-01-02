@@ -27,7 +27,7 @@ body {
     padding: 0;
 }
 .main_view {
-    background: var(--Radial, radial-gradient(64.56% 50% at 50% 50%, #870F0F 0%, #4D0000 100%));
+    background: var(--Radial, radial-gradient(64.56% 50% at 50% 50%, #1B2240 40%, #0B0F1A 100%));
     background-repeat: repeat, no-repeat;
     background-size: contain, cover;
     background-position: top left, center;

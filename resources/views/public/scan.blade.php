@@ -25,10 +25,9 @@
                                 <!-- Image de dotation -->
                         <div class="row justify-content-center">
                             <div class="col-12 text-center mg-top-20 mg-bottom-20">
-                                <img src="{{ asset('images/madiana/dotation-express.png') }}" class="img-fluid rounded" alt="Dotation">
+                                <img src="{{ asset('images/madiana/dotation-express.png') }}" class="img-fluid rounded mb-4" alt="Dotation">
                             </div>
                         </div>
-                                <p class="lead text-warning mb-4 mt-4">Vous venez de scanner le film :</p>
                                 
                             </div>
                         </div>
@@ -37,7 +36,7 @@
                         <div class="row justify-content-center">
                             <div class="col-10 text-center">
                                 <div class="film-scanned">
-                                    <img src="{{ asset('storage/'.$film->vignette) }}" class="img-fluid rounded shadow-lg" alt="{{ $film->title }}">
+                                    <img src="{{ asset('storage/'.$film->vignette) }}" class="img-fluid rounded" alt="{{ $film->title }}">
                                     <h2 class="text-white mt-3">{{ $film->title }}</h2>
                                     <p class="text-white-50">{{ $film->description }}</p>
                                 </div>

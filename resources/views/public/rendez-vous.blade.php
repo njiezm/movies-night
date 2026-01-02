@@ -33,52 +33,7 @@
                             </div>
                         </div>
 
-                        <!-- Informations clés de l'événement -->
-                        <div class="row text-center mb-4 event-info">
-                            <div class="col-12">
-                                <!--h3 class="h5 text-warning">Une nuit de frissons vous attend !</-h3-->
-                                <p>Scannez les QR codes dans le cinéma pour participer à la course.</p>
-                            </div>
-                            <div class="col-4 mt-3">
-                                <i class="fas fa-calendar-alt fa-2x text-warning mb-2"></i>
-                                <h5>Date</h5>
-                                <p class="text-white">du 18 Janvier au 20 Juin 2026</p>
-                            </div>
-                            <div class="col-4 mt-3">
-                                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
-                                <h5>Heure</h5>
-                                <p class="text-white">Tous les soirs</p>
-                            </div>
-                            <div class="col-4 mt-3">
-                                <i class="fas fa-map-marker-alt fa-2x text-warning mb-2"></i>
-                                <h5>Lieu</h5>
-                                <p class="text-white">Cinéma Madiana</p>
-                            </div>
-                        </div>
-
-                        <!-- Liste des films à l'affiche -->
-                        <div class="text-center mb-4">
-                            <h3 class="text-white">Les films à l'affiche</h3>
-                        </div>
-
-                        <div class="row">
-                            @forelse ($films as $film)
-                                <div class="col-6 mb-3">
-                                    <div class="film-card-custom">
-                                        <a href="#" title="Voir les détails de {{ $film->title }}">
-                                            <img src="{{ asset('storage/'.$film->vignette) }}" class="film-poster" alt="Affiche du film {{ $film->title }}">
-                                        </a>
-                                        <div class="film-title mt-2">
-                                            <h5>{{ $film->title }}</h5>
-                                        </div>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="col-12">
-                                    <p class="text-center text-white">La liste des films sera bientôt disponible.</p>
-                                </div>
-                            @endforelse
-                        </div>
+                       
 
                         <!-- Appel à l'action final -->
                         <!--div class="text-center mt-4 p-3 cta-block">

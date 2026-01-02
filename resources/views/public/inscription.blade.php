@@ -135,7 +135,7 @@
 
                                 <div class="row justify-content-center mt-4">
                                     <div class="col-8 col-sm-4 mg-top-5 text-center mg-bottom-40">
-                                <button type="submit" class="btn-submit-img">
+                                <button type="submit" style="background: transparent; border: none;" class="btn-submit-img">
                                     <img src="{{ asset('images/madiana/valider_btn.png') }}"
                                         class="img-fluid"
                                         alt="S'inscrire">
