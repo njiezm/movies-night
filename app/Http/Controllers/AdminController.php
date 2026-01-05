@@ -319,7 +319,8 @@ public function updateFilm(Request $request, Film $film)
             'message' => 'Le gagnant du tirage au sort est ' . $winner->firstname . ' ' . $winner->lastname . ' !',
             'winner_firstname' => $winner->firstname,
             'winner_lastname' => $winner->lastname,
-            'winner_email' => $winner->email ?? 'Non spécifié'
+            'winner_email' => $winner->email ?? 'Non spécifié',
+            'winner_telephone' => $winner->telephone
         ]);
     }
     public function editDotation(Dotation $dotation)
@@ -354,7 +355,7 @@ public function updateFilm(Request $request, Film $film)
     // --- TIRAGES AU SORT ---
     public function tirages()
     {
-        $tirages = Tirage::with('dotation')->get();
+         $tirages = Tirage::with('dotation')->orderBy('date', 'asc')->get();
         $dotations = Dotation::all();
         return view('admin.tirages.index', compact('tirages', 'dotations'));
     }
