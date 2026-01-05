@@ -13,7 +13,7 @@
                 <input type="text" id="searchFilms" class="form-control" placeholder="Rechercher un film...">
             </div>
         </div>
-        <button class="btn btn-primary" onclick="showAddFilmModal()">
+        <button class="btn btn-primary" id="addFilmBtn">
             <i class="fas fa-plus"></i> Ajouter un film
         </button>
     </div>
@@ -37,7 +37,7 @@
             <option value="desc">Décroissant</option>
         </select>
     </div>
-    <button class="btn-filter" onclick="applyFilters()">
+    <button class="btn-filter" id="applyFiltersBtn">
         <i class="fas fa-filter"></i> Appliquer
     </button>
 </div>
@@ -55,10 +55,10 @@
         </div>
     </div>
     
-    <!-- Vue grille -->
+   <!-- Vue grille -->
     <div class="film-grid" id="filmsGridView">
         @forelse($films as $film)
-            <div class="film-card" data-id="{{ $film->id }}" data-title="{{ strtolower($film->title) }}" data-participants="{{ $film->participants_count }}" data-start-date="{{ $film->start_date ?? '' }}" data-end-date="{{ $film->end_date ?? '' }}">
+            <div class="film-card" data-id="{{ $film->id }}" data-title="{{ strtolower($film->title) }}" data-participants="{{ $film->participants_count }}" data-start-date="{{ $film->start_date ?? '' }}" data-end-date="{{ $film->end_date ?? '' }}" data-description="{{ $film->description }}">
                 <div class="film-poster">
                     @if($film->vignette)
                         <img src="{{ asset('storage/'.$film->vignette) }}" alt="{{ $film->title }}">
@@ -91,18 +91,18 @@
                     
                     <div class="film-card-footer">
                         <div class="film-actions">
-                            <button class="btn btn-sm btn-outline-primary" onclick="showEditFilmModal({{ $film->id }})" title="Modifier">
+                            <button class="btn btn-sm btn-outline-primary edit-film-btn" data-id="{{ $film->id }}" title="Modifier">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-info" onclick="showQrModal('{{ asset($film->qrcode ?? '') }}', '{{ route('scan', $film->slug) }}')" title="Voir le QR Code">
+                            <button class="btn btn-sm btn-outline-info show-qr-btn" data-qr="{{ asset($film->qrcode ?? '') }}" data-url="{{ route('scan', $film->slug) }}" title="Voir le QR Code">
                                 <i class="fas fa-qrcode"></i>
                             </button>
                             @if($film->qrcode)
-                            <button class="btn btn-sm btn-outline-success" onclick="downloadQrCode('{{ asset($film->qrcode) }}', '{{ $film->title }}')" title="Télécharger le QR Code">
+                            <button class="btn btn-sm btn-outline-success download-qr-btn" data-qr="{{ asset($film->qrcode) }}" data-title="{{ $film->title }}" title="Télécharger le QR Code">
                                 <i class="fas fa-download"></i>
                             </button>
                             @endif
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteFilm({{ $film->id }})" title="Supprimer">
+                            <button class="btn btn-sm btn-outline-danger delete-film-btn" data-id="{{ $film->id }}" title="Supprimer">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -114,7 +114,7 @@
                 <i class="fas fa-film fa-4x mb-3"></i>
                 <h3>Aucun film trouvé</h3>
                 <p>Commencez par ajouter votre premier film.</p>
-                <button class="btn btn-primary" onclick="showAddFilmModal()">
+                <button class="btn btn-primary" id="addFilmEmptyBtn">
                     <i class="fas fa-plus"></i> Ajouter un film
                 </button>
             </div>
@@ -124,7 +124,7 @@
     <!-- Vue liste (cachée par défaut) -->
     <div class="table-container" id="filmsListView" style="display: none;">
         <div class="table-responsive">
-            <table class="table">
+            <table class="table table-striped align-middle">
                 <thead>
                     <tr>
                         <th>Affiche</th>
@@ -138,7 +138,7 @@
                 </thead>
                 <tbody>
                     @forelse($films as $film)
-                        <tr data-id="{{ $film->id }}" data-title="{{ strtolower($film->title) }}" data-participants="{{ $film->participants_count }}" data-start-date="{{ $film->start_date ?? '' }}" data-end-date="{{ $film->end_date ?? '' }}">
+                        <tr data-id="{{ $film->id }}" data-title="{{ strtolower($film->title) }}" data-participants="{{ $film->participants_count }}" data-start-date="{{ $film->start_date ?? '' }}" data-end-date="{{ $film->end_date ?? '' }}" data-description="{{ $film->description }}">
                             <td>
                                 @if($film->vignette)
                                     <img src="{{ asset('storage/'.$film->vignette) }}" alt="{{ $film->title }}" class="film-thumbnail">
@@ -162,10 +162,10 @@
                             <td>{{ $film->participants_count }}</td>
                             <td>
                                 @if($film->qrcode)
-                                    <button class="btn btn-sm btn-outline-info" onclick="showQrModal('{{ asset($film->qrcode) }}', '{{ route('scan', $film->slug) }}')">
+                                    <button class="btn btn-sm btn-outline-info show-qr-btn" data-qr="{{ asset($film->qrcode) }}" data-url="{{ route('scan', $film->slug) }}">
                                         <i class="fas fa-qrcode"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-success" onclick="downloadQrCode('{{ asset($film->qrcode) }}', '{{ $film->title }}')" title="Télécharger le QR Code">
+                                    <button class="btn btn-sm btn-outline-success download-qr-btn" data-qr="{{ asset($film->qrcode) }}" data-title="{{ $film->title }}" title="Télécharger le QR Code">
                                         <i class="fas fa-download"></i>
                                     </button>
                                 @else
@@ -174,10 +174,10 @@
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="btn btn-sm btn-outline-primary" onclick="showEditFilmModal({{ $film->id }})" title="Modifier">
+                                    <button class="btn btn-sm btn-outline-primary edit-film-btn" data-id="{{ $film->id }}" title="Modifier">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-danger" onclick="deleteFilm({{ $film->id }})" title="Supprimer">
+                                    <button class="btn btn-sm btn-outline-danger delete-film-btn" data-id="{{ $film->id }}" title="Supprimer">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -189,7 +189,7 @@
                                 <div class="empty-state">
                                     <i class="fas fa-film fa-3x mb-3"></i>
                                     <p>Aucun film trouvé</p>
-                                    <button class="btn btn-primary" onclick="showAddFilmModal()">
+                                    <button class="btn btn-primary" id="addFilmTableBtn">
                                         <i class="fas fa-plus"></i> Ajouter un film
                                     </button>
                                 </div>
@@ -202,70 +202,78 @@
     </div>
 </section>
 
-<!-- Modal Ajout/Modification Film -->
-<div id="filmModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h4 id="filmModalTitle">Ajouter un film</h4>
-            <span class="close">&times;</span>
-        </div>
-        <form id="filmForm" class="modal-form" enctype="multipart/form-data">
+{{-- MODAL AJOUT / MODIF --}}
+<div class="modal fade" id="filmModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="POST" id="filmForm" class="modal-content admin-form" enctype="multipart/form-data">
             @csrf
-            <input type="hidden" id="film_id" name="id">
-            <div class="form-group">
-                <label for="title" class="form-label">Titre du film</label>
-                <div class="input-group">
-                    <div class="input-icon">
-                        <i class="fas fa-heading"></i>
-                    </div>
-                    <input type="text" class="form-control" id="title" name="title" required>
-                </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="filmModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="form-group">
-                <label for="description" class="form-label">Description</label>
-                <div class="input-group">
-                    <div class="input-icon" style="top: 15px;">
-                        <i class="fas fa-align-left"></i>
+
+            <div class="modal-body">
+                <input type="hidden" name="id" id="film_id">
+
+                <div class="form-group">
+                    <label for="title" class="form-label">Titre du film</label>
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-heading"></i>
+                        </div>
+                        <input type="text" class="form-control" name="title" id="title" required>
                     </div>
-                    <textarea class="form-control" id="description" name="description" rows="4"></textarea>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="start_date" class="form-label">Date de début</label>
-                        <div class="input-group">
-                            <div class="input-icon">
-                                <i class="fas fa-calendar-alt"></i>
+
+                <div class="form-group">
+                    <label for="description" class="form-label">Description</label>
+                    <div class="input-group">
+                        <div class="input-icon" style="align-items: flex-start; padding-top: 0.75rem;">
+                            <i class="fas fa-align-left"></i>
+                        </div>
+                        <textarea class="form-control" name="description" id="description" rows="4"></textarea>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="start_date" class="form-label">Date de début</label>
+                            <div class="input-group">
+                                <div class="input-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <input type="date" class="form-control" name="start_date" id="start_date">
                             </div>
-                            <input type="date" class="form-control" id="start_date" name="start_date">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="end_date" class="form-label">Date de fin</label>
+                            <div class="input-group">
+                                <div class="input-icon">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </div>
+                                <input type="date" class="form-control" name="end_date" id="end_date">
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="end_date" class="form-label">Date de fin</label>
-                        <div class="input-group">
-                            <div class="input-icon">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <input type="date" class="form-control" id="end_date" name="end_date">
+
+                <div class="form-group">
+                    <label for="vignette" class="form-label">Affiche</label>
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-image"></i>
                         </div>
+                        <input type="file" class="form-control" name="vignette" id="vignette" accept="image/*">
                     </div>
+                    <div class="form-text" id="file-name">Choisir une image</div>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="vignette" class="form-label">Affiche</label>
-                <div class="file-upload">
-                    <input type="file" class="form-control" id="vignette" name="vignette" accept="image/*">
-                    <label for="vignette" class="file-upload-label">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <span id="file-name">Choisir une image</span>
-                    </label>
-                </div>
-            </div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="$('#filmModal').hide()">
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="fas fa-times"></i> Annuler
                 </button>
                 <button type="submit" class="btn btn-primary">
@@ -276,52 +284,59 @@
     </div>
 </div>
 
-<!-- Modal Suppression Film -->
-<div id="deleteFilmModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h4>Supprimer un film</h4>
-            <span class="close">&times;</span>
-        </div>
-        <div class="modal-body">
-            <div class="alert alert-warning">
-                <i class="fas fa-exclamation-triangle"></i>
-                <p>Êtes-vous sûr de vouloir supprimer ce film ?</p>
-                <p>Cette action est irréversible et supprimera également toutes les données associées.</p>
+{{-- MODAL SUPPRESSION --}}
+<div class="modal fade" id="deleteFilmModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <form method="POST" id="deleteFilmForm" class="modal-content admin-form">
+            @csrf
+            @method('DELETE')
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i> Supprimer le film
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <form id="deleteFilmForm">
-                @csrf
-                <input type="hidden" id="delete_film_id" name="id">
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="$('#deleteFilmModal').hide()">
-                        <i class="fas fa-times"></i> Annuler
-                    </button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> Supprimer
-                    </button>
-                </div>
-            </form>
-        </div>
+            <div class="modal-body text-center py-4">
+                <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
+                <p class="mb-0">Cette action est définitive.</p>
+                <p class="text-muted">Êtes-vous sûr de vouloir continuer ?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Supprimer
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- Modal QR Code -->
-<div id="qrModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h4>QR Code du film</h4>
-            <span class="close">&times;</span>
-        </div>
-        <div class="modal-body text-center">
-            <div id="qrCodeContainer">
-                <!-- Le QR code sera affiché ici -->
+{{-- MODAL QR CODE --}}
+<div class="modal fade" id="qrModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-qrcode"></i> QR Code du film
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="mt-3">
-                <p id="qrCodeUrl" class="text-muted small"></p>
+            <div class="modal-body text-center">
+                <div id="qrCodeContainer">
+                    <!-- Le QR code sera affiché ici -->
+                </div>
+                <div class="mt-3">
+                    <p id="qrCodeUrl" class="text-muted small"></p>
+                </div>
             </div>
-            <div class="mt-3">
-                <button id="downloadQrBtn" class="btn btn-success">
-                    <i class="fas fa-download"></i> Télécharger le QR Code
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Fermer
+                </button>
+                <button type="button" class="btn btn-success" id="downloadQrBtn">
+                    <i class="fas fa-download"></i> Télécharger
                 </button>
             </div>
         </div>
@@ -332,11 +347,16 @@
 
 @push('scripts')
 <script>
-    // Définir les URLs de base pour les requêtes AJAX
-    const filmBaseUrl = '{{ url("/admin/films") }}';
-    const filmStoreUrl = '{{ route("admin.films.store") }}';
+ $(function () {
+    const baseUrl = '{{ url("/admin/films") }}';
     
-    // Gestion des vues (grille/liste)
+    // Fonction utilitaire pour afficher une modale Bootstrap
+    function showModal(modalId) {
+        const modal = new bootstrap.Modal(document.getElementById(modalId));
+        modal.show();
+    }
+
+    // --- GESTION DES VUES (GRILLE/LISTE) ---
     $('#gridView').click(function() {
         $('#filmsGridView').show();
         $('#filmsListView').hide();
@@ -350,142 +370,112 @@
         $(this).addClass('active');
         $('#gridView').removeClass('active');
     });
-    
-    // Recherche de films
+
+    // --- RECHERCHE ---
     $('#searchFilms').on('input', function() {
         const searchTerm = $(this).val().toLowerCase();
         
-        if (searchTerm === '') {
-            $('.film-card').show();
-            $('#filmsListView tbody tr').show();
-        } else {
-            $('.film-card').each(function() {
-                const title = $(this).data('title');
-                $(this).toggle(title.includes(searchTerm));
-            });
-            
-            $('#filmsListView tbody tr').each(function() {
-                const title = $(this).data('title');
-                $(this).toggle(title.includes(searchTerm));
-            });
-        }
+        $('.film-card').each(function() {
+            const title = $(this).data('title');
+            $(this).toggle(title.includes(searchTerm));
+        });
+        
+        $('#filmsListView tbody tr').each(function() {
+            const title = $(this).data('title');
+            $(this).toggle(title.includes(searchTerm));
+        });
     });
-    
-    // Appliquer les filtres
-    function applyFilters() {
+
+    // --- FILTRES ---
+    $('#applyFiltersBtn').click(function() {
         const sortBy = $('#filterBy').val();
         const sortOrder = $('#filterOrder').val();
         
+        // Trier la vue grille
         let sortedFilms = $('.film-card').toArray().sort(function(a, b) {
-            let aVal, bVal;
-            
-            if (sortBy === 'title') {
-                aVal = $(a).data('title');
-                bVal = $(b).data('title');
-            } else if (sortBy === 'participants') {
-                aVal = parseInt($(a).data('participants'));
-                bVal = parseInt($(b).data('participants'));
-            } else if (sortBy === 'period') {
-                aVal = $(a).data('start-date');
-                bVal = $(b).data('start-date');
-                if (aVal === '') aVal = '9999-12-31';
-                if (bVal === '') bVal = '9999-12-31';
-            } else {
-                // Par défaut, trier par ID
-                aVal = parseInt($(a).data('id'));
-                bVal = parseInt($(b).data('id'));
-            }
-            
-            if (sortOrder === 'asc') {
-                return aVal > bVal ? 1 : -1;
-            } else {
-                return aVal < bVal ? 1 : -1;
-            }
+            return compareElements(a, b, sortBy, sortOrder);
         });
-        
-        // Réorganiser les cartes
         $('.film-grid').empty().append(sortedFilms);
         
-        // Appliquer le même tri à la vue liste
+        // Trier la vue liste
         let sortedRows = $('#filmsListView tbody tr').toArray().sort(function(a, b) {
-            let aVal, bVal;
-            
-            if (sortBy === 'title') {
-                aVal = $(a).find('td:eq(1)').text().toLowerCase();
-                bVal = $(b).find('td:eq(1)').text().toLowerCase();
-            } else if (sortBy === 'participants') {
-                aVal = parseInt($(a).find('td:eq(4)').text());
-                bVal = parseInt($(b).find('td:eq(4)').text());
-            } else if (sortBy === 'period') {
-                aVal = $(a).data('start-date');
-                bVal = $(b).data('start-date');
-                if (aVal === '') aVal = '9999-12-31';
-                if (bVal === '') bVal = '9999-12-31';
-            } else {
-                // Par défaut, trier par ID
-                aVal = parseInt($(a).data('id'));
-                bVal = parseInt($(b).data('id'));
-            }
-            
-            if (sortOrder === 'asc') {
-                return aVal > bVal ? 1 : -1;
-            } else {
-                return aVal < bVal ? 1 : -1;
-            }
+            return compareElements(a, b, sortBy, sortOrder);
         });
-        
         $('#filmsListView tbody').empty().append(sortedRows);
+    });
+
+    // Fonction utilitaire pour la comparaison lors du tri
+    function compareElements(a, b, sortBy, sortOrder) {
+        let aVal, bVal;
+        const $a = $(a), $b = $(b);
+        
+        if (sortBy === 'title') {
+            aVal = $a.data('title') || $a.find('td:eq(1)').text().toLowerCase();
+            bVal = $b.data('title') || $b.find('td:eq(1)').text().toLowerCase();
+        } else if (sortBy === 'participants') {
+            aVal = parseInt($a.data('participants') || $a.find('td:eq(4)').text());
+            bVal = parseInt($b.data('participants') || $b.find('td:eq(4)').text());
+        } else if (sortBy === 'period') {
+            aVal = $a.data('start-date') || '9999-12-31';
+            bVal = $b.data('start-date') || '9999-12-31';
+        } else { // Par défaut, trier par ID
+            aVal = parseInt($a.data('id'));
+            bVal = parseInt($b.data('id'));
+        }
+        
+        if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+        if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+        return 0;
     }
-    
-    // Gestion de l'upload de fichier
+
+    // --- GESTION DES FICHIERS ---
     $('#vignette').change(function() {
         const fileName = $(this).val().split('\\').pop();
         $('#file-name').text(fileName || 'Choisir une image');
     });
     
-    // Afficher le modal d'ajout de film
-    function showAddFilmModal() {
-        $('#filmModalTitle').text('Ajouter un film');
-        $('#film_id').val('');
-        $('#title').val('');
-        $('#description').val('');
-        $('#start_date').val('');
-        $('#end_date').val('');
-        $('#vignette').val('');
+    // --- AJOUTER UN FILM ---
+    $('#addFilmBtn, #addFilmEmptyBtn, #addFilmTableBtn').on('click', function () {
+        $('#filmForm')[0].reset();
+        $('#filmForm').attr('action', '{{ route("admin.films.store") }}');
+        $('#filmForm').find('input[name="_method"]').remove();
+        $('#filmModalLabel').text('Ajouter un film');
         $('#file-name').text('Choisir une image');
-        $('#filmForm').attr('action', filmStoreUrl);
-        $('#filmModal').show();
-    }
+        showModal('filmModal');
+    });
 
-    // Afficher le modal de modification de film
-    function showEditFilmModal(id) {
-        $('#filmModalTitle').text('Modifier un film');
-        $('#film_id').val(id);
+    // --- MODIFIER UN FILM ---
+    // Utiliser la délégation d'événements pour les éléments dynamiques
+    $(document).on('click', '.edit-film-btn', function () {
+        const filmId = $(this).data('id');
+        const $card = $('.film-card[data-id="' + filmId + '"]');
         
-        // Afficher un indicateur de chargement
-        const $card = $('.film-card[data-id="' + id + '"]');
-        const originalActions = $card.find('.film-actions').html();
-        $card.find('.film-actions').html('<i class="fas fa-spinner fa-spin"></i>');
+        $('#filmForm').attr('action', baseUrl + '/' + filmId);
+        $('#filmForm').find('input[name="_method"]').remove();
+        $('#filmForm').append('<input type="hidden" name="_method" value="PUT">');
         
-        // Récupérer les données du film via AJAX
-        $.get(filmBaseUrl + '/' + id + '/data', function(data) {
-            $('#title').val(data.title);
-            $('#description').val(data.description);
-            $('#start_date').val(data.start_date);
-            $('#end_date').val(data.end_date);
-            $('#filmForm').attr('action', filmBaseUrl + '/' + id);
-            $('#filmModal').show();
-            
-            // Restaurer les boutons d'action
-            $card.find('.film-actions').html(originalActions);
-        }).fail(function(xhr) {
-            alert('Erreur: ' + xhr.responseText);
-            $card.find('.film-actions').html(originalActions);
-        });
-    }
+        $('#film_id').val(filmId);
+        $('#title').val($card.find('.film-card-title').text());
+        $('#description').val($card.data('description'));
+        $('#start_date').val($card.data('start-date'));
+        $('#end_date').val($card.data('end-date'));
+        
+        $('#filmModalLabel').text('Modifier un film');
+        showModal('filmModal');
+    });
 
-    // Afficher le modal du QR Code
-    function showQrModal(qrCodePath, scanUrl) {
+    // --- SUPPRIMER UN FILM ---
+    $(document).on('click', '.delete-film-btn', function () {
+        const filmId = $(this).data('id');
+        $('#deleteFilmForm').attr('action', baseUrl + '/' + filmId);
+        showModal('deleteFilmModal');
+    });
+    
+    // --- AFFICHER LE QR CODE ---
+    $(document).on('click', '.show-qr-btn', function () {
+        const qrCodePath = $(this).data('qr');
+        const scanUrl = $(this).data('url');
+        
         if (!qrCodePath) {
             alert('QR Code non disponible pour ce film');
             return;
@@ -493,107 +483,45 @@
         
         $('#qrCodeContainer').html('<img src="' + qrCodePath + '" alt="QR Code" class="img-fluid">');
         $('#qrCodeUrl').text(scanUrl);
-        
-        // Configurer le bouton de téléchargement
-        $('#downloadQrBtn').attr('onclick', 'downloadQrCode("' + qrCodePath + '", "QR Code")');
-        
-        $('#qrModal').show();
-    }
+        showModal('qrModal');
+    });
+
+    // --- TÉLÉCHARGER LE QR CODE ---
+    // Bouton dans la modal QR
+    $('#downloadQrBtn').on('click', function() {
+        const qrSrc = $('#qrCodeContainer img').attr('src');
+        if(qrSrc) {
+            downloadFile(qrSrc, 'QRCode');
+        }
+    });
     
-    // Télécharger le QR Code
-    function downloadQrCode(qrCodePath, filmTitle) {
+    // Boutons directs dans la liste/grille
+    $(document).on('click', '.download-qr-btn', function () {
+        const qrCodePath = $(this).data('qr');
+        const filmTitle = $(this).data('title');
+        
         if (!qrCodePath) {
             alert('QR Code non disponible pour ce film');
             return;
         }
-        
-        // Créer un lien temporaire pour le téléchargement
+        downloadFile(qrCodePath, 'QRCode_' + filmTitle.replace(/\s+/g, '_'));
+    });
+
+    // Fonction utilitaire pour télécharger un fichier
+    function downloadFile(path, filename) {
         const link = document.createElement('a');
-        link.href = qrCodePath;
-        link.download = 'QRCode_' + filmTitle.replace(/\s+/g, '_') + '.png';
+        link.href = path;
+        link.download = filename + '.png';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
-
-    // Supprimer un film
-    function deleteFilm(id) {
-        $('#delete_film_id').val(id);
-        $('#deleteFilmForm').attr('action', filmBaseUrl + '/' + id);
-        $('#deleteFilmModal').show();
-    }
-
-    // Soumission du formulaire de film
-    $('#filmForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        const $submitBtn = $(this).find('button[type="submit"]');
-        const originalText = $submitBtn.html();
-        $submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Enregistrement...').prop('disabled', true);
-        
-        var formData = new FormData(this);
-        var id = $('#film_id').val();
-        
-        // Ajouter la méthode PUT pour la modification
-        if (id) {
-            formData.append('_method', 'PUT');
-        }
-        
-        $.ajax({
-            url: $(this).attr('action'),
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                $('#filmModal').hide();
-                location.reload();
-            },
-            error: function(xhr) {
-                alert('Erreur: ' + xhr.responseText);
-                $submitBtn.html(originalText).prop('disabled', false);
-            }
-        });
-    });
-
-    // Soumission du formulaire de suppression
-    $('#deleteFilmForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        const $submitBtn = $(this).find('button[type="submit"]');
-        const originalText = $submitBtn.html();
-        $submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Suppression...').prop('disabled', true);
-        
-        var formData = new FormData(this);
-        formData.append('_method', 'DELETE');
-        
-        $.ajax({
-            url: $(this).attr('action'),
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                $('#deleteFilmModal').hide();
-                location.reload();
-            },
-            error: function(xhr) {
-                alert('Erreur: ' + xhr.responseText);
-                $submitBtn.html(originalText).prop('disabled', false);
-            }
-        });
-    });
-    
-    // Gestion des modals
-    $('.modal .close').on('click', function() {
-        $(this).closest('.modal').hide();
-    });
-    
-    // Fermer les modals en cliquant à l'extérieur
-    $(window).on('click', function(event) {
-        if ($(event.target).hasClass('modal')) {
-            $(event.target).hide();
-        }
-    });
+});
 </script>
+@endpush
+
+@push('styles')
+<style>
+
+</style>
 @endpush

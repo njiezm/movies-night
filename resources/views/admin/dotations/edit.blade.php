@@ -10,7 +10,7 @@
     <div class="form-container">
         <form action="{{ route('admin.dotations.update', $dotation) }}" method="POST" class="admin-form">
             @csrf
-            @method('PUT')  <!-- C'est cette ligne qui est importante -->
+            @method('PUT') 
             
             <div class="form-group">
                 <label for="title" class="form-label">Titre de la dotation</label>
