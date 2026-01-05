@@ -407,11 +407,11 @@ public function updateFilm(Request $request, Film $film)
     // Déchiffrement APRÈS récupération
     $tirages->each(function ($tirage) {
         if ($tirage->winner) {
-            $tirage->winner->firstname = $this->utf8(Genesys::Decrypt($tirage->winner->firstname));
-            $tirage->winner->lastname = $this->utf8(Genesys::Decrypt($tirage->winner->lastname));
-            $tirage->winner->telephone = $this->utf8(Genesys::Decrypt($tirage->winner->telephone));
+            $tirage->winner->firstname = $this->Genesys::Decrypt($tirage->winner->firstname));
+            $tirage->winner->lastname = $this->Genesys::Decrypt($tirage->winner->lastname);
+            $tirage->winner->telephone = $this->Genesys::Decrypt($tirage->winner->telephone);
             if ($tirage->winner->email) {
-                $tirage->winner->email = $this->utf8(Genesys::Decrypt($tirage->winner->email));
+                $tirage->winner->email = $this->Genesys::Decrypt($tirage->winner->email);
             }
         }
     });
@@ -502,23 +502,16 @@ public function updateFilm(Request $request, Film $film)
         'date' => $tirage->date,
         'dotation_id' => $tirage->dotation_id,
         'winner' => $tirage->winner ? [
-            'firstname' => $this->utf8(Genesys::Decrypt($tirage->winner->firstname)),
-            'lastname' => $this->utf8(Genesys::Decrypt($tirage->winner->lastname)),
-            'telephone' => $this->utf8(Genesys::Decrypt($tirage->winner->telephone)),
+            'firstname' => $this->Genesys::Decrypt($tirage->winner->firstname),
+            'lastname' => $this->Genesys::Decrypt($tirage->winner->lastname),
+            'telephone' => $this->Genesys::Decrypt($tirage->winner->telephone),
             'email' => $tirage->winner->email
-                ? $this->utf8(Genesys::Decrypt($tirage->winner->email))
+                ? $this->Genesys::Decrypt($tirage->winner->email)
                 : null,
         ] : null
     ]);
 }
 
-private function utf8(?string $value): ?string
-{
-    if ($value === null) {
-        return null;
-    }
 
-    return mb_convert_encoding($value, 'UTF-8', 'UTF-8');
-}
 
 }
