@@ -293,37 +293,50 @@ public function updateFilm(Request $request, Film $film)
     }
 
     public function drawTirage(Request $request, Tirage $tirage)
-    {
-        // Récupérer tous les participants
-        $participants = Participant::all();
-        
-        if ($participants->isEmpty()) {
-            return response()->json(['error' => 'Aucun participant disponible pour le tirage au sort.'], 400);
-        }
-        
-        // Vérifier s'il reste des dotations disponibles
-        $dotation = $tirage->dotation;
-        if ($dotation->remaining_count <= 0) {
-            return response()->json(['error' => 'Il ne reste plus de dotations disponibles pour ce tirage.'], 400);
-        }
-        
-        // Choisir un gagnant au hasard
-        $winner = $participants->random();
-        
-        // Enregistrer le gagnant
-        $tirage->winner_id = $winner->id;
-        $tirage->save();
-        
-        // Retourner les informations du gagnant au format JSON
-        return response()->json([
-            'success' => true,
-            'message' => 'Le gagnant du tirage au sort est ' . $winner->firstname . ' ' . $winner->lastname . ' !',
-            'winner_firstname' => $winner->firstname,
-            'winner_lastname' => $winner->lastname,
-            'winner_email' => $winner->email ?? 'Non spécifié',
-            'winner_telephone' => $winner->telephone
-        ]);
+{
+    // Récupérer tous les participants
+    $participants = Participant::all();
+    
+    if ($participants->isEmpty()) {
+        return response()->json(['error' => 'Aucun participant disponible pour le tirage au sort.'], 400);
     }
+    
+    // Vérifier s'il reste des dotations disponibles
+    $dotation = $tirage->dotation;
+    if ($dotation->remaining_count <= 0) {
+        return response()->json(['error' => 'Il ne reste plus de dotations disponibles pour ce tirage.'], 400);
+    }
+    
+    // Choisir un gagnant au hasard
+    $winner = $participants->random();
+    
+    // Enregistrer le gagnant
+    $tirage->winner_id = $winner->id;
+    $tirage->save();
+    
+    // Déchiffrer les données du gagnant
+    $winnerFirstname = Genesys::Decrypt($winner->firstname);
+    $winnerLastname = Genesys::Decrypt($winner->lastname);
+    $winnerEmail = $winner->email ? Genesys::Decrypt($winner->email) : 'Non spécifié';
+    $winnerTelephone = Genesys::Decrypt($winner->telephone);
+    
+    // S'assurer que les données sont en UTF-8
+    $winnerFirstname = mb_convert_encoding($winnerFirstname, 'UTF-8', 'UTF-8');
+    $winnerLastname = mb_convert_encoding($winnerLastname, 'UTF-8', 'UTF-8');
+    $winnerEmail = mb_convert_encoding($winnerEmail, 'UTF-8', 'UTF-8');
+    $winnerTelephone = mb_convert_encoding($winnerTelephone, 'UTF-8', 'UTF-8');
+    
+    // Retourner les informations du gagnant au format JSON
+    return response()->json([
+        'success' => true,
+        'message' => 'Le gagnant du tirage au sort est ' . $winnerFirstname . ' ' . $winnerLastname . ' !',
+        'winner_firstname' => $winnerFirstname,
+        'winner_lastname' => $winnerLastname,
+        'winner_email' => $winnerEmail,
+        'winner_telephone' => $winnerTelephone
+    ]);
+}
+
     public function editDotation(Dotation $dotation)
     {
         // Vérifier si l'utilisateur a accès à cette section
