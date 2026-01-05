@@ -17,6 +17,9 @@
                     <tr>
                         <th>Titre</th>
                         <th>Date</th>
+                        <th>Quantité totale</th>
+                        <th>Quantité attribuée</th>
+                        <th>Quantité restante</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -25,6 +28,13 @@
                         <tr>
                             <td>{{ $dotation->title }}</td>
                             <td>{{ \Carbon\Carbon::parse($dotation->dotationdate)->format('d/m/Y') }}</td>
+                            <td>{{ $dotation->quantity }}</td>
+                            <td>{{ $dotation->attributed_count }}</td>
+                            <td>
+                                <span class="badge {{ $dotation->remaining_count > 0 ? 'badge-success' : 'badge-danger' }}">
+                                    {{ $dotation->remaining_count }}
+                                </span>
+                            </td>
                             <td>
                                 <div class="action-buttons">
                                     <a href="{{ route('admin.dotations.edit', $dotation) }}" class="btn btn-sm btn-outline-primary" title="Modifier">
@@ -42,7 +52,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="3" class="text-center">Aucune dotation trouvée</td>
+                            <td colspan="6" class="text-center">Aucune dotation trouvée</td>
                         </tr>
                     @endforelse
                 </tbody>

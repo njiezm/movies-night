@@ -1,22 +1,14 @@
-/* Importation des styles de base */
 body {
     background-color: #000;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Marykate', Arial, sans-serif;
     line-height: 1.6;
-    color: #fff;
+    color: var(--text-color);
     margin: 0;
     padding: 0;
 }
 
 .main_view {
-    background-image:
-        url("/images/madiana/pattern.jpg"),
-        radial-gradient(
-            ellipse at center,
-            #222 0%,
-            #8B0000 50%,
-            #330000 100%
-        );
+    background: var(--Radial, radial-gradient(64.56% 50% at 50% 50%, #1B2240 40%, #0B0F1A 100%));
 
     background-repeat: repeat, no-repeat;
     background-size: contain, cover;
@@ -28,7 +20,6 @@ body {
     overflow-x: hidden;
     box-shadow: 0 0 25px rgba(139, 0, 0, 0.5);
 }
-
 .container .row > * {
     padding-left: 0;
     padding-right: 0;

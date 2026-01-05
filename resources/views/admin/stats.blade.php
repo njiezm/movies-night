@@ -14,6 +14,10 @@
             <div class="stat-label">Participants</div>
         </div>
         <div class="stat-card">
+            <div class="stat-value">{{ $totalOptinParticipants }}</div>
+            <div class="stat-label">Participants avec optin</div>
+        </div>
+        <div class="stat-card">
             <div class="stat-value">{{ $totalFilms }}</div>
             <div class="stat-label">Films</div>
         </div>
@@ -40,7 +44,7 @@
                     <tr>
                         <th>Titre</th>
                         <th>Participants</th>
-                        <th>Progression</th>
+                     
                     </tr>
                 </thead>
                 <tbody>
@@ -48,21 +52,7 @@
                         <tr>
                             <td>{{ $film->title }}</td>
                             <td>{{ $film->participants_count }}</td>
-                            <td>
-                                @if($totalParticipants > 0)
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: {{ ($film->participants_count / $totalParticipants) * 100 }}%;" aria-valuenow="{{ $film->participants_count }}" aria-valuemin="0" aria-valuemax="{{ $totalParticipants }}">
-                                            {{ round(($film->participants_count / $totalParticipants) * 100) }}%
-                                        </div>
-                                    </div>
-                                @else
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0">
-                                            0%
-                                        </div>
-                                    </div>
-                                @endif
-                            </td>
+                            
                         </tr>
                     @endforeach
                 </tbody>
@@ -101,7 +91,8 @@
                                     {{ $index + 1 }}
                                 @endif
                             </td>
-                            <td>{{ $participant->firstname }} {{ $participant->lastname }}</td>
+                            <!-- Anonymisation : première lettre du prénom et du nom -->
+                            <td>{{ substr($participant->firstname, 0, 1) }}. {{ substr($participant->lastname, 0, 1) }}.</td>
                             <td>{{ $participant->films_count }}</td>
                         </tr>
                     @endforeach
@@ -115,7 +106,5 @@
         <p class="mt-2">Chargement...</p>
     </div>
 </section>
-
-
 
 @endsection

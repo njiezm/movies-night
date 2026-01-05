@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Film extends Model
 {
     protected $fillable = [
-        'title', 'description', 'slug', 'vignette', 'qrcode'
+        'title', 'description', 'slug', 'vignette', 'qrcode', 'start_date', 'end_date'
     ];
 
     public function participants()

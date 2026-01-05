@@ -10,7 +10,7 @@
     <div class="form-container">
         <form action="{{ route('admin.dotations.update', $dotation) }}" method="POST" class="admin-form">
             @csrf
-            @method('PUT')
+            @method('PUT')  <!-- C'est cette ligne qui est importante -->
             
             <div class="form-group">
                 <label for="title" class="form-label">Titre de la dotation</label>
@@ -29,6 +29,19 @@
                         <i class="fas fa-calendar-alt"></i>
                     </div>
                     <input type="date" class="form-control" id="dotationdate" name="dotationdate" value="{{ $dotation->dotationdate }}" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="quantity" class="form-label">Quantité</label>
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fas fa-sort-numeric-up"></i>
+                    </div>
+                    <input type="number" class="form-control" id="quantity" name="quantity" value="{{ $dotation->quantity }}" min="{{ $dotation->attributed_count ?? 1 }}" required>
+                    @if($dotation->attributed_count > 0)
+                        <small class="form-text text-muted">Note: {{ $dotation->attributed_count }} dotation(s) déjà attribuée(s)</small>
+                    @endif
                 </div>
             </div>
             

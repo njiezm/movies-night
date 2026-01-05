@@ -31,6 +31,16 @@
                 </div>
             </div>
             
+            <div class="form-group">
+                <label for="quantity" class="form-label">Quantité</label>
+                <div class="input-group">
+                    <div class="input-icon">
+                        <i class="fas fa-sort-numeric-up"></i>
+                    </div>
+                    <input type="number" class="form-control" id="quantity" name="quantity" value="{{ old('quantity', 1) }}" min="1" required>
+                </div>
+            </div>
+            
             <div class="form-actions">
                 <a href="{{ route('admin.dotations') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Annuler

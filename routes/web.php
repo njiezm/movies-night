@@ -24,7 +24,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/films/create', [AdminController::class, 'createFilm'])->name('admin.films.create');
         Route::post('/films', [AdminController::class, 'storeFilm'])->name('admin.films.store');
         Route::get('/films/{film}/edit', [AdminController::class, 'editFilm'])->name('admin.films.edit');
-        Route::post('/films/{film}', [AdminController::class, 'updateFilm'])->name('admin.films.update');
+        //Route::post('/films/{film}', [AdminController::class, 'updateFilm'])->name('admin.films.update');
+        Route::put('/films/{film}', [AdminController::class, 'updateFilm'])->name('admin.films.update');
         Route::delete('/films/{film}', [AdminController::class, 'deleteFilm'])->name('admin.films.delete');
         Route::get('/films/{film}/data', [AdminController::class, 'getFilmData'])->name('admin.films.data');
         
@@ -32,7 +33,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/tirages/create', [AdminController::class, 'createTirage'])->name('admin.tirages.create');
         Route::post('/tirages', [AdminController::class, 'storeTirage'])->name('admin.tirages.store');
         Route::get('/tirages/{tirage}/edit', [AdminController::class, 'editTirage'])->name('admin.tirages.edit');
-        Route::post('/tirages/{tirage}', [AdminController::class, 'updateTirage'])->name('admin.tirages.update');
+        Route::put('/tirages/{tirage}', [AdminController::class, 'updateTirage'])->name('admin.tirages.update');
         Route::delete('/tirages/{tirage}', [AdminController::class, 'deleteTirage'])->name('admin.tirages.delete');
         Route::post('/tirages/{tirage}/draw', [AdminController::class, 'drawTirage'])->name('admin.tirages.draw');
         Route::get('/tirages/{tirage}/data', [AdminController::class, 'getTirageData'])->name('admin.tirages.data');
@@ -41,7 +42,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/dotations/create', [AdminController::class, 'createDotation'])->name('admin.dotations.create');
         Route::post('/dotations', [AdminController::class, 'storeDotation'])->name('admin.dotations.store');
         Route::get('/dotations/{dotation}/edit', [AdminController::class, 'editDotation'])->name('admin.dotations.edit');
-        Route::post('/dotations/{dotation}', [AdminController::class, 'updateDotation'])->name('admin.dotations.update');
+        Route::put('/dotations/{dotation}', [AdminController::class, 'updateDotation'])->name('admin.dotations.update');
         Route::delete('/dotations/{dotation}', [AdminController::class, 'deleteDotation'])->name('admin.dotations.delete');
     });
 });

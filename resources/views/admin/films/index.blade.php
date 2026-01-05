@@ -27,6 +27,7 @@
             <option value="title">Titre</option>
             <option value="participants">Participants</option>
             <option value="date">Date d'ajout</option>
+            <option value="period">Période</option>
         </select>
     </div>
     <div class="filter-group">
@@ -40,8 +41,6 @@
         <i class="fas fa-filter"></i> Appliquer
     </button>
 </div>
-
-
 
 <section class="content-section">
     <div class="section-header">
@@ -59,7 +58,7 @@
     <!-- Vue grille -->
     <div class="film-grid" id="filmsGridView">
         @forelse($films as $film)
-            <div class="film-card" data-id="{{ $film->id }}" data-title="{{ strtolower($film->title) }}" data-participants="{{ $film->participants_count }}">
+            <div class="film-card" data-id="{{ $film->id }}" data-title="{{ strtolower($film->title) }}" data-participants="{{ $film->participants_count }}" data-start-date="{{ $film->start_date ?? '' }}" data-end-date="{{ $film->end_date ?? '' }}">
                 <div class="film-poster">
                     @if($film->vignette)
                         <img src="{{ asset('storage/'.$film->vignette) }}" alt="{{ $film->title }}">
@@ -70,12 +69,25 @@
                         <div class="film-stats">
                             <span><i class="fas fa-users"></i> {{ $film->participants_count }}</span>
                             <span><i class="fas fa-qrcode"></i> QR</span>
+                            @if($film->start_date && $film->end_date)
+                                <span><i class="fas fa-calendar"></i> {{ $film->start_date }} au {{ $film->end_date }}</span>
+                            @endif
                         </div>
                     </div>
                 </div>
                 <div class="film-card-content">
                     <h4 class="film-card-title">{{ $film->title }}</h4>
                     <p class="film-card-description">{{ Str::limit($film->description, 80) }}</p>
+                    
+                    @if($film->start_date && $film->end_date)
+                        <div class="film-period mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt"></i> 
+                                Du {{ \Carbon\Carbon::parse($film->start_date)->format('d/m/Y') }} 
+                                au {{ \Carbon\Carbon::parse($film->end_date)->format('d/m/Y') }}
+                            </small>
+                        </div>
+                    @endif
                     
                     <div class="film-card-footer">
                         <div class="film-actions">
@@ -85,6 +97,11 @@
                             <button class="btn btn-sm btn-outline-info" onclick="showQrModal('{{ asset($film->qrcode ?? '') }}', '{{ route('scan', $film->slug) }}')" title="Voir le QR Code">
                                 <i class="fas fa-qrcode"></i>
                             </button>
+                            @if($film->qrcode)
+                            <button class="btn btn-sm btn-outline-success" onclick="downloadQrCode('{{ asset($film->qrcode) }}', '{{ $film->title }}')" title="Télécharger le QR Code">
+                                <i class="fas fa-download"></i>
+                            </button>
+                            @endif
                             <button class="btn btn-sm btn-outline-danger" onclick="deleteFilm({{ $film->id }})" title="Supprimer">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -110,9 +127,10 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Vignette</th>
+                        <th>Affiche</th>
                         <th>Titre</th>
                         <th>Description</th>
+                        <th>Période</th>
                         <th>Participants</th>
                         <th>QR Code</th>
                         <th>Actions</th>
@@ -120,7 +138,7 @@
                 </thead>
                 <tbody>
                     @forelse($films as $film)
-                        <tr data-id="{{ $film->id }}" data-title="{{ strtolower($film->title) }}" data-participants="{{ $film->participants_count }}">
+                        <tr data-id="{{ $film->id }}" data-title="{{ strtolower($film->title) }}" data-participants="{{ $film->participants_count }}" data-start-date="{{ $film->start_date ?? '' }}" data-end-date="{{ $film->end_date ?? '' }}">
                             <td>
                                 @if($film->vignette)
                                     <img src="{{ asset('storage/'.$film->vignette) }}" alt="{{ $film->title }}" class="film-thumbnail">
@@ -130,11 +148,25 @@
                             </td>
                             <td>{{ $film->title }}</td>
                             <td>{{ Str::limit($film->description, 50) }}</td>
+                            <td>
+                                @if($film->start_date && $film->end_date)
+                                    <small>
+                                        <i class="fas fa-calendar-alt"></i> 
+                                        Du {{ \Carbon\Carbon::parse($film->start_date)->format('d/m/Y') }} 
+                                        au {{ \Carbon\Carbon::parse($film->end_date)->format('d/m/Y') }}
+                                    </small>
+                                @else
+                                    <span class="text-muted">Non définie</span>
+                                @endif
+                            </td>
                             <td>{{ $film->participants_count }}</td>
                             <td>
                                 @if($film->qrcode)
                                     <button class="btn btn-sm btn-outline-info" onclick="showQrModal('{{ asset($film->qrcode) }}', '{{ route('scan', $film->slug) }}')">
                                         <i class="fas fa-qrcode"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-success" onclick="downloadQrCode('{{ asset($film->qrcode) }}', '{{ $film->title }}')" title="Télécharger le QR Code">
+                                        <i class="fas fa-download"></i>
                                     </button>
                                 @else
                                     <span class="text-muted">Non généré</span>
@@ -153,7 +185,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">
+                            <td colspan="7" class="text-center">
                                 <div class="empty-state">
                                     <i class="fas fa-film fa-3x mb-3"></i>
                                     <p>Aucun film trouvé</p>
@@ -198,8 +230,32 @@
                     <textarea class="form-control" id="description" name="description" rows="4"></textarea>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="start_date" class="form-label">Date de début</label>
+                        <div class="input-group">
+                            <div class="input-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <input type="date" class="form-control" id="start_date" name="start_date">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="end_date" class="form-label">Date de fin</label>
+                        <div class="input-group">
+                            <div class="input-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <input type="date" class="form-control" id="end_date" name="end_date">
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="form-group">
-                <label for="vignette" class="form-label">Vignette</label>
+                <label for="vignette" class="form-label">Affiche</label>
                 <div class="file-upload">
                     <input type="file" class="form-control" id="vignette" name="vignette" accept="image/*">
                     <label for="vignette" class="file-upload-label">
@@ -245,6 +301,29 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal QR Code -->
+<div id="qrModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4>QR Code du film</h4>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body text-center">
+            <div id="qrCodeContainer">
+                <!-- Le QR code sera affiché ici -->
+            </div>
+            <div class="mt-3">
+                <p id="qrCodeUrl" class="text-muted small"></p>
+            </div>
+            <div class="mt-3">
+                <button id="downloadQrBtn" class="btn btn-success">
+                    <i class="fas fa-download"></i> Télécharger le QR Code
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -306,6 +385,11 @@
             } else if (sortBy === 'participants') {
                 aVal = parseInt($(a).data('participants'));
                 bVal = parseInt($(b).data('participants'));
+            } else if (sortBy === 'period') {
+                aVal = $(a).data('start-date');
+                bVal = $(b).data('start-date');
+                if (aVal === '') aVal = '9999-12-31';
+                if (bVal === '') bVal = '9999-12-31';
             } else {
                 // Par défaut, trier par ID
                 aVal = parseInt($(a).data('id'));
@@ -330,8 +414,13 @@
                 aVal = $(a).find('td:eq(1)').text().toLowerCase();
                 bVal = $(b).find('td:eq(1)').text().toLowerCase();
             } else if (sortBy === 'participants') {
-                aVal = parseInt($(a).find('td:eq(3)').text());
-                bVal = parseInt($(b).find('td:eq(3)').text());
+                aVal = parseInt($(a).find('td:eq(4)').text());
+                bVal = parseInt($(b).find('td:eq(4)').text());
+            } else if (sortBy === 'period') {
+                aVal = $(a).data('start-date');
+                bVal = $(b).data('start-date');
+                if (aVal === '') aVal = '9999-12-31';
+                if (bVal === '') bVal = '9999-12-31';
             } else {
                 // Par défaut, trier par ID
                 aVal = parseInt($(a).data('id'));
@@ -360,6 +449,8 @@
         $('#film_id').val('');
         $('#title').val('');
         $('#description').val('');
+        $('#start_date').val('');
+        $('#end_date').val('');
         $('#vignette').val('');
         $('#file-name').text('Choisir une image');
         $('#filmForm').attr('action', filmStoreUrl);
@@ -380,6 +471,8 @@
         $.get(filmBaseUrl + '/' + id + '/data', function(data) {
             $('#title').val(data.title);
             $('#description').val(data.description);
+            $('#start_date').val(data.start_date);
+            $('#end_date').val(data.end_date);
             $('#filmForm').attr('action', filmBaseUrl + '/' + id);
             $('#filmModal').show();
             
@@ -389,6 +482,38 @@
             alert('Erreur: ' + xhr.responseText);
             $card.find('.film-actions').html(originalActions);
         });
+    }
+
+    // Afficher le modal du QR Code
+    function showQrModal(qrCodePath, scanUrl) {
+        if (!qrCodePath) {
+            alert('QR Code non disponible pour ce film');
+            return;
+        }
+        
+        $('#qrCodeContainer').html('<img src="' + qrCodePath + '" alt="QR Code" class="img-fluid">');
+        $('#qrCodeUrl').text(scanUrl);
+        
+        // Configurer le bouton de téléchargement
+        $('#downloadQrBtn').attr('onclick', 'downloadQrCode("' + qrCodePath + '", "QR Code")');
+        
+        $('#qrModal').show();
+    }
+    
+    // Télécharger le QR Code
+    function downloadQrCode(qrCodePath, filmTitle) {
+        if (!qrCodePath) {
+            alert('QR Code non disponible pour ce film');
+            return;
+        }
+        
+        // Créer un lien temporaire pour le téléchargement
+        const link = document.createElement('a');
+        link.href = qrCodePath;
+        link.download = 'QRCode_' + filmTitle.replace(/\s+/g, '_') + '.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     // Supprimer un film
@@ -457,6 +582,18 @@
                 $submitBtn.html(originalText).prop('disabled', false);
             }
         });
+    });
+    
+    // Gestion des modals
+    $('.modal .close').on('click', function() {
+        $(this).closest('.modal').hide();
+    });
+    
+    // Fermer les modals en cliquant à l'extérieur
+    $(window).on('click', function(event) {
+        if ($(event.target).hasClass('modal')) {
+            $(event.target).hide();
+        }
     });
 </script>
 @endpush

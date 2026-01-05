@@ -52,7 +52,7 @@
                                 @if($tirage->winner)
                                     <div class="winner-info">
                                         <div class="winner-name">{{ $tirage->winner->firstname }} {{ $tirage->winner->lastname }}</div>
-                                        <small class="text-muted">ID: {{ $tirage->winner->id }}</small>
+                                        <small class="text-muted">Tél: {{ $tirage->winner->telephone }}</small>
                                     </div>
                                 @else
                                     <span class="text-muted">Non défini</span>
@@ -360,30 +360,41 @@
     });
     
     // Soumission du formulaire de tirage au sort
-    $('#drawTirageForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        const $submitBtn = $(this).find('button[type="submit"]');
-        const originalText = $submitBtn.html();
-        $submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Tirage en cours...').prop('disabled', true);
-        
-        $.ajax({
-            url: $(this).attr('action'),
-            type: 'POST',
-            data: $(this).serialize(),
-            success: function(response) {
+ $('#drawTirageForm').on('submit', function(e) {
+    e.preventDefault();
+    
+    const $submitBtn = $(this).find('button[type="submit"]');
+    const originalText = $submitBtn.html();
+    $submitBtn.html('<i class="fas fa-spinner fa-spin"></i> Tirage en cours...').prop('disabled', true);
+    
+    $.ajax({
+        url: $(this).attr('action'),
+        type: 'POST',
+        data: $(this).serialize(),
+        dataType: 'json',  // Spécifier que nous attendons du JSON
+        success: function(response) {
+            if (response.success) {
                 // Afficher le résultat du tirage
                 $('#drawContent').hide();
                 $('#winnerName').text(response.winner_firstname + ' ' + response.winner_lastname);
                 $('#winnerEmail').text(response.winner_email);
                 $('#drawResult').show();
-            },
-            error: function(xhr) {
-                alert('Erreur: ' + xhr.responseText);
+            } else {
+                alert('Erreur: ' + response.error);
                 $submitBtn.html(originalText).prop('disabled', false);
                 $('#drawTirageModal').hide();
             }
-        });
+        },
+        error: function(xhr) {
+            let errorMessage = 'Une erreur est survenue lors du tirage au sort.';
+            if (xhr.responseJSON && xhr.responseJSON.error) {
+                errorMessage = xhr.responseJSON.error;
+            }
+            alert('Erreur: ' + errorMessage);
+            $submitBtn.html(originalText).prop('disabled', false);
+            $('#drawTirageModal').hide();
+        }
     });
+});
 </script>
 @endpush

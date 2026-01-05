@@ -22,7 +22,7 @@
             </div>
             
             <div class="form-group">
-                <label for="vignette">Vignette</label>
+                <label for="vignette">Affiche</label>
                 <input type="file" class="form-control" name="vignette">
                 @if(isset($film) && $film->vignette)
                     <div class="mt-2">
