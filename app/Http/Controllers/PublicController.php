@@ -117,35 +117,40 @@ public function showConnexionExpress()
 }
 
 
-    public function connexionExpress(Request $request)
-    {
-        $request->validate([
-            'telephone' => 'required',
-        ]);
+   use App\Models\Base\Genesys;
 
-        $participant = Participant::where('telephone', $request->telephone)->first();
+public function connexionExpress(Request $request)
+{
+    $request->validate([
+        'telephone' => 'required',
+    ]);
 
-        if (!$participant) {
-            // Si film_slug est défini, rediriger vers la page d'inscription avec ce paramètre
-            if ($request->film_slug) {
-                return redirect()->route('inscription', ['source' => 'qr_scan'])
-                    ->with('error', 'Numéro de téléphone non trouvé. Veuillez vous inscrire.')
-                    ->with('film_slug', $request->film_slug);
-            }
-            
-            // Sinon, rediriger vers la page d'inscription normale
-            return redirect()->route('inscription')
-                ->with('error', 'Numéro de téléphone non trouvé. Veuillez vous inscrire.');
-        }
+    // 🔐 chiffrement AVANT le where
+    $encryptedPhone = Genesys::Crypt($request->telephone);
 
-        // Si film_slug est défini, rediriger vers la page des films
+    $participant = Participant::where('telephone', $encryptedPhone)->first();
+
+    if (!$participant) {
         if ($request->film_slug) {
-            return redirect()->route('mes.films', ['participant' => $participant->slug, 'film_slug' => $request->film_slug]);
+            return redirect()->route('inscription', ['source' => 'qr_scan'])
+                ->with('error', 'Numéro de téléphone non trouvé. Veuillez vous inscrire.')
+                ->with('film_slug', $request->film_slug);
         }
 
-        // Sinon, rediriger vers la page des films sans film_slug
-        return redirect()->route('mes.films', ['participant' => $participant->slug]);
+        return redirect()->route('inscription')
+            ->with('error', 'Numéro de téléphone non trouvé. Veuillez vous inscrire.');
     }
+
+    if ($request->film_slug) {
+        return redirect()->route('mes.films', [
+            'participant' => $participant->slug,
+            'film_slug' => $request->film_slug
+        ]);
+    }
+
+    return redirect()->route('mes.films', ['participant' => $participant->slug]);
+}
+
 
     public function scanQr($slug)
     {
