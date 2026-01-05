@@ -13,4 +13,11 @@ class ExampleTest extends TestCase
     {
         $this->assertTrue(true);
     }
+
+    public function testBasicTest()
+{
+    $data = [10, 20, 30];
+    $result = array_sum($data);
+    $this->assertEquals(60, $result);
+}
 }
