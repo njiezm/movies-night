@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Film;
 use App\Models\Participant;
 use App\Models\Dotation;
-use App\Model\Base\Genesys;
+use App\Models\Base\Genesys;
 use App\Models\Tirage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
