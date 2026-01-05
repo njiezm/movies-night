@@ -493,6 +493,16 @@ public function updateFilm(Request $request, Film $film)
     // Charger la relation avec le gagnant
     $tirage->load('winner');
     
+    // Déchiffrer les informations du gagnant si présent
+    if ($tirage->winner) {
+        $tirage->winner->firstname = Genesys::Decrypt($tirage->winner->firstname);
+        $tirage->winner->lastname = Genesys::Decrypt($tirage->winner->lastname);
+        $tirage->winner->telephone = Genesys::Decrypt($tirage->winner->telephone);
+        if ($tirage->winner->email) {
+            $tirage->winner->email = Genesys::Decrypt($tirage->winner->email);
+        }
+    }
+    
     return response()->json($tirage);
 }
 }
