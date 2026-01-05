@@ -38,6 +38,7 @@ Route::prefix('admin')->group(function () {
         Route::post('/tirages/{tirage}/draw', [AdminController::class, 'drawTirage'])->name('admin.tirages.draw');
         Route::get('/tirages/{tirage}/data', [AdminController::class, 'getTirageData'])->name('admin.tirages.data');
         
+        
         Route::get('/dotations', [AdminController::class, 'dotations'])->name('admin.dotations');
         Route::get('/dotations/create', [AdminController::class, 'createDotation'])->name('admin.dotations.create');
         Route::post('/dotations', [AdminController::class, 'storeDotation'])->name('admin.dotations.store');
@@ -57,3 +58,4 @@ Route::post('/connexion/express', [PublicController::class, 'connexionExpress'])
 Route::get('/scan/{slug}', [PublicController::class, 'scanQr'])->name('scan');
 Route::get('/mes-films/{participant}', [PublicController::class, 'mesFilms'])->name('mes.films');
 Route::get('/rendez-vous', [PublicController::class, 'rendezVous'])->name('rendez.vous');
+

@@ -108,92 +108,90 @@ class AdminController extends Controller
     }
 
   public function storeFilm(Request $request)
-{
-    $request->validate([
-        'title' => 'required',
-        'description' => 'nullable',
-        'vignette' => 'nullable|image',
-        'start_date' => 'nullable|date',
-        'end_date' => 'nullable|date|after_or_equal:start_date'
-    ]);
+    {
+        $request->validate([
+            'title' => 'required',
+            'description' => 'nullable',
+            'vignette' => 'nullable|image',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date'
+        ]);
 
-    // Slug unique
-    $slug = $this->generateUniqueSlug();
+        // Slug unique
+        $slug = $this->generateUniqueSlug();
 
-    // Upload vignette
-    $vignettePath = null;
-    if ($request->hasFile('vignette')) {
-        $vignettePath = $request->file('vignette')->store('vignettes', 'public');
-    }
+        // Upload vignette
+        $vignettePath = null;
+        if ($request->hasFile('vignette')) {
+            $vignettePath = $request->file('vignette')->store('vignettes', 'public');
+        }
 
-    $film = Film::create([
-        'title' => $request->title,
-        'description' => $request->description,
-        'slug' => $slug,
-        'vignette' => $vignettePath,
-        'start_date' => $request->start_date,
-        'end_date' => $request->end_date
-    ]);
+        $film = Film::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'slug' => $slug,
+            'vignette' => $vignettePath,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date
+        ]);
 
-    // Créer dossier qrcodes si absent
-    if (!file_exists(public_path('qrcodes'))) {
-        mkdir(public_path('qrcodes'), 0755, true);
-    }
+        // Créer dossier qrcodes si absent
+        if (!file_exists(public_path('qrcodes'))) {
+            mkdir(public_path('qrcodes'), 0755, true);
+        }
 
-    // Génération QR code avec endroid/qr-code
-    $qrcodePath = "qrcodes/film-{$film->id}.png";
-    $qrLink = route('scan', $film->slug);
-    
-    try {
-        $qrCode = QrCode::create($qrLink)
-            ->setSize(300)
-            ->setMargin(10);
+        // Génération QR code avec endroid/qr-code
+        $qrcodePath = "qrcodes/film-{$film->id}.png";
+        $qrLink = route('scan', $film->slug);
+        
+        try {
+            $qrCode = QrCode::create($qrLink)
+                ->setSize(300)
+                ->setMargin(10);
+                
+            $writer = new PngWriter();
+            $result = $writer->write($qrCode);
             
-        $writer = new PngWriter();
-        $result = $writer->write($qrCode);
-        
-        $result->saveToFile(public_path($qrcodePath));
-        
-        $film->update(['qrcode' => $qrcodePath]);
-    } catch (\Exception $e) {
-        \Log::error('Erreur lors de la génération du QR code: ' . $e->getMessage());
+            $result->saveToFile(public_path($qrcodePath));
+            
+            $film->update(['qrcode' => $qrcodePath]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la génération du QR code: ' . $e->getMessage());
+        }
+
+        return redirect()->route('admin.films')->with('success', 'Film ajouté avec succès !');
     }
 
-    return redirect()->route('admin.films')->with('success', 'Film ajouté avec succès !');
-}
+    public function updateFilm(Request $request, Film $film)
+    {
+        $request->validate([
+            'title'=>'required',
+            'description'=>'nullable',
+            'vignette'=>'nullable|image',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date'
+        ]);
 
-public function updateFilm(Request $request, Film $film)
-{
-    $request->validate([
-        'title'=>'required',
-        'description'=>'nullable',
-        'vignette'=>'nullable|image',
-        'start_date' => 'nullable|date',
-        'end_date' => 'nullable|date|after_or_equal:start_date'
-    ]);
+        // Conserver le slug existant pour maintenir le lien /scan/slug
+        $film->update([
+            'title'=>$request->title,
+            'description'=>$request->description,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date
+        ]);
 
-    // Conserver le slug existant pour maintenir le lien /scan/slug
-    $film->update([
-        'title'=>$request->title,
-        'description'=>$request->description,
-        'start_date' => $request->start_date,
-        'end_date' => $request->end_date
-    ]);
+        if($request->hasFile('vignette')){
+            $film->vignette = $request->file('vignette')->store('vignettes','public');
+            $film->save();
+        }
 
-    if($request->hasFile('vignette')){
-        $film->vignette = $request->file('vignette')->store('vignettes','public');
-        $film->save();
+        return redirect()->route('admin.films')->with('success','Film mis à jour !');
     }
-
-    return redirect()->route('admin.films')->with('success','Film mis à jour !');
-}
 
     public function editFilm(Film $film)
     {
         return view('admin.films.edit', compact('film'));
     }
-
-  
 
     public function deleteFilm(Film $film)
     {
@@ -400,20 +398,8 @@ public function updateFilm(Request $request, Film $film)
     // --- TIRAGES AU SORT ---
     public function tirages()
 {
-    $tirages = Tirage::with('dotation')->with(['winner' => function($query) {
-        // Nous allons charger les gagnants et déchiffrer leurs informations
-        $query->get()->each(function($winner) {
-            if ($winner) {
-                $winner->firstname = Genesys::Decrypt($winner->firstname);
-                $winner->lastname = Genesys::Decrypt($winner->lastname);
-                $winner->telephone = Genesys::Decrypt($winner->telephone);
-                if ($winner->email) {
-                    $winner->email = Genesys::Decrypt($winner->email);
-                }
-            }
-        });
-    }])->orderBy('date', 'asc')->get();
-    
+   
+    $tirages = Tirage::orderBy('date', 'asc')->get();
     $dotations = Dotation::all();
     return view('admin.tirages.index', compact('tirages', 'dotations'));
 }
