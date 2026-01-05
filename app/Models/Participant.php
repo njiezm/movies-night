@@ -22,25 +22,5 @@ class Participant extends Model
     {
         return $this->belongsToMany(Dotation::class, 'participant_dotation');
     }
-
-    // --- Accessors pour déchiffrement ---
-    public function getFirstnameAttribute($value)
-    {
-        return $value ? Genesys::Decrypt($value) : '';
-    }
-
-    public function getLastnameAttribute($value)
-    {
-        return $value ? Genesys::Decrypt($value) : '';
-    }
-
-    public function getEmailAttribute($value)
-    {
-        return $value ? Genesys::Decrypt($value) : '';
-    }
-
-    public function getTelephoneAttribute($value)
-    {
-        return $value ? Genesys::Decrypt($value) : '';
-    }
+   
 }
