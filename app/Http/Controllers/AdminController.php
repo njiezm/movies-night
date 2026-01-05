@@ -398,18 +398,24 @@ public function updateFilm(Request $request, Film $film)
     }
 
     // --- TIRAGES AU SORT ---
-    // Afficher les détails du gagnant
-function showWinnerDetails(tirageId) {
-    // Récupérer les informations du tirage
-    $.get(tirageBaseUrl + '/' + tirageId + '/data', function(data) {
-        if (data.winner) {
-            alert('Gagnant: ' + data.winner.firstname + ' ' + data.winner.lastname + 
-                  '\nEmail: ' + (data.winner.email || 'Non spécifié') + 
-                  '\nTéléphone: ' + data.winner.telephone);
-        }
-    }).fail(function(xhr) {
-        alert('Erreur: ' + xhr.responseText);
-    });
+    public function tirages()
+{
+    $tirages = Tirage::with('dotation')->with(['winner' => function($query) {
+        // Nous allons charger les gagnants et déchiffrer leurs informations
+        $query->get()->each(function($winner) {
+            if ($winner) {
+                $winner->firstname = Genesys::Decrypt($winner->firstname);
+                $winner->lastname = Genesys::Decrypt($winner->lastname);
+                $winner->telephone = Genesys::Decrypt($winner->telephone);
+                if ($winner->email) {
+                    $winner->email = Genesys::Decrypt($winner->email);
+                }
+            }
+        });
+    }])->orderBy('date', 'asc')->get();
+    
+    $dotations = Dotation::all();
+    return view('admin.tirages.index', compact('tirages', 'dotations'));
 }
 
     public function createTirage()
