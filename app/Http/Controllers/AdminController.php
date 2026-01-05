@@ -407,7 +407,7 @@ public function updateFilm(Request $request, Film $film)
     // Déchiffrement APRÈS récupération
     $tirages->each(function ($tirage) {
         if ($tirage->winner) {
-            $tirage->winner->firstname = $this->Genesys::Decrypt($tirage->winner->firstname));
+            $tirage->winner->firstname = $this->Genesys::Decrypt($tirage->winner->firstname);
             $tirage->winner->lastname = $this->Genesys::Decrypt($tirage->winner->lastname);
             $tirage->winner->telephone = $this->Genesys::Decrypt($tirage->winner->telephone);
             if ($tirage->winner->email) {
