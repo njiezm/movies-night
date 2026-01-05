@@ -398,12 +398,19 @@ public function updateFilm(Request $request, Film $film)
     }
 
     // --- TIRAGES AU SORT ---
-    public function tirages()
-    {
-        $tirages = Tirage::with('dotation')->orderBy('date', 'asc')->get();
-        $dotations = Dotation::all();
-        return view('admin.tirages.index', compact('tirages', 'dotations'));
-    }
+    // Afficher les détails du gagnant
+function showWinnerDetails(tirageId) {
+    // Récupérer les informations du tirage
+    $.get(tirageBaseUrl + '/' + tirageId + '/data', function(data) {
+        if (data.winner) {
+            alert('Gagnant: ' + data.winner.firstname + ' ' + data.winner.lastname + 
+                  '\nEmail: ' + (data.winner.email || 'Non spécifié') + 
+                  '\nTéléphone: ' + data.winner.telephone);
+        }
+    }).fail(function(xhr) {
+        alert('Erreur: ' + xhr.responseText);
+    });
+}
 
     public function createTirage()
     {
