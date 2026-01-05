@@ -30,27 +30,27 @@ class PublicController extends Controller
         'zipcode' => 'nullable|string|max:10',
     ]);
 
-    // 🔐 Chiffrement des données sensibles
+    // Chiffrement 
     $firstname = Genesys::Crypt(ucfirst(strtolower($request->firstname)));
     $lastname  = Genesys::Crypt(ucfirst(strtolower($request->lastname)));
     $telephone = Genesys::Crypt($request->telephone);
     $email     = $request->email ? Genesys::Crypt(strtolower($request->email)) : null;
 
-    // 🔍 Vérification unicité téléphone (APRÈS chiffrement)
+    // Vérification unicité téléphone (APRÈS chiffrement)
     if (Participant::where('telephone', $telephone)->exists()) {
         return back()
             ->withErrors(['telephone' => 'Ce numéro est déjà inscrit'])
             ->withInput();
     }
 
-    // 🔍 Vérification unicité email (si fourni)
+    // Vérification unicité email (si fourni)
     if ($email && Participant::where('email', $email)->exists()) {
         return back()
             ->withErrors(['email' => 'Cet email est déjà inscrit'])
             ->withInput();
     }
 
-    // 📬 Gestion optin
+    // Gestion optin
     $optin = (int) $request->input('optin', 0);
     $bysms = false;
     $byemail = false;
@@ -61,7 +61,7 @@ class PublicController extends Controller
         $byemail = in_array($contactMethod, [2, 3]);
     }
 
-    // 📍 Source
+    // Source
     if ($request->boolean('from_qr_scan')) {
         $source = 'salle';
     } elseif (!empty($request->source)) {
@@ -70,10 +70,10 @@ class PublicController extends Controller
         $source = 'web';
     }
 
-    // 🔑 Slug sécurisé
+    // Slug sécurisé
     $slug = Genesys::GenCodeAlphaNum(20);
 
-    // 💾 Création du participant
+    // Création du participant
     $participant = Participant::create([
         'firstname' => $firstname,
         'lastname' => $lastname,
@@ -87,7 +87,7 @@ class PublicController extends Controller
         'source' => $source,
     ]);
 
-    // 🔁 Redirections
+    // Redirections
     if ($request->boolean('from_qr_scan') && $request->filled('film_slug')) {
         return redirect()
             ->route('mes.films', [
