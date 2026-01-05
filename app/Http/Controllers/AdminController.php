@@ -400,27 +400,23 @@ public function updateFilm(Request $request, Film $film)
     // --- TIRAGES AU SORT ---
     public function tirages()
 {
-    $tirages = Tirage::with(['dotation', 'winner'])
-        ->orderBy('date', 'asc')
-        ->get();
-
-    // Déchiffrement APRÈS récupération
-    $tirages->each(function ($tirage) {
-        if ($tirage->winner) {
-            $tirage->winner->firstname = Genesys::Decrypt($tirage->winner->firstname);
-            $tirage->winner->lastname = Genesys::Decrypt($tirage->winner->lastname);
-            $tirage->winner->telephone = Genesys::Decrypt($tirage->winner->telephone);
-            if ($tirage->winner->email) {
-                $tirage->winner->email = Genesys::Decrypt($tirage->winner->email);
+    $tirages = Tirage::with('dotation')->with(['winner' => function($query) {
+        // Nous allons charger les gagnants et déchiffrer leurs informations
+        $query->get()->each(function($winner) {
+            if ($winner) {
+                $winner->firstname = Genesys::Decrypt($winner->firstname);
+                $winner->lastname = Genesys::Decrypt($winner->lastname);
+                $winner->telephone = Genesys::Decrypt($winner->telephone);
+                if ($winner->email) {
+                    $winner->email = Genesys::Decrypt($winner->email);
+                }
             }
-        }
-    });
-
+        });
+    }])->orderBy('date', 'asc')->get();
+    
     $dotations = Dotation::all();
-
     return view('admin.tirages.index', compact('tirages', 'dotations'));
 }
-
 
     public function createTirage()
     {
@@ -492,7 +488,7 @@ public function updateFilm(Request $request, Film $film)
     return response()->json($film);
 }
 
-   public function getTirageData(Tirage $tirage)
+     public function getTirageData(Tirage $tirage)
 {
     $tirage->load(['winner', 'dotation']);
 
@@ -503,15 +499,12 @@ public function updateFilm(Request $request, Film $film)
         'dotation_id' => $tirage->dotation_id,
         'winner' => $tirage->winner ? [
             'firstname' => Genesys::Decrypt($tirage->winner->firstname),
-            'lastname' => $this->Genesys::Decrypt($tirage->winner->lastname),
-            'telephone' => $this->Genesys::Decrypt($tirage->winner->telephone),
+            'lastname' => Genesys::Decrypt($tirage->winner->lastname),
+            'telephone' => Genesys::Decrypt($tirage->winner->telephone),
             'email' => $tirage->winner->email
-                ? $this->Genesys::Decrypt($tirage->winner->email)
+                ? Genesys::Decrypt($tirage->winner->email)
                 : null,
         ] : null
     ]);
 }
-
-
-
 }

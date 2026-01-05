@@ -68,9 +68,9 @@
                                             <i class="fas fa-dice"></i>
                                         </button>
                                     @else
-                                        <button class="btn btn-sm btn-outline-info" onclick="showWinnerDetails({{ $tirage->id }})" title="Voir le gagnant">
+                                        <!--button class="btn btn-sm btn-outline-info" onclick="showWinnerDetails({{ $tirage->id }})" title="Voir le gagnant">
                                             <i class="fas fa-user"></i>
-                                        </button>
+                                        </!--button-->
                                     @endif
                                     <button class="btn btn-sm btn-outline-danger" onclick="deleteTirage({{ $tirage->id }})" title="Supprimer">
                                         <i class="fas fa-trash"></i>
