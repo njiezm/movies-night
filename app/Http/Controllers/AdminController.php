@@ -171,12 +171,10 @@ public function updateFilm(Request $request, Film $film)
         'end_date' => 'nullable|date|after_or_equal:start_date'
     ]);
 
-    $slug = Str::slug($request->title);
-
+    // Conserver le slug existant pour maintenir le lien /scan/slug
     $film->update([
         'title'=>$request->title,
         'description'=>$request->description,
-        'slug'=>$slug,
         'start_date' => $request->start_date,
         'end_date' => $request->end_date
     ]);
