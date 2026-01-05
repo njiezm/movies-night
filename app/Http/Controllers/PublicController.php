@@ -116,9 +116,6 @@ public function showConnexionExpress()
     return view('public.connexion-express', compact('film'));
 }
 
-
-   use App\Models\Base\Genesys;
-
 public function connexionExpress(Request $request)
 {
     $request->validate([
