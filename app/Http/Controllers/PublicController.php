@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Film;
 use App\Models\Participant;
+use App\Models\Base\Genesys;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -20,68 +21,85 @@ class PublicController extends Controller
     }
 
     public function storeInscription(Request $request)
-    {
-        $request->validate([
-            'firstname' => 'required',
-            'lastname' => 'required',
-            'telephone' => 'required|unique:participants',
-            'email' => 'nullable|email',
-            'zipcode' => 'nullable',
-        ]);
+{
+    $request->validate([
+        'firstname' => 'required|string|max:255',
+        'lastname' => 'required|string|max:255',
+        'telephone' => 'required|string|max:20',
+        'email' => 'nullable|email|max:255',
+        'zipcode' => 'nullable|string|max:10',
+    ]);
 
-        // Traitement des options de contact
-        $optin = $request->has('optin') ? $request->optin : 0;
-        $bysms = false;
-        $byemail = false;
-        
-        if ($optin == 1 && $request->has('contact_method')) {
-            $contactMethod = $request->contact_method;
-            $bysms = ($contactMethod == 1 || $contactMethod == 3);
-            $byemail = ($contactMethod == 2 || $contactMethod == 3);
-        }
+    // 🔐 Chiffrement des données sensibles
+    $firstname = Genesys::Crypt(ucfirst(strtolower($request->firstname)));
+    $lastname  = Genesys::Crypt(ucfirst(strtolower($request->lastname)));
+    $telephone = Genesys::Crypt($request->telephone);
+    $email     = $request->email ? Genesys::Crypt(strtolower($request->email)) : null;
 
-        // Détermination de la source
-        // Priorité : scan QR > source du formulaire > web par défaut
-        if ($request->has('from_qr_scan') && $request->from_qr_scan == 1) {
-            $source = 'salle';
-        } elseif ($request->has('source') && !empty($request->source)) {
-            $source = $request->source;
-        } else {
-            $source = 'web';
-        }
-
-        // Générer un slug unique pour le participant
-        $slug = Str::slug($request->firstname . '-' . $request->lastname . '-' . $request->telephone);
-        $originalSlug = $slug;
-        $count = 1;
-        
-        while (Participant::where('slug', $slug)->exists()) {
-            $slug = $originalSlug . '-' . $count;
-            $count++;
-        }
-
-        $participant = Participant::create([
-            'firstname' => $request->firstname,
-            'lastname' => $request->lastname,
-            'telephone' => $request->telephone,
-            'email' => $request->email,
-            'zipcode' => $request->zipcode,
-            'slug' => $slug,
-            'optin' => $optin,
-            'bysms' => $bysms,
-            'byemail' => $byemail,
-            'source' => $source,
-        ]);
-
-        // Si l'inscription vient d'un scan QR code, rediriger vers la page des films
-        if ($request->has('from_qr_scan') && $request->has('film_slug')) {
-            return redirect()->route('mes.films', ['participant' => $participant->slug, 'film_slug' => $request->film_slug])
-                ->with('success', 'Inscription réussie !');
-        }
-
-        // Sinon, rediriger vers la page de rendez-vous
-        return redirect()->route('rendez.vous');
+    // 🔍 Vérification unicité téléphone (APRÈS chiffrement)
+    if (Participant::where('telephone', $telephone)->exists()) {
+        return back()
+            ->withErrors(['telephone' => 'Ce numéro est déjà inscrit'])
+            ->withInput();
     }
+
+    // 🔍 Vérification unicité email (si fourni)
+    if ($email && Participant::where('email', $email)->exists()) {
+        return back()
+            ->withErrors(['email' => 'Cet email est déjà inscrit'])
+            ->withInput();
+    }
+
+    // 📬 Gestion optin
+    $optin = (int) $request->input('optin', 0);
+    $bysms = false;
+    $byemail = false;
+
+    if ($optin === 1 && $request->has('contact_method')) {
+        $contactMethod = $request->contact_method;
+        $bysms = in_array($contactMethod, [1, 3]);
+        $byemail = in_array($contactMethod, [2, 3]);
+    }
+
+    // 📍 Source
+    if ($request->boolean('from_qr_scan')) {
+        $source = 'salle';
+    } elseif (!empty($request->source)) {
+        $source = $request->source;
+    } else {
+        $source = 'web';
+    }
+
+    // 🔑 Slug sécurisé
+    $slug = Genesys::GenCodeAlphaNum(20);
+
+    // 💾 Création du participant
+    $participant = Participant::create([
+        'firstname' => $firstname,
+        'lastname' => $lastname,
+        'telephone' => $telephone,
+        'email' => $email,
+        'zipcode' => $request->zipcode,
+        'slug' => $slug,
+        'optin' => $optin,
+        'bysms' => $bysms,
+        'byemail' => $byemail,
+        'source' => $source,
+    ]);
+
+    // 🔁 Redirections
+    if ($request->boolean('from_qr_scan') && $request->filled('film_slug')) {
+        return redirect()
+            ->route('mes.films', [
+                'participant' => $participant->slug,
+                'film_slug' => $request->film_slug
+            ])
+            ->with('success', 'Inscription réussie !');
+    }
+
+    return redirect()->route('rendez.vous');
+}
+
 
     /**
  * Affiche la page de connexion express.

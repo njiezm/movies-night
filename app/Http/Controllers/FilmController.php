@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Film;
+use App\Models\Base\Genesys;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Str;
@@ -32,7 +33,9 @@ class FilmController extends Controller
             'vignette' => 'nullable|image|max:2048',
         ]);
 
-        $slug = Str::slug($request->title);
+        // Génération d'un slug sécurisé avec Genesys
+        $slug = Genesys::GenCodeAlphaNum(10);
+        
         $vignettePath = null;
 
         if ($request->hasFile('vignette')) {
@@ -72,7 +75,7 @@ class FilmController extends Controller
             'vignette' => 'nullable|image|max:2048',
         ]);
 
-        $slug = Str::slug($request->title);
+        $slug = Genesys::GenSlugCode($request->title);
         $film->update([
             'title' => $request->title,
             'description' => $request->description,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Participant;
 use App\Models\Film;
+use App\Models\Base\Genesys;
 use Illuminate\Http\Request;
 
 class ParticipantController extends Controller
@@ -12,7 +13,19 @@ class ParticipantController extends Controller
     public function index()
     {
         $participants = Participant::with('films')->get();
-        return view('admin.participants.index', compact('participants'));
+        
+        // Déchiffrement des données pour l'affichage
+        $decryptedParticipants = $participants->map(function($participant) {
+            $participant->firstname = Genesys::Decrypt($participant->firstname);
+            $participant->lastname = Genesys::Decrypt($participant->lastname);
+            $participant->telephone = Genesys::Decrypt($participant->telephone);
+            if ($participant->email) {
+                $participant->email = Genesys::Decrypt($participant->email);
+            }
+            return $participant;
+        });
+        
+        return view('admin.participants.index', ['participants' => $decryptedParticipants]);
     }
 
     public function create()
@@ -34,7 +47,16 @@ class ParticipantController extends Controller
             'byemail' => 'boolean',
         ]);
 
+        // Chiffrement des données sensibles avant stockage
         $data = $request->all();
+        $data['firstname'] = Genesys::Crypt($request->firstname);
+        $data['lastname'] = Genesys::Crypt($request->lastname);
+        if ($request->telephone) {
+            $data['telephone'] = Genesys::Crypt($request->telephone);
+        }
+        if ($request->email) {
+            $data['email'] = Genesys::Crypt($request->email);
+        }
         $data['slug'] = \Str::slug($request->firstname.'-'.$request->lastname.'-'.uniqid());
 
         $participant = Participant::create($data);
@@ -48,6 +70,14 @@ class ParticipantController extends Controller
 
     public function edit(Participant $participant)
     {
+        // Déchiffrement des données pour l'édition
+        $participant->firstname = Genesys::Decrypt($participant->firstname);
+        $participant->lastname = Genesys::Decrypt($participant->lastname);
+        $participant->telephone = Genesys::Decrypt($participant->telephone);
+        if ($participant->email) {
+            $participant->email = Genesys::Decrypt($participant->email);
+        }
+        
         $films = Film::all();
         return view('admin.participants.edit', compact('participant','films'));
     }
@@ -65,7 +95,18 @@ class ParticipantController extends Controller
             'byemail' => 'boolean',
         ]);
 
-        $participant->update($request->all());
+        // Chiffrement des données sensibles avant mise à jour
+        $data = $request->all();
+        $data['firstname'] = Genesys::Crypt($request->firstname);
+        $data['lastname'] = Genesys::Crypt($request->lastname);
+        if ($request->telephone) {
+            $data['telephone'] = Genesys::Crypt($request->telephone);
+        }
+        if ($request->email) {
+            $data['email'] = Genesys::Crypt($request->email);
+        }
+
+        $participant->update($data);
 
         if ($request->films) {
             $participant->films()->sync($request->films);

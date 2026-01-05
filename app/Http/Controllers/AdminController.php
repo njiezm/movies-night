@@ -343,19 +343,50 @@ public function updateFilm(Request $request, Film $film)
         $totalFilms = Film::count();
         $films = Film::withCount('participants')->get();
         
-        // Récupère les 4 meilleurs participants
+        // Récupère les 4 meilleurs participants avec déchiffrement des noms
         $ranking = Participant::withCount('films')
                             ->orderByDesc('films_count')
                             ->take(4)
-                            ->get();
+                            ->get()
+                            ->map(function($participant) {
+                                $participant->firstname = Genesys::Decrypt($participant->firstname);
+                                $participant->lastname = Genesys::Decrypt($participant->lastname);
+                                return $participant;
+                            });
 
         return view('admin.stats', compact('totalParticipants','totalOptinParticipants','totalFilms','films','ranking'));
+    }
+
+    // --- Pour l'export futur ---
+    public function exportParticipants()
+    {
+        $participants = Participant::all();
+        
+        // Préparation des données avec déchiffrement
+        $exportData = $participants->map(function($participant) {
+            return [
+                'id' => $participant->id,
+                'firstname' => Genesys::Decrypt($participant->firstname),
+                'lastname' => Genesys::Decrypt($participant->lastname),
+                'telephone' => Genesys::Decrypt($participant->telephone),
+                'email' => $participant->email ? Genesys::Decrypt($participant->email) : null,
+                'zipcode' => $participant->zipcode,
+                'optin' => $participant->optin,
+                'bysms' => $participant->bysms,
+                'byemail' => $participant->byemail,
+                'source' => $participant->source,
+                'created_at' => $participant->created_at,
+            ];
+        });
+        
+        // Ici vous pourriez retourner un CSV ou un autre format d'export
+        return response()->json($exportData);
     }
 
     // --- TIRAGES AU SORT ---
     public function tirages()
     {
-         $tirages = Tirage::with('dotation')->orderBy('date', 'asc')->get();
+        $tirages = Tirage::with('dotation')->orderBy('date', 'asc')->get();
         $dotations = Dotation::all();
         return view('admin.tirages.index', compact('tirages', 'dotations'));
     }
