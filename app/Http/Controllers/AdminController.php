@@ -313,10 +313,10 @@ class AdminController extends Controller
     $tirage->save();
     
     // Déchiffrer les données du gagnant
-    $winnerFirstname = Genesys::Decrypt($winner->firstname);
-    $winnerLastname = Genesys::Decrypt($winner->lastname);
-    $winnerEmail = $winner->email ? Genesys::Decrypt($winner->email) : 'Non spécifié';
-    $winnerTelephone = Genesys::Decrypt($winner->telephone);
+    $winnerFirstname = $winner->firstname;
+    $winnerLastname = $winner->lastname;
+    $winnerEmail = $winner->email ? $winner->email : 'Non spécifié';
+    $winnerTelephone = $winner->telephone;
     
     // S'assurer que les données sont en UTF-8
     $winnerFirstname = mb_convert_encoding($winnerFirstname, 'UTF-8', 'UTF-8');
@@ -348,27 +348,57 @@ class AdminController extends Controller
 
 
    // --- STATISTIQUES ---
-    public function stats()
-    {
-        $totalParticipants = Participant::count();
-        $totalOptinParticipants = Participant::where('optin', 1)->count();
-        $totalFilms = Film::count();
-        $films = Film::withCount('participants')->get();
+    // --- STATISTIQUES ---
+public function stats()
+{
+    $totalParticipants = Participant::count();
+    $totalOptinParticipants = Participant::where('optin', 1)->count();
+    $totalFilms = Film::count();
+    $films = Film::withCount('participants')->get();
+    
+    // Calcul de l'éligibilité par film
+    $filmsEligibility = [];
+    foreach ($films as $film) {
+        // Nombre de participants éligibles pour ce film (TAS mensuel)
+        $eligibleCount = $film->participants()->count();
         
-        // Récupère les 4 meilleurs participants avec déchiffrement des noms
-        $ranking = Participant::withCount('films')
-                            ->orderByDesc('films_count')
-                            ->take(4)
-                            ->get()
-                            ->map(function($participant) {
-                                $participant->firstname = Genesys::Decrypt($participant->firstname);
-                                $participant->lastname = Genesys::Decrypt($participant->lastname);
-                                return $participant;
-                            });
-
-        return view('admin.stats', compact('totalParticipants','totalOptinParticipants','totalFilms','films','ranking'));
+        $filmsEligibility[] = [
+            'film' => $film,
+            'eligible_count' => $eligibleCount
+        ];
     }
+    
+    // Calcul du nombre de participants éligibles au BIG TAS (ceux qui ont vu tous les films)
+    $bigTasEligible = 0;
+    if ($totalFilms > 0) {
+        // Récupérer tous les participants avec le nombre de films qu'ils ont vus
+        $participantsWithFilmCount = Participant::withCount('films')->get();
+        
+        // Compter ceux qui ont vu tous les films
+        $bigTasEligible = $participantsWithFilmCount->where('films_count', $totalFilms)->count();
+    }
+    
+    // Récupère les 4 meilleurs participants avec déchiffrement des noms
+    $ranking = Participant::withCount('films')
+                        ->orderByDesc('films_count')
+                        ->take(4)
+                        ->get()
+                        ->map(function($participant) {
+                            $participant->firstname = $participant->firstname;
+                            $participant->lastname = $participant->lastname;
+                            return $participant;
+                        });
 
+    return view('admin.stats', compact(
+        'totalParticipants',
+        'totalOptinParticipants',
+        'totalFilms',
+        'films',
+        'filmsEligibility',
+        'bigTasEligible',
+        'ranking'
+    ));
+}
     // --- Pour l'export futur ---
     public function exportParticipants()
     {
@@ -484,11 +514,11 @@ class AdminController extends Controller
         'date' => $tirage->date,
         'dotation_id' => $tirage->dotation_id,
         'winner' => $tirage->winner ? [
-            'firstname' => Genesys::Decrypt($tirage->winner->firstname),
-            'lastname' => Genesys::Decrypt($tirage->winner->lastname),
-            'telephone' => Genesys::Decrypt($tirage->winner->telephone),
+            'firstname' =>$tirage->winner->firstname,
+            'lastname' => $tirage->winner->lastname,
+            'telephone' => $tirage->winner->telephone,
             'email' => $tirage->winner->email
-                ? Genesys::Decrypt($tirage->winner->email)
+                ? $tirage->winner->email
                 : null,
         ] : null
     ]);

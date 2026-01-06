@@ -44,7 +44,7 @@
                                     {{ App\Models\Base\Genesys::Decrypt($tirage->winner->lastname) }}
                                 </strong><br>
                                 <small class="text-muted">
-                                    {{ App\Models\Base\Genesys::Decrypt($tirage->winner->telephone) }}
+                                    {{ $tirage->winner->telephone }}
                                 </small>
                             @else
                                 <span class="text-muted">-</span>
