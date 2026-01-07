@@ -11,15 +11,15 @@
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-value">{{ $totalParticipants }}</div>
-            <div class="stat-label">Participants</div>
+            <div class="stat-label">Nombre d'inscrits</div>
         </div>
         <div class="stat-card">
             <div class="stat-value">{{ $totalOptinParticipants }}</div>
-            <div class="stat-label">Participants avec optin</div>
+            <div class="stat-label">Nombre d'opt-in</div>
         </div>
         <div class="stat-card">
             <div class="stat-value">{{ $totalFilms }}</div>
-            <div class="stat-label">Films</div>
+            <div class="stat-label">Nombre de films intégrés</div>
         </div>
         <div class="stat-card">
             <div class="stat-value">{{ $films->sum('participants_count') }}</div>
@@ -34,6 +34,41 @@
             <div class="stat-label">Éligibles BIG TAS</div>
         </div>
     </div>
+</section>
+
+
+
+<!-- Section d'éligibilité par films -->
+<section class="content-section">
+    <div class="section-header">
+        <h2><i class="fas fa-trophy"></i> Nombre de personnes éligbiles aux TAS Mensuel</h2>
+    </div>
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Titre du film</th>
+                        <th>Nombre d'éligibles (TAS mensuel)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($filmsEligibility as $item)
+                        <tr>
+                            <td>{{ $item['film']->title }}</td>
+                            <td>{{ $item['eligible_count'] }} personne(s)</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="alert alert-info mt-3 d-flex flex-column">
+    <i class="fas fa-info-circle"></i>
+    <strong>Éligible TAS mensuel:</strong> Tous ceux qui ont vu ce film
+    <strong>Éligible BIG TAS:</strong> Uniquement ceux qui ont vu tous les films
+</div>
+
 </section>
 
 <!-- Section des films les plus populaires -->
@@ -60,38 +95,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
-</section>
-
-<!-- Section d'éligibilité par films -->
-<section class="content-section">
-    <div class="section-header">
-        <h2><i class="fas fa-trophy"></i> Éligibilité par films</h2>
-    </div>
-    <div class="table-container">
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Titre du film</th>
-                        <th>Nombre d'éligibles (TAS mensuel)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($filmsEligibility as $item)
-                        <tr>
-                            <td>{{ $item['film']->title }}</td>
-                            <td>{{ $item['eligible_count'] }} personne(s)</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div class="alert alert-info mt-3">
-        <i class="fas fa-info-circle"></i> 
-        <strong>Éligible TAS mensuel:</strong> Tous ceux qui ont vu ce film<br>
-        <strong>Éligible BIG TAS:</strong> Uniquement ceux qui ont vu tous les films ({{ $bigTasEligible }} personne(s))
     </div>
 </section>
 

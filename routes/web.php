@@ -48,13 +48,10 @@ Route::prefix('admin')->group(function () {
 });
 
 // FRONT PUBLIC
-//Route::get('/', [PublicController::class, 'accueil'])->name('accueil');
 Route::get('/', [PublicController::class, 'showInscription'])->name('inscription');
 Route::get('/inscription/{source?}', [PublicController::class, 'showInscription'])->name('inscription');
 Route::post('/inscription', [PublicController::class, 'storeInscription'])->name('inscription.store');
-Route::get('/connexion/express', [PublicController::class, 'showConnexionExpress'])->name('connexion.express');
 Route::post('/connexion/express', [PublicController::class, 'connexionExpress'])->name('connexion.express.post');
 Route::get('/scan/{slug}', [PublicController::class, 'scanQr'])->name('scan');
 Route::get('/mes-films/{participant}', [PublicController::class, 'mesFilms'])->name('mes.films');
 Route::get('/rendez-vous', [PublicController::class, 'rendezVous'])->name('rendez.vous');
-

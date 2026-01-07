@@ -150,10 +150,11 @@ public function connexionExpress(Request $request)
 
 
     public function scanQr($slug)
-    {
-        $film = Film::where('slug', $slug)->firstOrFail();
-        return view('public.scan', compact('film'));
-    }
+{
+    $film = Film::where('slug', $slug)->firstOrFail();
+    // Utiliser la nouvelle vue unifiée
+    return view('public.scan-connexion', compact('film'));
+}
 
     public function mesFilms($participant)
     {

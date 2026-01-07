@@ -17,18 +17,42 @@
 
             <!-- Contenu principal -->
             <div class="row justify-content-center">
-                <div class="col-10 card_red">
+                <div class="col-10">
                     <div class="p-4">
                         <!-- Titre et accroche -->
-                        <div class="row justify-content-center">
+                        <!--div class="row justify-content-center">
                             <div class="col-11 text-center mg-top-10">
                                 <h1>Bonjour {{ App\Models\Base\Genesys::Decrypt($participant->firstname) }}</h1>
                                 <p class="text-warning lead">Votre progression dans le marathon</p>
                             </div>
-                        </div>
+                        </div-->
+                        <!-- films vus -->
+                        <p>{{ $filmsVus->count() }} / {{ $total }} Films </p>
+                        @if($filmsVus->count() == 0)
+                            <p>img 0</p>
+                        @endif
+                        @if($filmsVus->count() == 1)
+                            <p>img 1</p>
+                        @endif
+                        @if($filmsVus->count() == 2)
+                            <p>img 2</p>
+                        @endif
+                        @if($filmsVus->count() == 3)
+                            <p>img 3</p>
+                        @endif
+                        @if($filmsVus->count() == 4)
+                            <p>img 4</p>
+                        @endif
 
+                        @if($filmsVus->count() == 5)
+                            <p>img 5</p>
+                        @endif
+
+                        @if($filmsVus->count() == 6)
+                            <p>img 6</p>
+                        @endif
                         <!-- Barre de progression -->
-                        <div class="row justify-content-center mb-4">
+                        <!--div class="row justify-content-center mb-4">
                             <div class="col-12">
                                 <div class="custom-progress">
                                     <div class="progress-bar" role="progressbar" style="width: {{ ($total > 0) ? ($filmsVus->count() / $total) * 100 : 0 }}%;" aria-valuenow="{{ $filmsVus->count() }}" aria-valuemin="0" aria-valuemax="{{ $total }}">
@@ -43,10 +67,10 @@
                                     @endif
                                 </p>
                             </div>
-                        </div>
+                        </!--div-->
 
                         <!-- Liste des films vus -->
-                        <div class="row justify-content-center">
+                        <!--div class="row justify-content-center">
                             <div class="col-11">
                                 <h3 class="text-white mb-3 text-center">Films que vous avez vu :</h3>
                                 <div class="row">
@@ -71,15 +95,15 @@
                                     @endforelse
                                 </div>
                             </div>
-                        </div>
+                        </!--div-->
                         
                         <!-- Appel à l'action final -->
-                        <div class="text-center mt-4">
+                        <!--div class="text-center mt-4">
                             <p class="text-white">Bon film et bon courage !</p>
                             <a href="{{ route('rendez.vous') }}" class="btn btn-outline-light btn-lg rounded-pill px-4">
                                 <i class="fas fa-home"></i> Retour à l'accueil
                             </a>
-                        </div>
+                        </!--div-->
                     </div>
                 </div>
             </div>

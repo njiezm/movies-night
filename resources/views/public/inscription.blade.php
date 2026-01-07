@@ -148,9 +148,9 @@
                         <div class="text-center mt-3">
                             <!--p class="text-white">Déjà inscrit ? 
                                 @if(request('film_slug'))
-                                    <a href="{{ route('connexion.express') }}?film_slug={{ request('film_slug') }}" class="text-warning">Connectez-vous</a>
+                                    <a href="{{ route('scan', ['slug' => $film->slug ?? 'default']) }}?film_slug={{ request('film_slug') }}" class="text-warning">Connectez-vous</a>
                                 @else
-                                    <a href="{{ route('connexion.express') }}" class="text-warning">Connectez-vous</a>
+                                    <a href="{{ routeroute('scan', ['slug' => $film->slug ?? 'default']) }}" class="text-warning">Connectez-vous</a>
                                 @endif
                             </p-->
                         </div>

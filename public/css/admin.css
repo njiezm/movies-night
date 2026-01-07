@@ -1458,3 +1458,9 @@ body {
     height: 1rem;
     background-size: 1rem 1rem;
 }
+
+
+.text-muted {
+    --bs-text-opacity: 1;
+    color: white !important;
+}
