@@ -11,8 +11,12 @@ class Film extends Model
     ];
 
     public function participants()
-{
-    return $this->belongsToMany(Participant::class, 'participant_film');
-}
-
+    {
+        return $this->belongsToMany(Participant::class, 'participant_film');
+    }
+    
+    public function tirage()
+    {
+        return $this->hasOne(Tirage::class);
+    }
 }

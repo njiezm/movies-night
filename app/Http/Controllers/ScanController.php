@@ -22,8 +22,8 @@ class ScanController extends Controller
         
         // Déchiffrement des données pour l'affichage
         $decryptedParticipant = [
-            'firstname' => Genesys::Decrypt($participant->firstname),
-            'lastname' => Genesys::Decrypt($participant->lastname),
+            'firstname' => $participant->firstname,
+            'lastname' => $participant->lastname,
         ];
 
         return view('scan.success', compact('film', 'seen', 'total', 'decryptedParticipant'));
@@ -51,10 +51,10 @@ class ScanController extends Controller
         $decryptedParticipant = [
             'id' => $participant->id,
             'slug' => $participant->slug,
-            'firstname' => Genesys::Decrypt($participant->firstname),
-            'lastname' => Genesys::Decrypt($participant->lastname),
-            'telephone' => Genesys::Decrypt($participant->telephone),
-            'email' => $participant->email ? Genesys::Decrypt($participant->email) : null,
+            'firstname' => $participant->firstname,
+            'lastname' => $participant->lastname,
+            'telephone' => $participant->telephone,
+            'email' => $participant->email ? $participant->email : null,
             'films_count' => $participant->films()->count(),
         ];
         

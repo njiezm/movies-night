@@ -37,7 +37,7 @@ Route::prefix('admin')->group(function () {
         Route::delete('/tirages/{tirage}', [AdminController::class, 'deleteTirage'])->name('admin.tirages.delete');
         Route::post('/tirages/{tirage}/draw', [AdminController::class, 'drawTirage'])->name('admin.tirages.draw');
         Route::get('/tirages/{tirage}/data', [AdminController::class, 'getTirageData'])->name('admin.tirages.data');
-        
+Route::post('/admin/tirages/create-big-tas', [AdminController::class, 'createBigTas'])->name('admin.tirages.createBigTas');        
         
         Route::get('/dotations', [AdminController::class, 'dotations'])->name('admin.dotations');
         Route::get('/dotations/create', [AdminController::class, 'createDotation'])->name('admin.dotations.create');

@@ -108,59 +108,68 @@ class AdminController extends Controller
     }
 
   public function storeFilm(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'vignette' => 'nullable|image',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date'
-        ]);
+{
+    $request->validate([
+        'title' => 'required',
+        'description' => 'nullable',
+        'vignette' => 'nullable|image',
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date|after_or_equal:start_date'
+    ]);
 
-        // Slug unique
-        $slug = $this->generateUniqueSlug();
+    // Slug unique
+    $slug = $this->generateUniqueSlug();
 
-        // Upload vignette
-        $vignettePath = null;
-        if ($request->hasFile('vignette')) {
-            $vignettePath = $request->file('vignette')->store('vignettes', 'public');
-        }
-
-        $film = Film::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'slug' => $slug,
-            'vignette' => $vignettePath,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date
-        ]);
-
-        // Créer dossier qrcodes si absent
-        if (!file_exists(public_path('qrcodes'))) {
-            mkdir(public_path('qrcodes'), 0755, true);
-        }
-
-        // Génération QR code avec endroid/qr-code
-        $qrcodePath = "qrcodes/film-{$film->id}.png";
-        $qrLink = route('scan', $film->slug);
-        
-        try {
-            $qrCode = QrCode::create($qrLink)
-                ->setSize(300)
-                ->setMargin(10);
-                
-            $writer = new PngWriter();
-            $result = $writer->write($qrCode);
-            
-            $result->saveToFile(public_path($qrcodePath));
-            
-            $film->update(['qrcode' => $qrcodePath]);
-        } catch (\Exception $e) {
-            \Log::error('Erreur lors de la génération du QR code: ' . $e->getMessage());
-        }
-
-        return redirect()->route('admin.films')->with('success', 'Film ajouté avec succès !');
+    // Upload vignette
+    $vignettePath = null;
+    if ($request->hasFile('vignette')) {
+        $vignettePath = $request->file('vignette')->store('vignettes', 'public');
     }
+
+    $film = Film::create([
+        'title' => $request->title,
+        'description' => $request->description,
+        'slug' => $slug,
+        'vignette' => $vignettePath,
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date
+    ]);
+
+    // Créer un tirage automatiquement pour ce film
+    Tirage::create([
+        'title' => 'Tirage pour le film: ' . $film->title,
+        'film_id' => $film->id,
+        'date' => $film->end_date ?? now()->addMonth(),
+        'condition_recuperation' => 'Présenter le QR code du film à la caisse',
+        'is_big_tas' => false
+    ]);
+
+    // Créer dossier qrcodes si absent
+    if (!file_exists(public_path('qrcodes'))) {
+        mkdir(public_path('qrcodes'), 0755, true);
+    }
+
+    // Génération QR code avec endroid/qr-code
+    $qrcodePath = "qrcodes/film-{$film->id}.png";
+    $qrLink = route('scan', $film->slug);
+    
+    try {
+        $qrCode = QrCode::create($qrLink)
+            ->setSize(300)
+            ->setMargin(10);
+            
+        $writer = new PngWriter();
+        $result = $writer->write($qrCode);
+        
+        $result->saveToFile(public_path($qrcodePath));
+        
+        $film->update(['qrcode' => $qrcodePath]);
+    } catch (\Exception $e) {
+        \Log::error('Erreur lors de la génération du QR code: ' . $e->getMessage());
+    }
+
+    return redirect()->route('admin.films')->with('success', 'Film ajouté avec succès !');
+}
 
     public function updateFilm(Request $request, Film $film)
     {
@@ -292,31 +301,57 @@ class AdminController extends Controller
 
     public function drawTirage(Request $request, Tirage $tirage)
 {
-    // Récupérer tous les participants
-    $participants = Participant::all();
+    // Si c'est une demande de confirmation, on met à jour le champ conf
+    if ($request->has('confirm') && $request->confirm) {
+        $tirage->conf = true;
+        $tirage->save();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Le tirage a été confirmé avec succès !'
+        ]);
+    }
+    
+    // Récupérer les participants éligibles pour ce tirage
+    $participants = [];
+    
+    if ($tirage->is_big_tas) {
+        // Pour le BIG TAS, on récupère les participants qui ont vu tous les films
+        $totalFilms = Film::count();
+        $participants = Participant::withCount('films')
+            ->having('films_count', '=', $totalFilms)
+            ->get();
+    } elseif ($tirage->film_id) {
+        // Pour un tirage de film, on récupère les participants qui ont vu ce film
+        $participants = $tirage->film->participants;
+    } else {
+        // Pour un tirage classique, on récupère tous les participants
+        $participants = Participant::all();
+    }
     
     if ($participants->isEmpty()) {
-        return response()->json(['error' => 'Aucun participant disponible pour le tirage au sort.'], 400);
+        return response()->json(['error' => 'Aucun participant éligible disponible pour le tirage au sort.'], 400);
     }
     
     // Vérifier s'il reste des dotations disponibles
     $dotation = $tirage->dotation;
-    if ($dotation->remaining_count <= 0) {
+    if ($dotation && $dotation->remaining_count <= 0) {
         return response()->json(['error' => 'Il ne reste plus de dotations disponibles pour ce tirage.'], 400);
     }
     
     // Choisir un gagnant au hasard
     $winner = $participants->random();
     
-    // Enregistrer le gagnant
+    // Enregistrer le gagnant mais sans confirmer le tirage
     $tirage->winner_id = $winner->id;
+    $tirage->conf = false; // Par défaut, le tirage n'est pas confirmé
     $tirage->save();
     
     // Déchiffrer les données du gagnant
-    $winnerFirstname = $winner->firstname;
-    $winnerLastname = $winner->lastname;
-    $winnerEmail = $winner->email ? $winner->email : 'Non spécifié';
-    $winnerTelephone = $winner->telephone;
+    $winnerFirstname = Genesys::Decrypt($winner->firstname);
+    $winnerLastname = Genesys::Decrypt($winner->lastname);
+    $winnerEmail = $winner->email ? Genesys::Decrypt($winner->email) : 'Non spécifié';
+    $winnerTelephone = Genesys::Decrypt($winner->telephone);
     
     // S'assurer que les données sont en UTF-8
     $winnerFirstname = mb_convert_encoding($winnerFirstname, 'UTF-8', 'UTF-8');
@@ -331,10 +366,29 @@ class AdminController extends Controller
         'winner_firstname' => $winnerFirstname,
         'winner_lastname' => $winnerLastname,
         'winner_email' => $winnerEmail,
-        'winner_telephone' => $winnerTelephone
+        'winner_telephone' => $winnerTelephone,
+        'confirmed' => $tirage->conf
     ]);
 }
 
+public function createBigTas()
+{
+    // Vérifier si un BIG TAS existe déjà
+    $existingBigTas = Tirage::where('is_big_tas', true)->first();
+    if ($existingBigTas) {
+        return redirect()->route('admin.tirages')->with('error', 'Un BIG TAS existe déjà !');
+    }
+    
+    // Créer le BIG TAS
+    Tirage::create([
+        'title' => 'BIG TAS - Tirage pour les participants ayant vu tous les films',
+        'date' => now()->addMonth(),
+        'condition_recuperation' => 'Présenter tous les QR codes des films à la caisse',
+        'is_big_tas' => true
+    ]);
+    
+    return redirect()->route('admin.tirages')->with('success', 'BIG TAS créé avec succès !');
+}
     public function editDotation(Dotation $dotation)
     {
         // Vérifier si l'utilisateur a accès à cette section
@@ -428,10 +482,14 @@ public function stats()
     // --- TIRAGES AU SORT ---
     public function tirages()
 {
-   
-    $tirages = Tirage::orderBy('date', 'asc')->get();
+    $tirages = Tirage::with(['film', 'dotation', 'winner'])->orderBy('date', 'asc')->get();
     $dotations = Dotation::all();
-    return view('admin.tirages.index', compact('tirages', 'dotations'));
+    $films = Film::all();
+    
+    // Vérifier si un BIG TAS existe déjà
+    $bigTasExists = Tirage::where('is_big_tas', true)->exists();
+    
+    return view('admin.tirages.index', compact('tirages', 'dotations', 'films', 'bigTasExists'));
 }
 
     public function createTirage()

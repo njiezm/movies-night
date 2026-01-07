@@ -5,10 +5,30 @@
 
 <div class="page-header d-flex justify-content-between align-items-center mb-4">
     <h1><i class="fas fa-gift"></i> Gestion des Tirages</h1>
-    <button class="btn btn-primary" id="addTirageBtn">
-        <i class="fas fa-plus"></i> Ajouter un tirage
-    </button>
+    <div>
+       @if(!$bigTasExists)
+            <!-- Formulaire caché pour créer le BIG TAS -->
+            <form id="createBigTasForm" method="POST" action="{{ route('admin.tirages.createBigTas') }}" style="display: none;">
+                @csrf
+            </form>
+            <button class="btn btn-success me-2" id="createBigTasBtn" type="button">
+                <i class="fas fa-trophy"></i> Créer BIG TAS
+            </button>
+        @endif
+        <!--button class="btn btn-primary" id="addTirageBtn">
+            <i class="fas fa-plus"></i> Ajouter un tirage
+        </!--button-->
+    </div>
 </div>
+
+<!-- Affichage du message du gagnant si un tirage vient d'être fait -->
+@if(session('winner_drawn'))
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <h4 class="alert-heading"><i class="fas fa-dice"></i> Tirage effectué !</h4>
+        <p>Le gagnant est : <strong>{{ session('winner_firstname') }} {{ session('winner_lastname') }}</strong></p>
+        <p class="mb-0">Contact : {{ session('winner_telephone') }}</p>
+    </div>
+@endif
 
 <section class="content-section">
     <div class="table-container">
@@ -17,9 +37,11 @@
                 <thead>
                     <tr>
                         <th>Titre</th>
+                        <th>Film</th>
                         <th>Dotation</th>
                         <th>Date</th>
                         <th>Statut</th>
+                        <th>Condition de récupération</th>
                         <th>Gagnant</th>
                         <th>Actions</th>
                     </tr>
@@ -28,13 +50,39 @@
                 @forelse($tirages as $tirage)
                     <tr>
                         <td>{{ $tirage->title }}</td>
-                        <td><span class="badge bg-secondary">{{ $tirage->dotation->title }}</span></td>
+                        <td>
+                            @if($tirage->is_big_tas)
+                                <span class="badge bg-warning text-dark">BIG TAS</span>
+                            @elseif($tirage->film)
+                                {{ $tirage->film->title }}
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($tirage->dotation)
+                                <span class="badge bg-secondary">{{ $tirage->dotation->title }}</span>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </td>
                         <td>{{ \Carbon\Carbon::parse($tirage->date)->format('d/m/Y') }}</td>
                         <td>
                             @if($tirage->winner_id)
-                                <span class="badge bg-success">Terminé</span>
+                                @if($tirage->conf)
+                                    <span class="badge bg-success">Confirmé</span>
+                                @else
+                                    <span class="badge bg-warning text-dark">En attente de confirmation</span>
+                                @endif
                             @else
-                                <span class="badge bg-warning text-dark">En attente</span>
+                                <span class="badge bg-info">En attente de tirage</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($tirage->condition_recuperation)
+                                <small>{{ $tirage->condition_recuperation }}</small>
+                            @else
+                                <span class="text-muted">-</span>
                             @endif
                         </td>
                         <td>
@@ -44,7 +92,7 @@
                                     {{ App\Models\Base\Genesys::Decrypt($tirage->winner->lastname) }}
                                 </strong><br>
                                 <small class="text-muted">
-                                    {{ $tirage->winner->telephone }}
+                                    {{ App\Models\Base\Genesys::Decrypt($tirage->winner->telephone) }}
                                 </small>
                             @else
                                 <span class="text-muted">-</span>
@@ -57,35 +105,48 @@
                                     data-id="{{ $tirage->id }}"
                                     data-title="{{ $tirage->title }}"
                                     data-dotation="{{ $tirage->dotation_id }}"
+                                    data-film="{{ $tirage->film_id }}"
                                     data-date="{{ $tirage->date }}"
+                                    data-condition="{{ $tirage->condition_recuperation }}"
                                     title="Modifier"
                                 >
                                     <i class="fas fa-edit"></i>
                                 </button>
 
                                 @if(!$tirage->winner_id)
-                                    <button
-                                        class="btn btn-sm btn-outline-warning draw-tirage-btn"
-                                        data-id="{{ $tirage->id }}"
-                                        title="Tirer au sort"
-                                    >
-                                        <i class="fas fa-dice"></i>
-                                    </button>
+                                    <!-- Formulaire pour tirer au sort -->
+                                    <form method="POST" action="{{ route('admin.tirages.draw', $tirage->id) }}" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-outline-warning" title="Tirer au sort">
+                                            <i class="fas fa-dice"></i>
+                                        </button>
+                                    </form>
+                                @elseif(!$tirage->conf)
+                                    <!-- Formulaire pour confirmer le tirage -->
+                                    <form method="POST" action="{{ route('admin.tirages.draw', $tirage->id) }}" style="display:inline;">
+                                        @csrf
+                                        <input type="hidden" name="confirm" value="1">
+                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Confirmer le tirage">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
                                 @endif
 
-                                <button
+                               
+                                <!--button
                                     class="btn btn-sm btn-outline-danger delete-tirage-btn"
                                     data-id="{{ $tirage->id }}"
                                     title="Supprimer"
                                 >
                                     <i class="fas fa-trash"></i>
-                                </button>
+                                </!--button-->
+                                
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
+                        <td colspan="8" class="text-center text-muted py-4">
                             <i class="fas fa-inbox fa-2x mb-3 d-block"></i>
                             Aucun tirage enregistré
                         </td>
@@ -121,13 +182,28 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="film_id" class="form-label">Film</label>
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <select name="film_id" id="film_id" class="form-select">
+                            <option value="">-- Aucun --</option>
+                            @foreach($films as $film)
+                                <option value="{{ $film->id }}">{{ $film->title }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
                     <label for="dotation_id" class="form-label">Dotation</label>
                     <div class="input-group">
                         <div class="input-icon">
                             <i class="fas fa-gift"></i>
                         </div>
-                        <select name="dotation_id" id="dotation_id" class="form-select" required>
-                            <option value="">-- Choisir --</option>
+                        <select name="dotation_id" id="dotation_id" class="form-select">
+                            <option value="">-- Aucune --</option>
                             @foreach($dotations as $dotation)
                                 <option value="{{ $dotation->id }}">{{ $dotation->title }}</option>
                             @endforeach
@@ -144,13 +220,32 @@
                         <input type="date" class="form-control" name="date" id="date" required>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label for="condition_recuperation" class="form-label">Condition de récupération</label>
+                    <div class="input-group">
+                        <div class="input-icon">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <textarea class="form-control" name="condition_recuperation" id="condition_recuperation" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <!--div class="form-group">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_big_tas" id="is_big_tas">
+                        <label class="form-check-label" for="is_big_tas">
+                            BIG TAS (pour les participants ayant vu tous les films)
+                        </label>
+                    </div>
+                </!--div-->
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="fas fa-times"></i> Annuler
                 </button>
-                <button class="btn btn-primary">
+                <button type="submit" class="btn btn-primary">
                     <i class="fas fa-save"></i> Enregistrer
                 </button>
             </div>
@@ -176,38 +271,11 @@
                 <p class="text-muted">Êtes-vous sûr de vouloir continuer ?</p>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                     <i class="fas fa-times"></i> Annuler
                 </button>
-                <button class="btn btn-danger">
+                <button type="submit" class="btn btn-danger">
                     <i class="fas fa-trash"></i> Supprimer
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-{{-- MODAL TIRAGE --}}
-<div class="modal fade" id="drawTirageModal" tabindex="-1">
-    <div class="modal-dialog modal-sm">
-        <form method="POST" id="drawTirageForm" class="modal-content admin-form">
-            @csrf
-            <div class="modal-header bg-warning text-dark">
-                <h5 class="modal-title">
-                    <i class="fas fa-dice"></i> Tirage au sort
-                </h5>
-                <button type="button" class="btn-close btn-close-dark" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body text-center py-4">
-                <i class="fas fa-dice fa-3x text-warning mb-3"></i>
-                <p>Confirmer le tirage au sort ?</p>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times"></i> Annuler
-                </button>
-                <button class="btn btn-warning">
-                    <i class="fas fa-dice"></i> Tirer
                 </button>
             </div>
         </form>
@@ -219,13 +287,20 @@
 @push('scripts')
 <script>
  $(function () {
-
     const baseUrl = '{{ url("/admin/tirages") }}';
 
     function showModal(id) {
         new bootstrap.Modal(document.getElementById(id)).show();
     }
 
+    // Bouton pour créer un BIG TAS
+    $('#createBigTasBtn').on('click', function() {
+        if(confirm('Êtes-vous sûr de vouloir créer un BIG TAS ?')) {
+            $('#createBigTasForm').submit();
+        }
+    });
+
+    // Bouton pour ajouter un tirage
     $('#addTirageBtn').on('click', function () {
         $('#tirageForm')[0].reset();
         $('#tirageForm').attr('action', '{{ route("admin.tirages.store") }}');
@@ -234,6 +309,7 @@
         showModal('tirageModal');
     });
 
+    // Bouton pour éditer un tirage
     $('.edit-tirage-btn').on('click', function () {
         const btn = $(this);
 
@@ -243,20 +319,18 @@
 
         $('#title').val(btn.data('title'));
         $('#dotation_id').val(btn.data('dotation'));
+        $('#film_id').val(btn.data('film'));
         $('#date').val(btn.data('date'));
+        $('#condition_recuperation').val(btn.data('condition'));
 
         $('#tirageModalLabel').text('Modifier le tirage');
         showModal('tirageModal');
     });
 
+    // Bouton pour supprimer un tirage
     $('.delete-tirage-btn').on('click', function () {
         $('#deleteTirageForm').attr('action', baseUrl + '/' + $(this).data('id'));
         showModal('deleteTirageModal');
-    });
-
-    $('.draw-tirage-btn').on('click', function () {
-        $('#drawTirageForm').attr('action', baseUrl + '/' + $(this).data('id') + '/draw');
-        showModal('drawTirageModal');
     });
 
 });

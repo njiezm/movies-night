@@ -16,11 +16,11 @@ class ParticipantController extends Controller
         
         // Déchiffrement des données pour l'affichage
         $decryptedParticipants = $participants->map(function($participant) {
-            $participant->firstname = Genesys::Decrypt($participant->firstname);
-            $participant->lastname = Genesys::Decrypt($participant->lastname);
-            $participant->telephone = Genesys::Decrypt($participant->telephone);
+            $participant->firstname = $participant->firstname;
+            $participant->lastname = $participant->lastname;
+            $participant->telephone = $participant->telephone;
             if ($participant->email) {
-                $participant->email = Genesys::Decrypt($participant->email);
+                $participant->email = $participant->email;
             }
             return $participant;
         });
@@ -47,7 +47,7 @@ class ParticipantController extends Controller
             'byemail' => 'boolean',
         ]);
 
-        // Chiffrement des données sensibles avant stockage
+        // Chiffrement 
         $data = $request->all();
         $data['firstname'] = Genesys::Crypt($request->firstname);
         $data['lastname'] = Genesys::Crypt($request->lastname);
@@ -71,11 +71,11 @@ class ParticipantController extends Controller
     public function edit(Participant $participant)
     {
         // Déchiffrement des données pour l'édition
-        $participant->firstname = Genesys::Decrypt($participant->firstname);
-        $participant->lastname = Genesys::Decrypt($participant->lastname);
-        $participant->telephone = Genesys::Decrypt($participant->telephone);
+        $participant->firstname =$participant->firstname;
+        $participant->lastname = $participant->lastname;
+        $participant->telephone = $participant->telephone;
         if ($participant->email) {
-            $participant->email = Genesys::Decrypt($participant->email);
+            $participant->email = $participant->email;
         }
         
         $films = Film::all();

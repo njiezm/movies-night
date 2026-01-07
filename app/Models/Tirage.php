@@ -9,7 +9,7 @@ class Tirage extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['title', 'dotation_id', 'date', 'winner_id'];
+    protected $fillable = ['title', 'dotation_id', 'date', 'winner_id', 'film_id', 'conf', 'condition_recuperation', 'is_big_tas'];
     
     public function dotation()
     {
@@ -19,5 +19,10 @@ class Tirage extends Model
     public function winner()
     {
         return $this->belongsTo(Participant::class, 'winner_id');
+    }
+    
+    public function film()
+    {
+        return $this->belongsTo(Film::class);
     }
 }
