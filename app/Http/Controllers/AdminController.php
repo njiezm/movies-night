@@ -317,12 +317,16 @@ class AdminController extends Controller
     $participants = [];
     
     if ($tirage->is_big_tas) {
-        // Pour le BIG TAS, on récupère les participants qui ont vu tous les films
-        $totalFilms = Film::count();
-        $participants = Participant::withCount('films')
-            ->having(DB::raw('films_count'), '=', $totalFilms)  
-            ->get();
-    } elseif ($tirage->film_id) {
+    $totalFilms = Film::count();
+
+    $participants = Participant::whereIn('id', function($query) use ($totalFilms) {
+        $query->select('participant_id')
+            ->from('participant_film')
+            ->groupBy('participant_id')
+            ->havingRaw('COUNT(*) = ?', [$totalFilms]);
+    })->get();
+}
+ elseif ($tirage->film_id) {
         // Pour un tirage de film, on récupère les participants qui ont vu ce film
         $participants = $tirage->film->participants;
     } else {
