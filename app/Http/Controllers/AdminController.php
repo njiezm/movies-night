@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\DB;  // CORRECTION : Importation correcte de la classe DB
 
 
 class AdminController extends Controller
@@ -319,7 +320,7 @@ class AdminController extends Controller
         // Pour le BIG TAS, on récupère les participants qui ont vu tous les films
         $totalFilms = Film::count();
         $participants = Participant::withCount('films')
-            ->having('films_count', '=', $totalFilms)
+            ->having(DB::raw('films_count'), '=', $totalFilms)  
             ->get();
     } elseif ($tirage->film_id) {
         // Pour un tirage de film, on récupère les participants qui ont vu ce film
@@ -330,13 +331,19 @@ class AdminController extends Controller
     }
     
     if ($participants->isEmpty()) {
-        return response()->json(['error' => 'Aucun participant éligible disponible pour le tirage au sort.'], 400);
+        return response()->json([
+            'success' => false,
+            'error' => 'Aucun participant éligible disponible pour le tirage au sort.'
+        ], 400);
     }
     
     // Vérifier s'il reste des dotations disponibles
     $dotation = $tirage->dotation;
     if ($dotation && $dotation->remaining_count <= 0) {
-        return response()->json(['error' => 'Il ne reste plus de dotations disponibles pour ce tirage.'], 400);
+        return response()->json([
+            'success' => false,
+            'error' => 'Il ne reste plus de dotations disponibles pour ce tirage.'
+        ], 400);
     }
     
     // Choisir un gagnant au hasard
@@ -431,7 +438,7 @@ public function stats()
         $bigTasEligible = $participantsWithFilmCount->where('films_count', $totalFilms)->count();
     }
     
-    // Récupère les 4 meilleurs participants avec déchiffrement des noms
+    // Récupère les 4 meilleurs participants 
     $ranking = Participant::withCount('films')
                         ->orderByDesc('films_count')
                         ->take(4)
