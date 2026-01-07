@@ -14,7 +14,7 @@ class Genesys extends Model
         $iv_length = openssl_cipher_iv_length($ciphering); 
         $options = 0; 
         $encryption_iv = '5424358513959785'; 
-        $encryption_key = env('5424358513959785'); 
+        $encryption_key = 'BasePlateformeWeb'; 
         $code = openssl_encrypt($chaine, $ciphering, 
                     $encryption_key, $options, $encryption_iv); 
         return $code;
@@ -22,8 +22,8 @@ class Genesys extends Model
 
     static function Decrypt($chaine){
         $ciphering = "AES-256-OFB"; 
-        $decryption_iv = env('5424358513959785'); 
-        $decryption_key = env('5424358513959785'); 
+        $decryption_iv = '5424358513959785'; 
+        $decryption_key ='BasePlateformeWeb': 
         $options = 0; 
         $code=openssl_decrypt ($chaine, $ciphering,  
         $decryption_key, $options, $decryption_iv); 
