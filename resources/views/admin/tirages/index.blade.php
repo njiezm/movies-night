@@ -15,6 +15,9 @@
                 <i class="fas fa-trophy"></i> Créer BIG TAS
             </button>
         @endif
+        <button class="btn btn-primary" id="addTirageBtn">
+            <i class="fas fa-plus"></i> Ajouter un tirage mensuel
+        </button>
     </div>
 </div>
 
@@ -27,10 +30,16 @@
     </div>
 @endif
 
-<section class="content-section">
+<!-- Section des tirages mensuels -->
+<section class="content-section mb-4">
+    <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-calendar-alt"></i> Gestion des tirages mensuels</h2>
+        <p class="text-white">Tirages mensuels associés à des films spécifiques</p>
+    </div>
+    
     <div class="table-container">
         <div class="table-responsive">
-            <table class="table table-striped align-middle">
+            <table class="table table-striped align-middle" id="monthly-draws-table">
                 <thead>
                     <tr>
                         <th>Titre</th>
@@ -44,13 +53,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                @forelse($tirages as $tirage)
+                @forelse($monthlyTirages as $tirage)
                     <tr data-tirage-id="{{ $tirage->id }}">
                         <td>{{ $tirage->title }}</td>
                         <td>
-                            @if($tirage->is_big_tas)
-                                <span class="badge bg-warning text-dark">BIG TAS</span>
-                            @elseif($tirage->film)
+                            @if($tirage->film)
                                 {{ $tirage->film->title }}
                             @else
                                 <span class="text-muted">-</span>
@@ -146,7 +153,119 @@
                     <tr>
                         <td colspan="8" class="text-center text-muted py-4">
                             <i class="fas fa-inbox fa-2x mb-3 d-block"></i>
-                            Aucun tirage enregistré
+                            Aucun tirage mensuel enregistré
+                        </td>
+                    </tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- Section du grand tirage au sort -->
+<section class="content-section">
+    <div class="section-header">
+        <h2 class="section-title"><i class="fas fa-trophy"></i> Gestion du grand tirage au sort (BIG TAS)</h2>
+        <p class="text-white">Tirage pour les participants ayant vu tous les films</p>
+    </div>
+    
+    <div class="table-container">
+        <div class="table-responsive">
+            <table class="table table-striped align-middle" id="big-draw-table">
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Date</th>
+                        <th>Statut</th>
+                        <th>Condition de récupération</th>
+                        <th>Gagnant</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @forelse($bigTirages as $tirage)
+                    <tr data-tirage-id="{{ $tirage->id }}">
+                        <td>
+                            <span class="badge bg-warning text-dark">BIG TAS</span>
+                            <br>
+                            {{ $tirage->title }}
+                        </td>
+                        <td>{{ \Carbon\Carbon::parse($tirage->date)->format('d/m/Y') }}</td>
+                        <td>
+                            @if($tirage->winner_id)
+                                @if($tirage->conf)
+                                    <span class="badge bg-success">Confirmé</span>
+                                @else
+                                    <span class="badge bg-warning text-dark">En attente de confirmation</span>
+                                @endif
+                            @else
+                                <span class="badge bg-info">En attente de tirage</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($tirage->condition_recuperation)
+                                <small>{{ $tirage->condition_recuperation }}</small>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($tirage->winner)
+                                <strong>
+                                    {{ App\Models\Base\Genesys::Decrypt($tirage->winner->firstname) }}
+                                    {{ App\Models\Base\Genesys::Decrypt($tirage->winner->lastname) }}
+                                </strong><br>
+                                <small class="text-muted">
+                                    {{ App\Models\Base\Genesys::Decrypt($tirage->winner->telephone) }}
+                                </small>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                @if(!$tirage->winner_id)
+                                    <!-- Bouton pour tirer au sort -->
+                                    <button
+                                        class="btn btn-sm btn-outline-warning draw-tirage-btn"
+                                        data-id="{{ $tirage->id }}"
+                                        title="Tirer au sort"
+                                    >
+                                        <i class="fas fa-dice"></i>
+                                    </button>
+                                @endif
+
+                                @if($tirage->winner_id && !$tirage->conf)
+                                    <!-- Bouton pour tirer à nouveau -->
+                                    <button
+                                        class="btn btn-sm btn-outline-warning redraw-tirage-btn"
+                                        data-id="{{ $tirage->id }}"
+                                        title="Tirer à nouveau"
+                                    >
+                                        <i class="fas fa-dice"></i>
+                                    </button>
+                                    <!-- Bouton pour confirmer le tirage -->
+                                    <button
+                                        class="btn btn-sm btn-outline-success confirm-tirage-btn"
+                                        data-id="{{ $tirage->id }}"
+                                        title="Confirmer le tirage"
+                                    >
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="fas fa-trophy fa-2x mb-3 d-block"></i>
+                            @if($bigTasExists)
+                                Aucun grand tirage enregistré
+                            @else
+                                Aucun grand tirage enregistré. Cliquez sur "Créer BIG TAS" pour en créer un.
+                            @endif
                         </td>
                     </tr>
                 @endforelse
@@ -163,7 +282,7 @@
             @csrf
             <div class="modal-header">
                 <h5 class="modal-title" id="tirageModalLabel"></h5>
-<button type="button" class="btn-close" aria-label="Close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" aria-label="Close" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
@@ -175,7 +294,7 @@
                         <div class="input-icon">
                             <i class="fas fa-heading"></i>
                         </div>
-                        <input type="text" class="form-control" name="title" id="title" required>
+                        <input type="text" style="color: black" class="form-control" name="title" id="title" required>
                     </div>
                 </div>
 
@@ -200,7 +319,7 @@
                         <div class="input-icon">
                             <i class="fas fa-gift"></i>
                         </div>
-                        <select name="dotation_id" id="dotation_id" class="form-select">
+                        <select style="color: black" name="dotation_id" id="dotation_id" class="form-select">
                             <option value="">-- Aucune --</option>
                             @foreach($dotations as $dotation)
                                 <option value="{{ $dotation->id }}">{{ $dotation->title }}</option>
@@ -215,7 +334,7 @@
                         <div class="input-icon">
                             <i class="fas fa-calendar-alt"></i>
                         </div>
-                        <input type="date" class="form-control" name="date" id="date" required>
+                        <input style="color: black" type="date" class="form-control" name="date" id="date" required>
                     </div>
                 </div>
 
@@ -225,7 +344,7 @@
                         <div class="input-icon">
                             <i class="fas fa-info-circle"></i>
                         </div>
-                        <textarea class="form-control" name="condition_recuperation" id="condition_recuperation" rows="3"></textarea>
+                        <textarea style="color: black" class="form-control" name="condition_recuperation" id="condition_recuperation" rows="3"></textarea>
                     </div>
                 </div>
             </div>
@@ -375,7 +494,7 @@
         $('#tirageForm')[0].reset();
         $('#tirageForm').attr('action', '{{ route("admin.tirages.store") }}');
         $('#tirageForm').find('input[name="_method"]').remove();
-        $('#tirageModalLabel').text('Ajouter un tirage');
+        $('#tirageModalLabel').text('Ajouter un tirage mensuel');
         showModal('tirageModal');
     });
 
@@ -393,7 +512,7 @@
         $('#date').val(btn.data('date'));
         $('#condition_recuperation').val(btn.data('condition'));
 
-        $('#tirageModalLabel').text('Modifier le tirage');
+        $('#tirageModalLabel').text('Modifier le tirage mensuel');
         showModal('tirageModal');
     });
 
@@ -404,60 +523,60 @@
     });
 
     // Gestion du tirage au sort
- $('.draw-tirage-btn').on('click', function(e) {
-    e.preventDefault();
-    const tirageId = $(this).data('id');
-    currentTirageId = tirageId;
-    
-    $.ajax({
-        url: baseUrl + '/' + tirageId + '/draw',
-        type: 'POST',
-        data: {
-            _token: '{{ csrf_token() }}'
-        },
-        success: function(response) {
-            if (response.success) {
-                // Afficher les informations du gagnant dans le modal
-                $('#winnerName').text(response.winner_firstname + ' ' + response.winner_lastname);
-                $('#winnerContact').text(response.winner_telephone);
-                $('#winnerInfo').text('Tirage effectué avec succès !');
-                
-                // Configurer les boutons du modal
-                if (response.confirmed) {
-                    $('#confirmWinnerBtn').hide();
-                    $('#redrawBtn').hide();
+    $('.draw-tirage-btn').on('click', function(e) {
+        e.preventDefault();
+        const tirageId = $(this).data('id');
+        currentTirageId = tirageId;
+        
+        $.ajax({
+            url: baseUrl + '/' + tirageId + '/draw',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Afficher les informations du gagnant dans le modal
+                    $('#winnerName').text(response.winner_firstname + ' ' + response.winner_lastname);
+                    $('#winnerContact').text(response.winner_telephone);
+                    $('#winnerInfo').text('Tirage effectué avec succès !');
+                    
+                    // Configurer les boutons du modal
+                    if (response.confirmed) {
+                        $('#confirmWinnerBtn').hide();
+                        $('#redrawBtn').hide();
+                    } else {
+                        $('#confirmWinnerBtn').show();
+                        $('#redrawBtn').show();
+                    }
+                    
+                    // Afficher le modal
+                    showModal('winnerModal');
                 } else {
-                    $('#confirmWinnerBtn').show();
-                    $('#redrawBtn').show();
+                    // Afficher le modal d'erreur avec le message approprié
+                    $('#drawErrorTitle').text('Tirage impossible');
+                    $('#drawErrorMessage').text(response.error || 'Une erreur est survenue lors du tirage.');
+                    showModal('drawErrorModal');
+                }
+            },
+            error: function(xhr) {
+                // Gérer les erreurs HTTP (400, 500, etc.)
+                let errorMessage = 'Une erreur est survenue lors du tirage.';
+                
+                if (xhr.status === 400) {
+                    // Erreur 400 - Pas de participants éligibles
+                    errorMessage = 'Aucun participant éligible disponible pour le tirage.';
+                } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                    // Utiliser le message d'erreur du serveur si disponible
+                    errorMessage = xhr.responseJSON.error;
                 }
                 
-                // Afficher le modal
-                showModal('winnerModal');
-            } else {
-                // Afficher le modal d'erreur avec le message approprié
-                $('#drawErrorTitle').text('Tirage impossible');
-                $('#drawErrorMessage').text(response.error || 'Une erreur est survenue lors du tirage.');
+                $('#drawErrorTitle').text('Erreur de tirage');
+                $('#drawErrorMessage').text(errorMessage);
                 showModal('drawErrorModal');
             }
-        },
-        error: function(xhr) {
-            // Gérer les erreurs HTTP (400, 500, etc.)
-            let errorMessage = 'Une erreur est survenue lors du tirage.';
-            
-            if (xhr.status === 400) {
-                // Erreur 400 - Pas de participants éligibles
-                errorMessage = 'Aucun participant éligible disponible pour le tirage.';
-            } else if (xhr.responseJSON && xhr.responseJSON.error) {
-                // Utiliser le message d'erreur du serveur si disponible
-                errorMessage = xhr.responseJSON.error;
-            }
-            
-            $('#drawErrorTitle').text('Erreur de tirage');
-            $('#drawErrorMessage').text(errorMessage);
-            showModal('drawErrorModal');
-        }
+        });
     });
-});
 
     // Gestion du tirage à nouveau
     $('.redraw-tirage-btn').on('click', function(e) {
@@ -585,7 +704,167 @@
 
 @push('styles')
 <style>
+/* Styles pour les sections */
+.section-header {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 15px 20px;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 1px solid #dee2e6;
+    margin-bottom: 0;
+}
 
+.section-title {
+    color: #495057;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0;
+}
 
+.content-section {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.table-container {
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+}
+
+/* Styles pour les formulaires */
+.admin-form .form-group {
+    margin-bottom: 20px;
+}
+
+.admin-form .form-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.admin-form .input-group {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+}
+
+.admin-form .input-icon {
+    display: flex;
+    align-items: center;
+    padding: 0.375rem 0.75rem;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-right: none;
+    border-radius: 0.25rem 0 0 0.25rem;
+    color: #495057;
+}
+
+.admin-form .form-control,
+.admin-form .form-select {
+    border-left: none;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.admin-form .form-control:focus,
+.admin-form .form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.admin-form .form-control:focus + .input-icon {
+    border-color: #86b7fe;
+}
+
+.admin-form .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 25px;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+/* Amélioration des modals */
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 1.5rem;
+}
+
+.modal-sm {
+    max-width: 400px;
+}
+
+/* Animation pour les boutons */
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Style pour le tableau */
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+}
+
+/* Message quand aucun résultat */
+.text-center.text-muted.py-4 i {
+    opacity: 0.5;
+}
+
+/* Styles pour les boutons d'action */
+.btn-outline-warning {
+    color: #f57c00;
+    border-color: #f57c00;
+}
+
+.btn-outline-warning:hover {
+    background-color: #f57c00;
+    color: white;
+}
+
+.btn-outline-success {
+    color: #2e7d32;
+    border-color: #2e7d32;
+}
+
+.btn-outline-success:hover {
+    background-color: #2e7d32;
+    color: white;
+}
 </style>
 @endpush

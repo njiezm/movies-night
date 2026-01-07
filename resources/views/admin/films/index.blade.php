@@ -221,7 +221,7 @@
                         <div class="input-icon">
                             <i class="fas fa-heading"></i>
                         </div>
-                        <input type="text" class="form-control" name="title" id="title" required>
+                        <input style="color: black !important" type="text-dark" class="form-control" name="title" id="title" required>
                     </div>
                 </div>
 
@@ -231,7 +231,7 @@
                         <div class="input-icon" style="align-items: flex-start; padding-top: 0.75rem;">
                             <i class="fas fa-align-left"></i>
                         </div>
-                        <textarea class="form-control" name="description" id="description" rows="4"></textarea>
+                        <textarea style="color: black !important" class="form-control" name="description" id="description" rows="4"></textarea>
                     </div>
                 </div>
 
@@ -243,7 +243,7 @@
                                 <div class="input-icon">
                                     <i class="fas fa-calendar-alt"></i>
                                 </div>
-                                <input type="date" class="form-control" name="start_date" id="start_date">
+                                <input style="color: black !important" type="date" class="form-control" name="start_date" id="start_date">
                             </div>
                         </div>
                     </div>
@@ -254,7 +254,7 @@
                                 <div class="input-icon">
                                     <i class="fas fa-calendar-alt"></i>
                                 </div>
-                                <input type="date" class="form-control" name="end_date" id="end_date">
+                                <input style="color: black !important" type="date" class="form-control" name="end_date" id="end_date">
                             </div>
                         </div>
                     </div>
@@ -266,7 +266,7 @@
                         <div class="input-icon">
                             <i class="fas fa-image"></i>
                         </div>
-                        <input type="file" class="form-control" name="vignette" id="vignette" accept="image/*">
+                        <input style="color: black !important" type="file" class="form-control" name="vignette" id="vignette" accept="image/*">
                     </div>
                     <div class="form-text" id="file-name">Choisir une image</div>
                 </div>

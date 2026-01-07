@@ -492,14 +492,20 @@ public function stats()
     // --- TIRAGES AU SORT ---
     public function tirages()
 {
-    $tirages = Tirage::with(['film', 'dotation', 'winner'])->orderBy('date', 'asc')->get();
+    // Récupérer tous les tirages avec leurs relations
+    $allTirages = Tirage::with(['film', 'dotation', 'winner'])->orderBy('date', 'asc')->get();
+    
+    // Séparer les tirages mensuels et le BIG TAS
+    $monthlyTirages = $allTirages->where('is_big_tas', false);
+    $bigTirages = $allTirages->where('is_big_tas', true);
+    
     $dotations = Dotation::all();
     $films = Film::all();
     
     // Vérifier si un BIG TAS existe déjà
     $bigTasExists = Tirage::where('is_big_tas', true)->exists();
     
-    return view('admin.tirages.index', compact('tirages', 'dotations', 'films', 'bigTasExists'));
+    return view('admin.tirages.index', compact('monthlyTirages', 'bigTirages', 'dotations', 'films', 'bigTasExists'));
 }
 
     public function createTirage()
