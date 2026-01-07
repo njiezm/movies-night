@@ -22,7 +22,7 @@
                         <!-- Titre et accroche -->
                         <div class="row justify-content-center">
                             <div class="col-11 text-center mg-top-10">
-                                <h1>Bonjour {{ App\Models\Base\Genesys::Decrypt($participant->firstname) }}</h1>
+                                <h1>Bonjour {{ $participant->firstname }}</h1>
                                 <p class="text-warning lead">Votre progression dans le marathon</p>
                             </div>
                         </div>
