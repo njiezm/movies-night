@@ -254,10 +254,12 @@ body {
     background-color: var(--card-bg);
     border-radius: var(--border-radius);
     padding: var(--padding-container);
-    box-shadow: var(--box-shadow);
-    backdrop-filter: blur(10px);
+    box-shadow: var(--box-shadow);  
 }
 
+.form-label {
+    color: black !important;
+}
 /* Header et navigation mobile */
 .admin-header-mobile {
     display: none;
@@ -337,6 +339,7 @@ body {
     padding: 15px var(--padding-container);
 }
 
+/**-------------------------------------------**/
 /* Styles des formulaires */
 .form-control {
     background-color: rgba(255, 255, 255, 0.9);
@@ -430,31 +433,6 @@ body {
     font-size: 16px;
 }
 
-/* Styles des tables pour le thème sombre */
-.table {
-    color: var(--text-color);
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-}
-
-.table th, .table td {
-    border-color: rgba(255, 255, 255, 0.1);
-    padding: 12px 15px;
-}
-
-.table thead th {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-bottom-color: rgba(255, 255, 255, 0.2);
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 12px;
-    letter-spacing: 1px;
-}
-
-.table tbody tr:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-}
 
 /* Cartes de films */
 .film-grid {
@@ -533,58 +511,8 @@ body {
     color: #aaa;
 }
 
-/* Modals */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1050;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.7);
-}
 
-.modal-content {
-    background-color: #333;
-    margin: 5% auto;
-    padding: 20px;
-    border-radius: var(--border-radius);
-    width: 80%;
-    max-width: 500px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    animation: modalopen 0.3s;
-}
 
-@keyframes modalopen {
-    from {opacity: 0; transform: translateY(-50px);}
-    to {opacity: 1; transform: translateY(0);}
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #555;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-    color: white;
-}
-
-.modal-body {
-    color: white;
-}
-
-.close {
-    color: #aaa;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close:hover {
-    color: white;
-}
 
 /* Alertes */
 .alert {
@@ -640,57 +568,7 @@ body {
     }
 }
 
-@media (max-width: 768px) {
-    :root {
-        --margin-section: 20px;
-        --padding-container: 15px;
-    }
-    
-    .login-card {
-        padding: 30px 20px;
-    }
-    
-    .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-    }
-    
-    .film-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    }
-    
-    .table th, .table td {
-        padding: 8px 10px;
-        font-size: 14px;
-    }
-    
-    .modal-content {
-        width: 95%;
-        margin: 10% auto;
-    }
-}
 
-@media (max-width: 480px) {
-    .login-card {
-        padding: 20px 15px;
-    }
-    
-    .login-header h2 {
-        font-size: 24px;
-    }
-    
-    .login-header p {
-        font-size: 14px;
-    }
-    
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .film-grid {
-        grid-template-columns: 1fr;
-    }
-}
 
 /* --- Styles supplémentaires pour la page de statistiques --- */
 
@@ -1111,18 +989,7 @@ body {
     margin-bottom: 15px;
 }
 
-/* Styles pour les modaux */
-.modal-form {
-    padding: 20px 0;
-}
 
-.modal-body {
-    padding: 20px;
-}
-
-.modal-body .alert {
-    margin-bottom: 20px;
-}
 
 .winner-card {
     display: flex;
@@ -1221,10 +1088,15 @@ body {
 }
 
 .search-box .form-control {
-    padding-left: 40px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    color: black;
+    position: relative;
+    width: 100%;
+    border-radius: 50px;
+    background: linear-gradient(135deg, rgb(218, 232, 247) 0%, rgb(214, 229, 247) 100%);
+    padding: 5px;
+    display: flex;
+    align-items: center;
 }
 
 .search-box .form-control:focus {
@@ -1357,23 +1229,7 @@ body {
     transform: scale(1.05);
 }
 
-.film-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.7) 100%);
-    display: flex;
-    align-items: flex-end;
-    padding: 10px;
-    opacity: 0;
-    transition: opacity var(--transition-speed);
-}
 
-.film-card:hover .film-overlay {
-    opacity: 1;
-}
 
 .film-stats {
     display: flex;
@@ -1413,6 +1269,8 @@ body {
     flex-grow: 1;
 }
 
+
+/*----*/
 .film-card-footer {
     margin-top: auto;
 }
@@ -1555,4 +1413,48 @@ body {
 .highlight-description {
     font-size: 14px;
     opacity: 0.9;
+}
+
+
+.btn-success {
+    outline: none;
+    cursor: pointer;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    position: relative;
+    display: inline-block;
+    letter-spacing: 0.05rem;
+    font-weight: 700;
+    font-size: 17px;
+    border-radius: 500px;
+    overflow: hidden;
+    color: ghostwhite;
+}
+
+.btn-warning {
+    outline: none;
+    cursor: pointer;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    position: relative;
+    display: inline-block;
+    letter-spacing: 0.05rem;
+    font-weight: 700;
+    font-size: 17px;
+    border-radius: 500px;
+    overflow: hidden;
+    color: ghostwhite;
+}
+
+
+.btn-close {
+    width: 1rem;
+    height: 1rem;
+    background-size: 1rem 1rem;
 }
