@@ -7,16 +7,23 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     public function up()
-    {
-        Schema::table('tirages', function (Blueprint $table) {
-            // D'abord, supprimer la contrainte étrangère
-            $table->dropForeign(['dotation_id']);
-            // Puis rendre la colonne nullable
-            $table->foreignId('dotation_id')->nullable()->change();
-            // Recréer la contrainte étrangère
-            $table->foreign('dotation_id')->references('id')->on('dotations');
-        });
-    }
+{
+    Schema::table('tirages', function (Blueprint $table) {
+        // Supprimer la clé étrangère
+        $table->dropForeign(['dotation_id']);
+    });
+
+    // Modifier uniquement la nullabilité (sans foreignId)
+    DB::statement('ALTER TABLE tirages ALTER COLUMN dotation_id DROP NOT NULL');
+
+    Schema::table('tirages', function (Blueprint $table) {
+        // Recréer la clé étrangère
+        $table->foreign('dotation_id')
+              ->references('id')
+              ->on('dotations');
+    });
+}
+
 
     public function down()
     {
