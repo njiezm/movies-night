@@ -15,9 +15,6 @@
                 <i class="fas fa-trophy"></i> Créer BIG TAS
             </button>
         @endif
-        <!--button class="btn btn-primary" id="addTirageBtn">
-            <i class="fas fa-plus"></i> Ajouter un tirage
-        </!--button-->
     </div>
 </div>
 
@@ -48,7 +45,7 @@
                 </thead>
                 <tbody>
                 @forelse($tirages as $tirage)
-                    <tr>
+                    <tr data-tirage-id="{{ $tirage->id }}">
                         <td>{{ $tirage->title }}</td>
                         <td>
                             @if($tirage->is_big_tas)
@@ -114,33 +111,34 @@
                                 </button>
 
                                 @if(!$tirage->winner_id)
-                                    <!-- Formulaire pour tirer au sort -->
-                                    <form method="POST" action="{{ route('admin.tirages.draw', $tirage->id) }}" style="display:inline;">
-                                        @csrf
-                                        <button type="submit" class="btn btn-sm btn-outline-warning" title="Tirer au sort">
-                                            <i class="fas fa-dice"></i>
-                                        </button>
-                                    </form>
-                                @elseif(!$tirage->conf)
-                                    <!-- Formulaire pour confirmer le tirage -->
-                                    <form method="POST" action="{{ route('admin.tirages.draw', $tirage->id) }}" style="display:inline;">
-                                        @csrf
-                                        <input type="hidden" name="confirm" value="1">
-                                        <button type="submit" class="btn btn-sm btn-outline-success" title="Confirmer le tirage">
-                                            <i class="fas fa-check"></i>
-                                        </button>
-                                    </form>
+                                    <!-- Bouton pour tirer au sort -->
+                                    <button
+                                        class="btn btn-sm btn-outline-warning draw-tirage-btn"
+                                        data-id="{{ $tirage->id }}"
+                                        title="Tirer au sort"
+                                    >
+                                        <i class="fas fa-dice"></i>
+                                    </button>
                                 @endif
 
-                               
-                                <!--button
-                                    class="btn btn-sm btn-outline-danger delete-tirage-btn"
-                                    data-id="{{ $tirage->id }}"
-                                    title="Supprimer"
-                                >
-                                    <i class="fas fa-trash"></i>
-                                </!--button-->
-                                
+                                @if($tirage->winner_id && !$tirage->conf)
+                                    <!-- Bouton pour tirer à nouveau -->
+                                    <button
+                                        class="btn btn-sm btn-outline-warning redraw-tirage-btn"
+                                        data-id="{{ $tirage->id }}"
+                                        title="Tirer à nouveau"
+                                    >
+                                        <i class="fas fa-dice"></i>
+                                    </button>
+                                    <!-- Bouton pour confirmer le tirage -->
+                                    <button
+                                        class="btn btn-sm btn-outline-success confirm-tirage-btn"
+                                        data-id="{{ $tirage->id }}"
+                                        title="Confirmer le tirage"
+                                    >
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                @endif
                             </div>
                         </td>
                     </tr>
@@ -230,15 +228,6 @@
                         <textarea class="form-control" name="condition_recuperation" id="condition_recuperation" rows="3"></textarea>
                     </div>
                 </div>
-
-                <!--div class="form-group">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="is_big_tas" id="is_big_tas">
-                        <label class="form-check-label" for="is_big_tas">
-                            BIG TAS (pour les participants ayant vu tous les films)
-                        </label>
-                    </div>
-                </!--div-->
             </div>
 
             <div class="modal-footer">
@@ -282,12 +271,93 @@
     </div>
 </div>
 
+{{-- MODAL GAGNANT --}}
+<div class="modal fade" id="winnerModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content admin-form">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
+                    <i class="fas fa-trophy"></i> Gagnant du tirage
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="fas fa-trophy fa-3x text-warning mb-3"></i>
+                <h4 id="winnerName" class="mb-3"></h4>
+                <p id="winnerContact" class="mb-3"></p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> 
+                    <span id="winnerInfo"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Fermer
+                </button>
+                <button type="button" class="btn btn-success" id="confirmWinnerBtn">
+                    <i class="fas fa-check"></i> Confirmer le gagnant
+                </button>
+                <button type="button" class="btn btn-warning" id="redrawBtn">
+                    <i class="fas fa-dice"></i> Tirer à nouveau
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- MODAL CONFIRMATION --}}
+<div class="modal fade" id="confirmationModal" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content admin-form">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-check-circle"></i> Confirmation
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                <p>Le tirage a été confirmé avec succès !</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    <i class="fas fa-check"></i> OK
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- MODAL ERREUR TIRAGE --}}
+<div class="modal fade" id="drawErrorModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content admin-form">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle"></i> Erreur de tirage
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                <h4 id="drawErrorTitle" class="mb-3">Tirage impossible</h4>
+                <p id="drawErrorMessage" class="mb-3"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    <i class="fas fa-times"></i> Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
 <script>
  $(function () {
     const baseUrl = '{{ url("/admin/tirages") }}';
+    let currentTirageId = null;
 
     function showModal(id) {
         new bootstrap.Modal(document.getElementById(id)).show();
@@ -331,6 +401,182 @@
     $('.delete-tirage-btn').on('click', function () {
         $('#deleteTirageForm').attr('action', baseUrl + '/' + $(this).data('id'));
         showModal('deleteTirageModal');
+    });
+
+    // Gestion du tirage au sort
+ $('.draw-tirage-btn').on('click', function(e) {
+    e.preventDefault();
+    const tirageId = $(this).data('id');
+    currentTirageId = tirageId;
+    
+    $.ajax({
+        url: baseUrl + '/' + tirageId + '/draw',
+        type: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}'
+        },
+        success: function(response) {
+            if (response.success) {
+                // Afficher les informations du gagnant dans le modal
+                $('#winnerName').text(response.winner_firstname + ' ' + response.winner_lastname);
+                $('#winnerContact').text(response.winner_telephone);
+                $('#winnerInfo').text('Tirage effectué avec succès !');
+                
+                // Configurer les boutons du modal
+                if (response.confirmed) {
+                    $('#confirmWinnerBtn').hide();
+                    $('#redrawBtn').hide();
+                } else {
+                    $('#confirmWinnerBtn').show();
+                    $('#redrawBtn').show();
+                }
+                
+                // Afficher le modal
+                showModal('winnerModal');
+            } else {
+                // Afficher le modal d'erreur avec le message approprié
+                $('#drawErrorTitle').text('Tirage impossible');
+                $('#drawErrorMessage').text(response.error || 'Une erreur est survenue lors du tirage.');
+                showModal('drawErrorModal');
+            }
+        },
+        error: function(xhr) {
+            // Gérer les erreurs HTTP (400, 500, etc.)
+            let errorMessage = 'Une erreur est survenue lors du tirage.';
+            
+            if (xhr.status === 400) {
+                // Erreur 400 - Pas de participants éligibles
+                errorMessage = 'Aucun participant éligible disponible pour le tirage.';
+            } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                // Utiliser le message d'erreur du serveur si disponible
+                errorMessage = xhr.responseJSON.error;
+            }
+            
+            $('#drawErrorTitle').text('Erreur de tirage');
+            $('#drawErrorMessage').text(errorMessage);
+            showModal('drawErrorModal');
+        }
+    });
+});
+
+    // Gestion du tirage à nouveau
+    $('.redraw-tirage-btn').on('click', function(e) {
+        e.preventDefault();
+        const tirageId = $(this).data('id');
+        currentTirageId = tirageId;
+        
+        // Récupérer les informations du gagnant depuis le tableau
+        const row = $(this).closest('tr');
+        const winnerName = row.find('td:nth-child(7) strong').text();
+        const winnerContact = row.find('td:nth-child(7) small').text();
+        
+        // Afficher les informations du gagnant dans le modal
+        $('#winnerName').text(winnerName);
+        $('#winnerContact').text(winnerContact);
+        $('#winnerInfo').text('Cliquez sur "Tirer à nouveau" pour choisir un autre gagnant');
+        
+        // Configurer les boutons du modal
+        $('#confirmWinnerBtn').show();
+        $('#redrawBtn').show();
+        
+        // Afficher le modal
+        showModal('winnerModal');
+    });
+
+    // Gestion de la confirmation du tirage
+    $('.confirm-tirage-btn').on('click', function(e) {
+        e.preventDefault();
+        const tirageId = $(this).data('id');
+        currentTirageId = tirageId;
+        
+        // Récupérer les informations du gagnant depuis le tableau
+        const row = $(this).closest('tr');
+        const winnerName = row.find('td:nth-child(7) strong').text();
+        const winnerContact = row.find('td:nth-child(7) small').text();
+        
+        // Afficher les informations du gagnant dans le modal
+        $('#winnerName').text(winnerName);
+        $('#winnerContact').text(winnerContact);
+        $('#winnerInfo').text('En attente de confirmation');
+        
+        // Configurer les boutons du modal
+        $('#confirmWinnerBtn').show();
+        $('#redrawBtn').show();
+        
+        // Afficher le modal
+        showModal('winnerModal');
+    });
+
+    // Bouton pour confirmer le gagnant
+    $('#confirmWinnerBtn').on('click', function() {
+        if (!currentTirageId) return;
+        
+        $.ajax({
+            url: baseUrl + '/' + currentTirageId + '/draw',
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                confirm: 1
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Fermer le modal du gagnant
+                    $('#winnerModal').modal('hide');
+                    
+                    // Afficher le modal de confirmation
+                    showModal('confirmationModal');
+                    
+                    // Mettre à jour le statut dans le tableau après un court délai
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    alert(response.error || 'Une erreur est survenue lors de la confirmation.');
+                }
+            },
+            error: function() {
+                alert('Une erreur est survenue lors de la confirmation.');
+            }
+        });
+    });
+
+    // Bouton pour tirer à nouveau
+    $('#redrawBtn').on('click', function() {
+        if (!currentTirageId) return;
+        
+        // Fermer le modal actuel
+        $('#winnerModal').modal('hide');
+        
+        // Effectuer un nouveau tirage après un court délai
+        setTimeout(function() {
+            $.ajax({
+                url: baseUrl + '/' + currentTirageId + '/draw',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Afficher les informations du nouveau gagnant dans le modal
+                        $('#winnerName').text(response.winner_firstname + ' ' + response.winner_lastname);
+                        $('#winnerContact').text(response.winner_telephone);
+                        $('#winnerInfo').text('Nouveau tirage effectué !');
+                        
+                        // Configurer les boutons du modal
+                        $('#confirmWinnerBtn').show();
+                        $('#redrawBtn').show();
+                        
+                        // Afficher le modal
+                        showModal('winnerModal');
+                    } else {
+                        alert(response.error || 'Une erreur est survenue lors du tirage.');
+                    }
+                },
+                error: function() {
+                    alert('Une erreur est survenue lors du tirage.');
+                }
+            });
+        }, 500);
     });
 
 });
@@ -408,6 +654,7 @@
 .action-buttons {
     display: flex;
     gap: 5px;
+    flex-wrap: wrap;
 }
 
 /* Amélioration des modals */
@@ -462,6 +709,27 @@
 /* Message quand aucun résultat */
 .text-center.text-muted.py-4 i {
     opacity: 0.5;
+}
+
+/* Styles pour les boutons d'action */
+.btn-outline-warning {
+    color: #f57c00;
+    border-color: #f57c00;
+}
+
+.btn-outline-warning:hover {
+    background-color: #f57c00;
+    color: white;
+}
+
+.btn-outline-success {
+    color: #2e7d32;
+    border-color: #2e7d32;
+}
+
+.btn-outline-success:hover {
+    background-color: #2e7d32;
+    color: white;
 }
 </style>
 @endpush

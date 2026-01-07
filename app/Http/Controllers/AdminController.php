@@ -370,7 +370,6 @@ class AdminController extends Controller
         'confirmed' => $tirage->conf
     ]);
 }
-
 public function createBigTas()
 {
     // Vérifier si un BIG TAS existe déjà
