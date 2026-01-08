@@ -15,9 +15,9 @@
                 <i class="fas fa-trophy"></i> Créer BIG TAS
             </button>
         @endif
-        <button class="btn btn-primary" id="addTirageBtn">
+        <!--button class="btn btn-primary" id="addTirageBtn">
             <i class="fas fa-plus"></i> Ajouter un tirage mensuel
-        </button>
+        </!--button-->
     </div>
 </div>
 
