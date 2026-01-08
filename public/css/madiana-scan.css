@@ -145,3 +145,22 @@ body {
 .image-btn-danger:hover {
     box-shadow: 0 8px 25px rgba(229, 9, 20, 0.6);
 }
+
+
+.input-white-big {
+    background: rgba(255, 255, 255, 0.20) !important;
+    color: #fff !important;
+    font-size: 1.8rem; /* taille du texte */
+    font-weight: 600;
+    height: 55px; /* input plus haut */
+    font-family: 'Marykate', Arial, sans-serif;
+}
+
+/* Placeholder en blanc */
+.input-white-big::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.8rem;
+    font-family: 'Marykate', Arial, sans-serif;
+}
+
+

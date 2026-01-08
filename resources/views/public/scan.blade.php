@@ -32,23 +32,7 @@
                             </div>
                         </div>
 
-                        <!-- Détails du film scanné -->
-                        <div class="row justify-content-center">
-                            <div class="col-10 text-center">
-                                <div class="film-scanned">
-                                    <img src="{{ asset('storage/'.$film->vignette) }}" class="img-fluid rounded" alt="{{ $film->title }}">
-                                    <h2 class="text-white mt-3">{{ $film->title }}</h2>
-                                    <p class="text-white-50">{{ $film->description }}</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Appel à l'action : Connexion ou Inscription -->
-                        <div class="row justify-content-center mt-4">
-                            <div class="col-12 text-center">
-                                <p class="text-white mb-4">Pour valider votre participation et marquer ce film comme vu, veuillez vous connecter ou vous inscrire.</p>
-                            </div>
-                        </div>
+                       
                         
                        <div class="row justify-content-center gx-2">
                         <div class="col-12 col-sm-6 mb-2">
