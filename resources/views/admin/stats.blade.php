@@ -65,7 +65,7 @@
     </div>
     <div class="alert alert-info mt-3 d-flex flex-column">
     <i class="fas fa-info-circle"></i>
-    <strong>Éligible TAS mensuel:</strong> Tous ceux qui ont vu ce film
+    <strong>Éligible TAS mensuel:</strong> Tous ceux qui ont vu le film du mois
     <strong>Éligible BIG TAS:</strong> Uniquement ceux qui ont vu tous les films
 </div>
 

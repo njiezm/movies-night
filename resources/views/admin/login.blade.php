@@ -442,6 +442,26 @@
                     }
                 }
             });
+
+             // Gestion du collage dans les champs
+    codeInputs.on('paste', function(e) {
+        e.preventDefault();
+        const pasteData = (e.originalEvent.clipboardData || window.clipboardData).getData('text');
+        const digits = pasteData.replace(/\D/g, '').substr(0, 6);
+        codeInputs.each(function(index) {
+            $(this).val(digits[index] || '');
+            if (digits[index]) $(this).addClass('filled');
+            else $(this).removeClass('filled');
+        });
+        updateHiddenInput();
+        // Focus sur le premier champ vide
+        codeInputs.each(function() {
+            if ($(this).val() === '') {
+                $(this).focus();
+                return false;
+            }
+        });
+    });
             
             // Mettre à jour le champ caché avec le code complet
             function updateHiddenInput() {
@@ -514,6 +534,8 @@
                 $(this).parent().removeClass('focused');
             });
         });
+
+        
     </script>
 </body>
 </html>
