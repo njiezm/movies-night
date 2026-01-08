@@ -121,38 +121,38 @@ class PublicController extends Controller
      * Affiche les films d'un participant
      */
    public function mesFilms($participantSlug)
-{
-    if ($redirect = $this->checkMarathonStatus()) {
-        return $redirect;
+    {
+        if ($redirect = $this->checkMarathonStatus()) {
+            return $redirect;
+        }
+
+        // Récupération du participant
+        $participant = Participant::where('slug', $participantSlug)->firstOrFail();
+        $filmsVus = $participant->films;
+        $total = Film::count();
+
+        // Film scanné (optionnel)
+        $film = null;
+        $filmSlug = request()->input('film_slug');
+        if ($filmSlug) {
+            $film = Film::where('slug', $filmSlug)->first();
+
+           /* if ($film) {
+                // Si le participant a déjà scanné ce film → redirection vers dejaJoue
+                if ($filmsVus->contains($film->id)) {
+                    return redirect()->route('deja.joue', ['participant' => $participant->slug]);
+                }
+
+                // Sinon → marquer le film comme vu
+                $participant->films()->attach($film->id);
+                // Récupérer la liste mise à jour
+                $filmsVus = $participant->fresh()->films;
+            }*/
+        }
+
+        // Passer $film à la vue seulement s'il existe
+        return view('public.mes-films', compact('participant', 'filmsVus', 'total', 'film'));
     }
-
-    // Récupération du participant
-    $participant = Participant::where('slug', $participantSlug)->firstOrFail();
-    $filmsVus = $participant->films;
-    $total = Film::count();
-
-    // Film scanné (optionnel)
-    $film = null;
-    $filmSlug = request()->input('film_slug');
-    if ($filmSlug) {
-        $film = Film::where('slug', $filmSlug)->first();
-
-        /*if ($film) {
-            // Si le participant a déjà scanné ce film → redirection vers dejaJoue
-            if ($filmsVus->contains($film->id)) {
-                return redirect()->route('deja.joue', ['participant' => $participant->slug]);
-            }
-
-            // Sinon → marquer le film comme vu
-            $participant->films()->attach($film->id);
-            // Récupérer la liste mise à jour
-            $filmsVus = $participant->fresh()->films;
-        }*/
-    }
-
-    // Passer $film à la vue seulement s'il existe
-    return view('public.mes-films', compact('participant', 'filmsVus', 'total', 'film'));
-}
 
 
     /**
