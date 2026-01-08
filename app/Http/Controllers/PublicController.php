@@ -137,7 +137,8 @@ class PublicController extends Controller
         if ($filmSlug) {
             $film = Film::where('slug', $filmSlug)->first();
 
-           /* if ($film) {
+           
+        if ($film) {
                 // Si le participant a déjà scanné ce film → redirection vers dejaJoue
                 if ($filmsVus->contains($film->id)) {
                     return redirect()->route('deja.joue', ['participant' => $participant->slug]);
@@ -147,7 +148,7 @@ class PublicController extends Controller
                 $participant->films()->attach($film->id);
                 // Récupérer la liste mise à jour
                 $filmsVus = $participant->fresh()->films;
-            }*/
+            }
         }
 
         // Passer $film à la vue seulement s'il existe

@@ -52,7 +52,7 @@
                         <div class="row justify-content-center">
                             <div class="col-10 text-center">
                                 <div class="film-scanned">
-                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                    <img src="{{ asset('images/madiana/0-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
                         </div>
@@ -61,7 +61,7 @@
                         <div class="row justify-content-center">
                             <div class="col-10 text-center">
                                 <div class="film-scanned">
-                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                    <img src="{{ asset('images/madiana/1-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
                         </div>
@@ -70,7 +70,7 @@
                              <div class="row justify-content-center">
                             <div class="col-10 text-center">
                                 <div class="film-scanned">
-                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                    <img src="{{ asset('images/madiana/2-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
                         </div>
@@ -88,7 +88,7 @@
                             <div class="row justify-content-center">
                             <div class="col-10 text-center">
                                 <div class="film-scanned">
-                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                    <img src="{{ asset('images/madiana/4-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
                         </div>
@@ -98,7 +98,7 @@
                           <div class="row justify-content-center">
                             <div class="col-10 text-center">
                                 <div class="film-scanned">
-                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                    <img src="{{ asset('images/madiana/5-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
                         </div>
@@ -108,13 +108,13 @@
                           <div class="row justify-content-center">
                             <div class="col-10 text-center">
                                 <div class="film-scanned">
-                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                    <img src="{{ asset('images/madiana/6-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
                         </div>
                         @endif
-
-                          <div class="row justify-content-center mt-4">
+                        @if(!$filmsVus->count() == 6)
+                                <div class="row justify-content-center mt-4">
                                     <div class="col-12 col-sm-4 mg-top-5 text-center mg-bottom-40">
                                         <button type="submit" style="background: transparent; border: none;" class="btn-submit-img">
                                             <img src="{{ asset('images/madiana/selection-films.png') }}"
@@ -131,6 +131,7 @@
                                                 alt="Selection de films">
                                     </div>
                                 </div>
+                                @endif
                         
                         <!-- Barre de progression -->
                         <!--div class="row justify-content-center mb-4">

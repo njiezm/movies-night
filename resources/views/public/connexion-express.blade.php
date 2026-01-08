@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title','Connexion Express')
+@section('title','Scan Film & Connexion')
 
 @section('content')
-<link href="{{ asset('css/madiana-connexion.css') }}" rel="stylesheet">
+<link href="{{ asset('css/madiana-scan.css') }}" rel="stylesheet">
 
 <div class="container">
     <div class="row justify-content-center">
@@ -11,7 +11,7 @@
             <!-- Header -->
             <div class="row justify-content-center">
                 <div class="col">
-                    <img src="{{ asset('images/madiana/header.png') }}" class="img-fluid" alt="Connexion Marathon">
+                    <img src="{{ asset('images/madiana/header.png') }}" class="img-fluid header-img" alt="Scan Marathon">
                 </div>
             </div>
 
@@ -19,32 +19,46 @@
             <div class="row justify-content-center">
                 <div class="col-10">
                     <div class="p-4">
-                        <!-- Titre et accroche -->
+                        <!-- Message de bienvenue -->
                         <div class="row justify-content-center">
-                            <div class="col-11 text-center mg-top-10">
-                                <h2 class="text-white mb-3">Connexion Express</h2>
-                                <p class="text-white">Accédez rapidement à votre progression dans le marathon</p>
+                            <div class="col-11 text-center">
+                                <!-- Image de dotation -->
+                        <div class="row justify-content-center">
+                            <div class="col-12 text-center mg-top-20 mg-bottom-20">
+                                <img src="{{ asset('images/madiana/dotation-express.png') }}" class="img-fluid rounded mb-4" alt="Dotation">
+                            </div>
+                        </div>
+                                
                             </div>
                         </div>
 
-                        @if($film)
-                            <!-- Section : Film scanné -->
-                            <div class="row justify-content-center mb-4">
-                                <div class="col-11 text-center">
-                                    <p class="text-warning lead">Pour valider votre visionnage du film :</p>
-                                    <div class="film-scanned">
-                                        <img src="{{ asset('storage/'.$film->vignette) }}" class="img-fluid rounded shadow-lg" alt="{{ $film->title }}">
-                                        <h3 class="text-white mt-3">{{ $film->title }}</h3>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
+                     
 
-                        <!-- Formulaire de connexion -->
-                        <div style="border-radius: 50px; background: rgba(0, 0, 0, 0.7); padding:40px;" class="row justify-content-center">
+                         <div class="row justify-content-center">
+                            <div class="col-12 text-center">
+                                <div class="row justify-content-center">
+                                    <div class="col-6 text-center mb-4">
+                                        <img src="{{ asset('images/madiana/express-register.png') }}" class="img-fluid">
+                                    </div>
+                                 </div>
+                                
+                                <a href="{{ route('inscription', ['source' => 'salle']) }}?from_qr_scan=1&film_slug={{ $film->slug }}"
+                                class="image-btn image-btn-danger">
+                                    <img src="{{ asset('images/madiana/icon-inscription.png') }}"
+                                        alt="Bouton Inscription">
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Formulaire de connexion express -->
+                        <div class="row justify-content-center mb-4 mt-4">
                             <div class="row justify-content-center">
                                 <div class="col-12 text-center mg-top-10 mg-bottom-20">
-                                    <h3 class="text-white">Entrez votre numéro de téléphone</h3>
+                                  <div class="row justify-content-center">
+                                    <div class="col-8 text-center mb-4 mt-4">
+                                        <img src="{{ asset('images/madiana/express-login.png') }}" class="img-fluid">
+                                    </div>
+                                 </div>
                                 </div>
                             </div>
 
@@ -62,33 +76,26 @@
                                 </div>
                             @endif
                             
-                            <form method="POST" action="{{ route('connexion.express.post') }}">
+                            <form method="POST" action="{{ route('connexion.express.post') }}" id="connexionForm">
                                 @csrf
-                                <input type="hidden" name="film_slug" value="{{ request('film_slug') }}">
+                                <input type="hidden" name="film_slug" value="{{ $film->slug }}">
                                 
                                 <div class="row p-2 mg-top-10">
                                     <div class="col mg-top-5">
-                                        <input type="tel" class="form-control text-center mg-top-5 rounded-pill" name="telephone" placeholder="Numéro de téléphone" required/>
+                                        <input type="tel" class="form-control text-center mg-top-5 rounded-pill input-white" style="background: rgba(255, 255, 255, 0.20); color:white;" name="telephone" placeholder="Numéro de téléphone" required/>
                                     </div>
                                 </div>
                                 
                                 <div class="row justify-content-center mt-4">
-                                    <div class="col-8 col-sm-4 mg-top-5 text-center mg-bottom-40">
-                                        <button type="submit" class="btn btn-danger btn-lg rounded-pill px-4">Connexion</button>
+                                    <div class="col-12 col-sm-6 mg-top-5 text-center mg-bottom-40">
+                                        <a href="#" onclick="document.getElementById('connexionForm').submit(); return false;" class="image-btn">
+                                            <img src="{{ asset('images/madiana/icon-connexion.png') }}"
+                                                alt="Bouton Connexion">
+                                        </a>
                                     </div>
                                 </div>
                             </form>
-                        </div>
-
-                        <div class="text-center mt-3">
-                            <p class="text-white">Pas encore inscrit ? 
-                                @if(request('film_slug'))
-                                    <a href="{{ route('inscription', ['source' => 'qr_scan']) }}?film_slug={{ request('film_slug') }}" class="text-warning">Inscrivez-vous</a>
-                                @else
-                                    <a href="{{ route('inscription') }}" class="text-warning">Inscrivez-vous</a>
-                                @endif
-                            </p>
-                        </div>
+                        </div>        
                     </div>
                 </div>
             </div>
@@ -102,4 +109,21 @@
         </div>
     </div>
 </div>
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ajout d'une validation simple avant la soumission
+    document.getElementById('connexionForm').addEventListener('submit', function(e) {
+        const telephone = document.querySelector('input[name="telephone"]').value;
+        
+        if (!telephone || telephone.trim() === '') {
+            e.preventDefault();
+            alert('Veuillez entrer votre numéro de téléphone');
+            return false;
+        }
+    });
+});
+</script>
+@endsection
 @endsection
