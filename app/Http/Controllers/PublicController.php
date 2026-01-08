@@ -8,11 +8,12 @@ use App\Models\Setting;
 use App\Models\Base\Genesys;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class PublicController extends Controller
 {
     /**
-     * Affiche la page d'inscription en vérifiant l'état du marathon
+     * Affiche la page d'inscription
      */
     public function showInscription($source = null)
     {
@@ -24,13 +25,12 @@ class PublicController extends Controller
     }
 
     /**
-     * Traite l'inscription d'un participant
+     * Enregistre un participant
      */
     public function storeInscription(Request $request)
     {
         $minAge = Setting::get('min_age', 14);
 
-        // Validation
         $request->validate([
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
@@ -41,44 +41,41 @@ class PublicController extends Controller
             'optin' => 'required|boolean',
         ]);
 
-        $isOver14 = $request->input('age') >= $minAge;
-        if (!$isOver14) {
-            return back()
-                ->with('error', "Vous devez avoir au moins $minAge ans pour participer.")
-                ->withInput();
+        if ($request->age < $minAge) {
+            return back()->with('error', "Vous devez avoir au moins $minAge ans.")->withInput();
         }
 
-        // Chiffrement
+        // 🔐 Chiffrement
         $firstname = Genesys::Crypt(ucfirst(strtolower($request->firstname)));
         $lastname  = Genesys::Crypt(ucfirst(strtolower($request->lastname)));
         $telephone = Genesys::Crypt($request->telephone);
         $email     = $request->email ? Genesys::Crypt(strtolower($request->email)) : null;
 
-        // Unicité
+        // 🔁 Unicité
         if (Participant::where('telephone', $telephone)->exists()) {
             return back()->withErrors(['telephone' => 'Ce numéro est déjà inscrit'])->withInput();
         }
+
         if ($email && Participant::where('email', $email)->exists()) {
             return back()->withErrors(['email' => 'Cet email est déjà inscrit'])->withInput();
         }
 
-        // Gestion optin
-        $optin = (int) $request->input('optin', 0);
+        // 📬 Optin
+        $optin = (int) $request->optin;
         $bysms = false;
         $byemail = false;
+
         if ($optin === 1 && $request->has('contact_method')) {
-            $contactMethod = $request->contact_method;
-            $bysms = in_array($contactMethod, [1, 3]);
-            $byemail = in_array($contactMethod, [2, 3]);
+            $bysms   = in_array($request->contact_method, [1, 3]);
+            $byemail = in_array($request->contact_method, [2, 3]);
         }
 
-        // Source
+        // 📍 Source
         $source = $request->boolean('from_qr_scan') ? 'salle' : ($request->source ?? 'web');
 
-        // Slug sécurisé
+        // 🔑 Slug sécurisé
         $slug = Genesys::GenCodeAlphaNum(20);
 
-        // Création
         $participant = Participant::create([
             'firstname' => $firstname,
             'lastname' => $lastname,
@@ -90,10 +87,10 @@ class PublicController extends Controller
             'bysms' => $bysms,
             'byemail' => $byemail,
             'source' => $source,
-            'is_over_14' => $isOver14,
+            'is_over_14' => true,
         ]);
 
-        // Redirection après inscription
+        // 🔀 Redirection post inscription
         if ($request->boolean('from_qr_scan') && $request->filled('film_slug')) {
             return redirect()->route('mes.films', [
                 'participant' => $participant->slug,
@@ -105,7 +102,7 @@ class PublicController extends Controller
     }
 
     /**
-     * Affiche la page du rendez-vous
+     * Page rendez-vous
      */
     public function rendezVous()
     {
@@ -113,51 +110,58 @@ class PublicController extends Controller
             return $redirect;
         }
 
-        $films = Film::orderBy('title', 'asc')->get();
+        $films = Film::orderBy('title')->get();
         return view('public.rendez-vous', compact('films'));
     }
 
     /**
-     * Affiche les films d'un participant
+     * Films d’un participant (scan inclus)
      */
-   public function mesFilms($participantSlug)
+    public function mesFilms($participantSlug)
     {
         if ($redirect = $this->checkMarathonStatus()) {
             return $redirect;
         }
 
-        // Récupération du participant
         $participant = Participant::where('slug', $participantSlug)->firstOrFail();
         $filmsVus = $participant->films;
         $total = Film::count();
-
-        // Film scanné (optionnel)
         $film = null;
-        $filmSlug = request()->input('film_slug');
+
+        $filmSlug = request('film_slug');
+
         if ($filmSlug) {
             $film = Film::where('slug', $filmSlug)->first();
 
-           
-        if ($film) {
-                // Si le participant a déjà scanné ce film → redirection vers dejaJoue
+            if ($film) {
+                $now = Carbon::now()->startOfDay();
+
+                // ⛔ Film hors période
+                if (
+                    ($film->start_date && $now->lt(Carbon::parse($film->start_date))) ||
+                    ($film->end_date && $now->gt(Carbon::parse($film->end_date)))
+                ) {
+                    return redirect()
+                        ->route('mes.films', ['participant' => $participant->slug])
+                        ->with('error', 'Ce film n’est pas disponible à cette date.');
+                }
+
+                // 🔁 Déjà scanné
                 if ($filmsVus->contains($film->id)) {
                     return redirect()->route('deja.joue', ['participant' => $participant->slug]);
                 }
 
-                // Sinon → marquer le film comme vu
+                // ✅ Scan valide
                 $participant->films()->attach($film->id);
-                // Récupérer la liste mise à jour
                 $filmsVus = $participant->fresh()->films;
             }
         }
 
-        // Passer $film à la vue seulement s'il existe
         return view('public.mes-films', compact('participant', 'filmsVus', 'total', 'film'));
     }
 
-
     /**
-     * Connexion express par téléphone
+     * Connexion rapide par téléphone
      */
     public function connexionExpress(Request $request)
     {
@@ -167,9 +171,9 @@ class PublicController extends Controller
         $participant = Participant::where('telephone', $encryptedPhone)->first();
 
         if (!$participant) {
-            $route = $request->film_slug ? route('inscription', ['source' => 'qr_scan']) : route('inscription');
-            return redirect($route)->with('error', 'Numéro de téléphone non trouvé. Veuillez vous inscrire.')
-                                   ->with('film_slug', $request->film_slug);
+            return redirect()->route('inscription', ['source' => 'qr_scan'])
+                ->with('error', 'Numéro introuvable, veuillez vous inscrire.')
+                ->with('film_slug', $request->film_slug);
         }
 
         $params = ['participant' => $participant->slug];
@@ -179,61 +183,78 @@ class PublicController extends Controller
     }
 
     /**
-     * Affiche la page de scan QR code
+     * Scan QR
      */
     public function scanQr($slug)
     {
         if ($redirect = $this->checkMarathonStatus()) {
-            return $redirect->with('error', 'Le marathon n\'est pas ouvert.');
+            return $redirect;
         }
 
         $film = Film::where('slug', $slug)->firstOrFail();
+        $now = Carbon::now()->startOfDay();
+
+        // ⛔ Film hors période
+        if (
+            ($film->start_date && $now->lt(Carbon::parse($film->start_date))) ||
+            ($film->end_date && $now->gt(Carbon::parse($film->end_date)))
+        ) {
+            return redirect()->route('patience')
+                ->with('message', 'Ce film n’est pas disponible actuellement.');
+        }
+
         return view('public.scan-connexion', compact('film'));
     }
 
     /**
-     * Page de patience
+     * Pages état marathon
      */
     public function patience()
     {
-        $openingDate = Setting::get('opening_date');
-        $message = request('message', 'Le marathon n\'a pas encore commencé. Revenez bientôt !');
-        return view('public.patience', compact('openingDate', 'message'));
+        return view('public.patience', [
+            'openingDate' => Setting::get('opening_date'),
+            'message' => request('message')
+        ]);
     }
 
-    /**
-     * Page terminé
-     */
     public function termine()
     {
-        $closingDate = Setting::get('closing_date');
-        $message = request('message', 'Le marathon est terminé. Merci d\'avoir participé !');
-        return view('public.terminated', compact('closingDate', 'message'));
+        return view('public.terminated', [
+            'closingDate' => Setting::get('closing_date'),
+            'message' => request('message')
+        ]);
     }
 
     /**
-     * Page déjà joué
+     * Déjà joué
      */
     public function dejaJoue($participant)
     {
         $participant = Participant::where('slug', $participant)->firstOrFail();
-        $filmsVus = $participant->films;
-        $total = Film::count();
-        return view('public.already-played', compact('participant', 'filmsVus', 'total'));
+        return view('public.already-played', [
+            'participant' => $participant,
+            'filmsVus' => $participant->films,
+            'total' => Film::count()
+        ]);
     }
 
     /**
-     * Vérifie l'état du marathon
+     * Vérifie état du marathon
      */
     private function checkMarathonStatus()
     {
+        $now = Carbon::now();
         $openingDate = Setting::get('opening_date');
         $closingDate = Setting::get('closing_date');
-        $now = now();
 
-        if ($now < $openingDate) return redirect()->route('patience');
-        if ($now > $closingDate) return redirect()->route('termine');
+        if ($openingDate && $now->lt(Carbon::parse($openingDate))) {
+            return redirect()->route('patience');
+        }
 
-        return null; // ouvert
+        if ($closingDate && $now->gt(Carbon::parse($closingDate))) {
+            return redirect()->route('termine');
+        }
+
+        return null;
     }
 }
