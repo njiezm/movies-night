@@ -45,13 +45,13 @@ class PublicController extends Controller
             return back()->with('error', "Vous devez avoir au moins $minAge ans.")->withInput();
         }
 
-        // 🔐 Chiffrement
+        // Chiffrement
         $firstname = Genesys::Crypt(ucfirst(strtolower($request->firstname)));
         $lastname  = Genesys::Crypt(ucfirst(strtolower($request->lastname)));
         $telephone = Genesys::Crypt($request->telephone);
         $email     = $request->email ? Genesys::Crypt(strtolower($request->email)) : null;
 
-        // 🔁 Unicité
+        // Unicité
         if (Participant::where('telephone', $telephone)->exists()) {
             return back()->withErrors(['telephone' => 'Ce numéro est déjà inscrit'])->withInput();
         }
@@ -60,7 +60,7 @@ class PublicController extends Controller
             return back()->withErrors(['email' => 'Cet email est déjà inscrit'])->withInput();
         }
 
-        // 📬 Optin
+        // Optin
         $optin = (int) $request->optin;
         $bysms = false;
         $byemail = false;
@@ -70,10 +70,10 @@ class PublicController extends Controller
             $byemail = in_array($request->contact_method, [2, 3]);
         }
 
-        // 📍 Source
+        // Source
         $source = $request->boolean('from_qr_scan') ? 'salle' : ($request->source ?? 'web');
 
-        // 🔑 Slug sécurisé
+        // Slug sécurisé
         $slug = Genesys::GenCodeAlphaNum(20);
 
         $participant = Participant::create([
@@ -90,7 +90,7 @@ class PublicController extends Controller
             'is_over_14' => true,
         ]);
 
-        // 🔀 Redirection post inscription
+        // Redirection post inscription
         if ($request->boolean('from_qr_scan') && $request->filled('film_slug')) {
             return redirect()->route('mes.films', [
                 'participant' => $participant->slug,
@@ -136,7 +136,6 @@ class PublicController extends Controller
             if ($film) {
                 $now = Carbon::now()->startOfDay();
 
-                // ⛔ Film hors période
                 if (
                     ($film->start_date && $now->lt(Carbon::parse($film->start_date))) ||
                     ($film->end_date && $now->gt(Carbon::parse($film->end_date)))
@@ -194,7 +193,7 @@ class PublicController extends Controller
         $film = Film::where('slug', $slug)->firstOrFail();
         $now = Carbon::now()->startOfDay();
 
-        // ⛔ Film hors période
+
         if (
             ($film->start_date && $now->lt(Carbon::parse($film->start_date))) ||
             ($film->end_date && $now->gt(Carbon::parse($film->end_date)))
