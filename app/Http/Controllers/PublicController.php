@@ -145,12 +145,12 @@ class PublicController extends Controller
                         ->with('error', 'Ce film n’est pas disponible à cette date.');
                 }
 
-                // 🔁 Déjà scanné
+              
                 if ($filmsVus->contains($film->id)) {
                     return redirect()->route('deja.joue', ['participant' => $participant->slug]);
                 }
 
-                // ✅ Scan valide
+              
                 $participant->films()->attach($film->id);
                 $filmsVus = $participant->fresh()->films;
             }
