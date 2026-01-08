@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Film;
 use App\Models\Participant;
 use App\Models\Dotation;
+use App\Models\tirages;
 use App\Models\Base\Genesys;
 use App\Models\Tirage;
 use Illuminate\Http\Request;
@@ -12,7 +13,9 @@ use Illuminate\Support\Str;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\DB;  // CORRECTION : Importation correcte de la classe DB
+use Illuminate\Support\Facades\DB;  
+use Carbon\Carbon;
+
 
 
 class AdminController extends Controller
@@ -21,24 +24,6 @@ class AdminController extends Controller
     private $fullAccessCode = '123456';  // Accès complet avec dotations
     private $limitedAccessCode = '654321'; // Accès limité sans dotations
     
-    public function loginold(Request $request)
-    {
-        $request->validate([
-            'access_code' => 'required|digits:6'
-        ]);
-        
-        $accessCode = $request->input('access_code');
-        
-        if ($accessCode === $this->fullAccessCode) {
-            session(['admin_authenticated' => true, 'show_dotations' => true]);
-            return redirect()->route('admin.stats');
-        } elseif ($accessCode === $this->limitedAccessCode) {
-            session(['admin_authenticated' => true, 'show_dotations' => false]);
-            return redirect()->route('admin.stats');
-        } else {
-            return redirect()->back()->with('error', 'Code d\'accès incorrect');
-        }
-    }
 
     public function login(Request $request)
 {
@@ -108,106 +93,40 @@ class AdminController extends Controller
         return $slug;
     }
 
-  public function storeFilm(Request $request)
-{
-    $request->validate([
-        'title' => 'required',
-        'description' => 'nullable',
-        'vignette' => 'nullable|image',
-        'start_date' => 'nullable|date',
-        'end_date' => 'nullable|date|after_or_equal:start_date'
-    ]);
-
-    // Slug unique
-    $slug = $this->generateUniqueSlug();
-
-    // Upload vignette
-    $vignettePath = null;
-    if ($request->hasFile('vignette')) {
-        $vignettePath = $request->file('vignette')->store('vignettes', 'public');
-    }
-
-    $film = Film::create([
-        'title' => $request->title,
-        'description' => $request->description,
-        'slug' => $slug,
-        'vignette' => $vignettePath,
-        'start_date' => $request->start_date,
-        'end_date' => $request->end_date
-    ]);
-
-    // Créer un tirage automatiquement pour ce film
-    Tirage::create([
-        'title' => 'Tirage pour le film: ' . $film->title,
-        'film_id' => $film->id,
-        'date' => $film->end_date ?? now()->addMonth(),
-        'condition_recuperation' => 'Présenter le QR code du film à la caisse',
-        'is_big_tas' => false
-    ]);
-
-    // Créer dossier qrcodes si absent
-    if (!file_exists(public_path('qrcodes'))) {
-        mkdir(public_path('qrcodes'), 0755, true);
-    }
-
-    // Génération QR code avec endroid/qr-code
-    $qrcodePath = "qrcodes/film-{$film->id}.png";
-    $qrLink = route('scan', $film->slug);
-    
-    try {
-        $qrCode = QrCode::create($qrLink)
-            ->setSize(300)
-            ->setMargin(10);
-            
-        $writer = new PngWriter();
-        $result = $writer->write($qrCode);
-        
-        $result->saveToFile(public_path($qrcodePath));
-        
-        $film->update(['qrcode' => $qrcodePath]);
-    } catch (\Exception $e) {
-        \Log::error('Erreur lors de la génération du QR code: ' . $e->getMessage());
-    }
-
-    return redirect()->route('admin.films')->with('success', 'Film ajouté avec succès !');
-}
-
-    public function updateFilm(Request $request, Film $film)
-    {
-        $request->validate([
-            'title'=>'required',
-            'description'=>'nullable',
-            'vignette'=>'nullable|image',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date'
-        ]);
-
-        // Conserver le slug existant pour maintenir le lien /scan/slug
-        $film->update([
-            'title'=>$request->title,
-            'description'=>$request->description,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date
-        ]);
-
-        if($request->hasFile('vignette')){
-            $film->vignette = $request->file('vignette')->store('vignettes','public');
-            $film->save();
-        }
-
-        return redirect()->route('admin.films')->with('success','Film mis à jour !');
-    }
-
     public function editFilm(Film $film)
     {
         return view('admin.films.edit', compact('film'));
     }
 
     public function deleteFilm(Film $film)
-    {
-        $film->delete();
-        return redirect()->route('admin.films')->with('success','Film supprimé !');
+{
+    // Vérifier si un tirage associé à ce film a déjà un gagnant
+    $tiragesWithWinners = $film->tirage()->whereNotNull('winner_id')->get();
+    
+    if ($tiragesWithWinners->isNotEmpty()) {
+        // Récupérer les informations des gagnants pour le message d'erreur
+        $winnersInfo = [];
+        foreach ($tiragesWithWinners as $tirage) {
+            if ($tirage->winner) {
+                $winnerName = Genesys::Decrypt($tirage->winner->firstname) . ' ' . Genesys::Decrypt($tirage->winner->lastname);
+                $winnersInfo[] = "Tirage '{$tirage->title}' - Gagnant: {$winnerName}";
+            }
+        }
+        
+        return redirect()->route('admin.films')->with('error', 
+            'Impossible de supprimer ce film car un ou plusieurs tirages associés ont déjà des gagnants :<br>' . 
+            implode('<br>', $winnersInfo)
+        );
     }
+    
+    // Si aucun tirage n'a de gagnant, supprimer les tirages associés
+    $film->tirages()->delete();
+    
+    // Puis supprimer le film
+    $film->delete();
+    
+    return redirect()->route('admin.films')->with('success', 'Film et ses tirages associés ont été supprimés !');
+}
 
     // --- DOTATIONS ---
     public function dotations()
@@ -381,24 +300,7 @@ class AdminController extends Controller
         'confirmed' => $tirage->conf
     ]);
 }
-public function createBigTas()
-{
-    // Vérifier si un BIG TAS existe déjà
-    $existingBigTas = Tirage::where('is_big_tas', true)->first();
-    if ($existingBigTas) {
-        return redirect()->route('admin.tirages')->with('error', 'Un BIG TAS existe déjà !');
-    }
-    
-    // Créer le BIG TAS
-    Tirage::create([
-        'title' => 'BIG TAS - Tirage pour les participants ayant vu tous les films',
-        'date' => now()->addMonth(),
-        'condition_recuperation' => 'Présenter tous les QR codes des films à la caisse',
-        'is_big_tas' => true
-    ]);
-    
-    return redirect()->route('admin.tirages')->with('success', 'BIG TAS créé avec succès !');
-}
+
     public function editDotation(Dotation $dotation)
     {
         // Vérifier si l'utilisateur a accès à cette section
@@ -489,24 +391,6 @@ public function stats()
         return response()->json($exportData);
     }
 
-    // --- TIRAGES AU SORT ---
-    public function tirages()
-{
-    // Récupérer tous les tirages avec leurs relations
-    $allTirages = Tirage::with(['film', 'dotation', 'winner'])->orderBy('date', 'asc')->get();
-    
-    // Séparer les tirages mensuels et le BIG TAS
-    $monthlyTirages = $allTirages->where('is_big_tas', false);
-    $bigTirages = $allTirages->where('is_big_tas', true);
-    
-    $dotations = Dotation::all();
-    $films = Film::all();
-    
-    // Vérifier si un BIG TAS existe déjà
-    $bigTasExists = Tirage::where('is_big_tas', true)->exists();
-    
-    return view('admin.tirages.index', compact('monthlyTirages', 'bigTirages', 'dotations', 'films', 'bigTasExists'));
-}
 
     public function createTirage()
     {
@@ -514,35 +398,6 @@ public function stats()
         return view('admin.tirages.create', compact('dotations'));
     }
 
-    public function storeTirage(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'dotation_id' => 'required|exists:dotations,id',
-            'date' => 'required|date',
-        ]);
-
-        Tirage::create($request->all());
-        return redirect()->route('admin.tirages')->with('success', 'Tirage au sort ajouté !');
-    }
-
-    public function editTirage(Tirage $tirage)
-    {
-        $dotations = Dotation::all();
-        return view('admin.tirages.edit', compact('tirage', 'dotations'));
-    }
-
-    public function updateTirage(Request $request, Tirage $tirage)
-    {
-        $request->validate([
-            'title' => 'required',
-            'dotation_id' => 'required|exists:dotations,id',
-            'date' => 'required|date',
-        ]);
-
-        $tirage->update($request->all());
-        return redirect()->route('admin.tirages')->with('success', 'Tirage au sort mis à jour !');
-    }
 
     public function deleteTirage(Tirage $tirage)
     {
@@ -550,51 +405,319 @@ public function stats()
         return redirect()->route('admin.tirages')->with('success', 'Tirage au sort supprimé !');
     }
 
-    public function drawTirageold(Request $request, Tirage $tirage)
+   
+    public function getFilmData(Film $film)
     {
-        // Récupérer tous les participants
-        $participants = Participant::all();
+        // Formater les dates 
+        $film->start_date = $film->start_date ? date('Y-m-d', strtotime($film->start_date)) : null;
+        $film->end_date = $film->end_date ? date('Y-m-d', strtotime($film->end_date)) : null;
         
-        if ($participants->isEmpty()) {
-            return redirect()->route('admin.tirages')->with('error', 'Aucun participant disponible pour le tirage au sort.');
-        }
-        
-        // Choisir un gagnant au hasard
-        $winner = $participants->random();
-        
-        // Enregistrer le gagnant
-        $tirage->winner_id = $winner->id;
-        $tirage->save();
-        
-        return redirect()->route('admin.tirages')->with('success', 'Le gagnant du tirage au sort est ' . $winner->firstname . ' ' . $winner->lastname . ' !');
+        return response()->json($film);
     }
 
-    public function getFilmData(Film $film)
-{
-    // Formater les dates 
-    $film->start_date = $film->start_date ? date('Y-m-d', strtotime($film->start_date)) : null;
-    $film->end_date = $film->end_date ? date('Y-m-d', strtotime($film->end_date)) : null;
-    
-    return response()->json($film);
-}
-
      public function getTirageData(Tirage $tirage)
-{
-    $tirage->load(['winner', 'dotation']);
+    {
+        $tirage->load(['winner', 'dotation']);
 
-    return response()->json([
-        'id' => $tirage->id,
-        'title' => $tirage->title,
-        'date' => $tirage->date,
-        'dotation_id' => $tirage->dotation_id,
-        'winner' => $tirage->winner ? [
-            'firstname' =>$tirage->winner->firstname,
-            'lastname' => $tirage->winner->lastname,
-            'telephone' => $tirage->winner->telephone,
-            'email' => $tirage->winner->email
-                ? $tirage->winner->email
-                : null,
-        ] : null
-    ]);
-}
+        return response()->json([
+            'id' => $tirage->id,
+            'title' => $tirage->title,
+            'date' => $tirage->date,
+            'dotation_id' => $tirage->dotation_id,
+            'winner' => $tirage->winner ? [
+                'firstname' =>$tirage->winner->firstname,
+                'lastname' => $tirage->winner->lastname,
+                'telephone' => $tirage->winner->telephone,
+                'email' => $tirage->winner->email
+                    ? $tirage->winner->email
+                    : null,
+            ] : null
+        ]);
+    }
+
+    /**
+     * Détermine le numéro du tirage mensuel en fonction de la période
+     */
+    private function getMonthlyDrawNumber($date)
+    {
+        $year = Carbon::parse($date)->year;
+        $month = Carbon::parse($date)->month;
+        
+        // Compter le nombre de tirages mensuels avant cette date
+        $count = Tirage::where('is_big_tas', false)
+            ->whereYear('date', $year)
+            ->whereMonth('date', '<=', $month)
+            ->count();
+            
+        return $count;
+    }
+    
+    /**
+     * Formate le titre du tirage mensuel avec son numéro
+     */
+    private function formatMonthlyDrawTitle($date)
+    {
+        $number = $this->getMonthlyDrawNumber($date);
+        $monthName = Carbon::parse($date)->format('F');
+        $year = Carbon::parse($date)->year;
+        
+        // Gérer la numérotation en français (1er, 2ème, 3ème, etc.)
+        $number= $number + 1;
+        if ($number == 1) {
+            $numberText = '1er';
+        } else {
+            $numberText = $number . 'ème';
+        }
+        
+        // Traduire le nom du mois en français
+        $months = [
+            'January' => 'janvier',
+            'February' => 'février',
+            'March' => 'mars',
+            'April' => 'avril',
+            'May' => 'mai',
+            'June' => 'juin',
+            'July' => 'juillet',
+            'August' => 'août',
+            'September' => 'septembre',
+            'October' => 'octobre',
+            'November' => 'novembre',
+            'December' => 'décembre'
+        ];
+        
+        $frenchMonth = $months[$monthName] ?? $monthName;
+        
+        return "{$numberText} tirage - {$frenchMonth} {$year}";
+    }
+    
+    /**
+     * Crée automatiquement un tirage mensuel avec une dotation mensuelle
+     */
+    private function createMonthlyDraw($date)
+    {
+        // Trouver une dotation mensuelle disponible (non BIG TAS)
+        $dotation = Dotation::where('is_big_tas', false)
+            ->where('quantity', '>', 0)
+            ->first();
+            
+        if (!$dotation) {
+            return null;
+        }
+        
+        // Créer le tirage mensuel
+        return Tirage::create([
+            'title' => $this->formatMonthlyDrawTitle($date),
+            'dotation_id' => $dotation->id,
+            'date' => $date,
+            'condition_recuperation' => 'Présenter le QR code à la caisse',
+            'is_big_tas' => false
+        ]);
+    }
+    
+    /**
+     * Crée automatiquement un tirage BIG TAS avec une dotation BIG TAS
+     */
+    private function createBigTasDraw($date)
+    {
+        // Trouver une dotation BIG TAS disponible
+        $dotation = Dotation::where('is_big_tas', true)
+            ->where('quantity', '>', 0)
+            ->first();
+            
+        if (!$dotation) {
+            return null;
+        }
+        
+        // Créer le tirage BIG TAS
+        return Tirage::create([
+            'title' => 'BIG TAS - Tirage pour les participants ayant vu tous les films',
+            'dotation_id' => $dotation->id,
+            'date' => $date,
+            'condition_recuperation' => 'Présenter tous les QR codes des films à la caisse',
+            'is_big_tas' => true
+        ]);
+    }
+    
+    /**
+     * Mettre à jour la méthode storeFilm pour créer un tirage mensuel automatiquement
+     */
+    public function storeFilm(Request $request)
+    {
+        $request->validate([
+            'title' => 'required',
+            'description' => 'nullable',
+            'vignette' => 'nullable|image',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date'
+        ]);
+
+        // Slug unique
+        $slug = $this->generateUniqueSlug();
+
+        // Upload vignette
+        $vignettePath = null;
+        if ($request->hasFile('vignette')) {
+            $vignettePath = $request->file('vignette')->store('vignettes', 'public');
+        }
+
+        $film = Film::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'slug' => $slug,
+            'vignette' => $vignettePath,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date
+        ]);
+
+        // Créer un tirage mensuel automatiquement pour ce film
+        $tirageDate = $film->end_date ?? now()->addMonth();
+        $tirage = $this->createMonthlyDraw($tirageDate);
+        
+        if ($tirage) {
+            $tirage->update(['film_id' => $film->id]);
+        }
+
+        // Créer dossier qrcodes si absent
+        if (!file_exists(public_path('qrcodes'))) {
+            mkdir(public_path('qrcodes'), 0755, true);
+        }
+
+        // Génération QR code avec endroid/qr-code
+        $qrcodePath = "qrcodes/film-{$film->id}.png";
+        $qrLink = route('scan', $film->slug);
+        
+        try {
+            $qrCode = QrCode::create($qrLink)
+                ->setSize(300)
+                ->setMargin(10);
+                
+            $writer = new PngWriter();
+            $result = $writer->write($qrCode);
+            
+            $result->saveToFile(public_path($qrcodePath));
+            
+            $film->update(['qrcode' => $qrcodePath]);
+        } catch (\Exception $e) {
+            \Log::error('Erreur lors de la génération du QR code: ' . $e->getMessage());
+        }
+
+        return redirect()->route('admin.films')->with('success', 'Film ajouté avec succès !');
+    }
+    
+    /**
+     * Mettre à jour la méthode createBigTas pour utiliser la nouvelle fonction
+     */
+    public function createBigTas()
+    {
+        // Vérifier si un BIG TAS existe déjà
+        $existingBigTas = Tirage::where('is_big_tas', true)->first();
+        if ($existingBigTas) {
+            return redirect()->route('admin.tirages')->with('error', 'Un BIG TAS existe déjà !');
+        }
+        
+        // Créer le BIG TAS avec la fonction dédiée
+        $tirage = $this->createBigTasDraw(now()->addMonth());
+        
+        if (!$tirage) {
+            return redirect()->route('admin.tirages')->with('error', 'Aucune dotation BIG TAS disponible. Veuillez en créer une d\'abord.');
+        }
+        
+        return redirect()->route('admin.tirages')->with('success', 'BIG TAS créé avec succès !');
+    }
+    
+    /**
+     * Mettre à jour la méthode storeTirage pour gérer automatiquement le titre
+     */
+    public function storeTirage(Request $request)
+    {
+        $request->validate([
+            'date' => 'required|date',
+            'is_big_tas' => 'required|boolean'
+        ]);
+        
+        $date = $request->date;
+        $isBigTas = $request->is_big_tas;
+        
+        if ($isBigTas) {
+            // Vérifier si un BIG TAS existe déjà
+            $existingBigTas = Tirage::where('is_big_tas', true)->first();
+            if ($existingBigTas) {
+                return redirect()->route('admin.tirages')->with('error', 'Un BIG TAS existe déjà !');
+            }
+            
+            // Créer le tirage BIG TAS
+            $tirage = $this->createBigTasDraw($date);
+            
+            if (!$tirage) {
+                return redirect()->route('admin.tirages')->with('error', 'Aucune dotation BIG TAS disponible. Veuillez en créer une d\'abord.');
+            }
+        } else {
+            // Créer un tirage mensuel
+            $tirage = $this->createMonthlyDraw($date);
+            
+            if (!$tirage) {
+                return redirect()->route('admin.tirages')->with('error', 'Aucune dotation mensuelle disponible. Veuillez en créer une d\'abord.');
+            }
+            
+            // Associer un film si spécifié
+            if ($request->has('film_id') && $request->film_id) {
+                $tirage->update(['film_id' => $request->film_id]);
+            }
+        }
+        
+        return redirect()->route('admin.tirages')->with('success', 'Tirage au sort ajouté !');
+    }
+    
+    /**
+     * Mettre à jour la méthode updateTirage pour gérer automatiquement le titre
+     */
+    public function updateTirage(Request $request, Tirage $tirage)
+    {
+        $request->validate([
+            'date' => 'required|date',
+        ]);
+        
+        // Mettre à jour la date
+        $tirage->date = $request->date;
+        
+        // Mettre à jour le titre en fonction du type de tirage
+        if ($tirage->is_big_tas) {
+            $tirage->title = 'BIG TAS - Tirage pour les participants ayant vu tous les films';
+        } else {
+            $tirage->title = $this->formatMonthlyDrawTitle($request->date);
+        }
+        
+        // Mettre à jour le film si spécifié
+        if ($request->has('film_id')) {
+            $tirage->film_id = $request->film_id;
+        }
+        
+        $tirage->save();
+        
+        return redirect()->route('admin.tirages')->with('success', 'Tirage au sort mis à jour !');
+    }
+    
+    /**
+     * Mettre à jour la méthode tirages pour séparer correctement les tirages
+     */
+    public function tirages()
+    {
+        // Récupérer tous les tirages avec leurs relations
+        $allTirages = Tirage::with(['film', 'dotation', 'winner'])->orderBy('date', 'asc')->get();
+        
+        // Séparer les tirages mensuels et le BIG TAS
+        $monthlyTirages = $allTirages->where('is_big_tas', false);
+        $bigTirages = $allTirages->where('is_big_tas', true);
+        
+        // Récupérer les dotations séparées par type
+        $monthlyDotations = Dotation::where('is_big_tas', false)->get();
+        $bigTasDotations = Dotation::where('is_big_tas', true)->get();
+        
+        $films = Film::all();
+        
+        // Vérifier si un BIG TAS existe déjà
+        $bigTasExists = Tirage::where('is_big_tas', true)->exists();
+        
+        return view('admin.tirages.index', compact('monthlyTirages', 'bigTirages', 'monthlyDotations', 'bigTasDotations', 'films', 'bigTasExists'));
+    }
 }

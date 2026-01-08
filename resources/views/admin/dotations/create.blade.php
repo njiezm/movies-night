@@ -41,6 +41,22 @@
                 </div>
             </div>
             
+            <div class="form-group">
+                <label class="form-label text-white">Type de dotation</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="is_big_tas" id="monthly" value="0" checked>
+                    <label class="form-check-label text-white" for="monthly">
+                        Dotation mensuelle (pour les tirages mensuels)
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="is_big_tas" id="bigtas" value="1">
+                    <label class="form-check-label text-white" for="bigtas">
+                        Dotation BIG TAS (pour le grand tirage annuel)
+                    </label>
+                </div>
+            </div>
+            
             <div class="form-actions">
                 <a href="{{ route('admin.dotations') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Annuler

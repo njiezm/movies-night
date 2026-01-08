@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Dotation extends Model
 {
-    protected $fillable = ['title', 'dotationdate', 'quantity'];
+    protected $fillable = ['title', 'dotationdate', 'quantity', 'is_big_tas'];
 
     public function participants()
     {

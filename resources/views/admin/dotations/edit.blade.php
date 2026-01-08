@@ -24,7 +24,7 @@
                         name="title" 
                         value="{{ $dotation->title }}" 
                         required>
-                                    </div>
+                </div>
             </div>
             
             <div class="form-group">
@@ -47,6 +47,22 @@
                     @if($dotation->attributed_count > 0)
                         <small class="form-text text-muted">Note: {{ $dotation->attributed_count }} dotation(s) déjà attribuée(s)</small>
                     @endif
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label text-white">Type de dotation</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="is_big_tas" id="monthly" value="0" {{ !$dotation->is_big_tas ? 'checked' : '' }}>
+                    <label class="form-check-label text-white" for="monthly">
+                        Dotation mensuelle (pour les tirages mensuels)
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="is_big_tas" id="bigtas" value="1" {{ $dotation->is_big_tas ? 'checked' : '' }}>
+                    <label class="form-check-label text-white" for="bigtas">
+                        Dotation BIG TAS (pour le grand tirage annuel)
+                    </label>
                 </div>
             </div>
             

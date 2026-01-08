@@ -268,7 +268,6 @@
                         </div>
                         <input style="color: black !important" type="file" class="form-control" name="vignette" id="vignette" accept="image/*">
                     </div>
-                    <div class="form-text" id="file-name">Choisir une image</div>
                 </div>
             </div>
 
@@ -342,6 +341,13 @@
         </div>
     </div>
 </div>
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {!! session('error') !!}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
 
 @endsection
 

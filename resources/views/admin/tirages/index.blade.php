@@ -55,7 +55,9 @@
                 <tbody>
                 @forelse($monthlyTirages as $tirage)
                     <tr data-tirage-id="{{ $tirage->id }}">
-                        <td>{{ $tirage->title }}</td>
+                        <td>
+                            <span class="badge bg-primary">{{ $tirage->title }}</span>
+                        </td>
                         <td>
                             @if($tirage->film)
                                 {{ $tirage->film->title }}
@@ -287,18 +289,19 @@
 
             <div class="modal-body">
                 <input type="hidden" name="id" id="tirage_id">
+                <input type="hidden" name="is_big_tas" id="is_big_tas" value="0">
 
                 <div class="form-group">
-                    <label for="title" class="form-label">Titre</label>
+                    <label for="date" class="form-label">Date</label>
                     <div class="input-group">
                         <div class="input-icon">
-                            <i class="fas fa-heading"></i>
+                            <i class="fas fa-calendar-alt"></i>
                         </div>
-                        <input type="text" style="color: black" class="form-control" name="title" id="title" required>
+                        <input style="color: black" type="date" class="form-control" name="date" id="date" required>
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="filmGroup">
                     <label for="film_id" class="form-label">Film</label>
                     <div class="input-group">
                         <div class="input-icon">
@@ -310,31 +313,6 @@
                                 <option value="{{ $film->id }}">{{ $film->title }}</option>
                             @endforeach
                         </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="dotation_id" class="form-label">Dotation</label>
-                    <div class="input-group">
-                        <div class="input-icon">
-                            <i class="fas fa-gift"></i>
-                        </div>
-                        <select style="color: black" name="dotation_id" id="dotation_id" class="form-select">
-                            <option value="">-- Aucune --</option>
-                            @foreach($dotations as $dotation)
-                                <option value="{{ $dotation->id }}">{{ $dotation->title }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="date" class="form-label">Date</label>
-                    <div class="input-group">
-                        <div class="input-icon">
-                            <i class="fas fa-calendar-alt"></i>
-                        </div>
-                        <input style="color: black" type="date" class="form-control" name="date" id="date" required>
                     </div>
                 </div>
 
@@ -495,6 +473,8 @@
         $('#tirageForm').attr('action', '{{ route("admin.tirages.store") }}');
         $('#tirageForm').find('input[name="_method"]').remove();
         $('#tirageModalLabel').text('Ajouter un tirage mensuel');
+        $('#is_big_tas').val('0');
+        $('#filmGroup').show();
         showModal('tirageModal');
     });
 
@@ -506,13 +486,23 @@
         $('#tirageForm').find('input[name="_method"]').remove();
         $('#tirageForm').append('<input type="hidden" name="_method" value="PUT">');
 
-        $('#title').val(btn.data('title'));
-        $('#dotation_id').val(btn.data('dotation'));
-        $('#film_id').val(btn.data('film'));
         $('#date').val(btn.data('date'));
         $('#condition_recuperation').val(btn.data('condition'));
-
-        $('#tirageModalLabel').text('Modifier le tirage mensuel');
+        
+        // Récupérer le type de tirage depuis la ligne du tableau
+        const isBigTas = $(this).closest('tr').find('#big-draw-table').length > 0;
+        $('#is_big_tas').val(isBigTas ? '1' : '0');
+        
+        // Afficher ou masquer le groupe de film en fonction du type de tirage
+        if (isBigTas) {
+            $('#filmGroup').hide();
+            $('#tirageModalLabel').text('Modifier le tirage BIG TAS');
+        } else {
+            $('#filmGroup').show();
+            $('#film_id').val(btn.data('film'));
+            $('#tirageModalLabel').text('Modifier le tirage mensuel');
+        }
+        
         showModal('tirageModal');
     });
 
