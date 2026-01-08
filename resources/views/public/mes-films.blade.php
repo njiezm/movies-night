@@ -26,31 +26,112 @@
                                 <p class="text-warning lead">Votre progression dans le marathon</p>
                             </div>
                         </div-->
+                        <div class="row justify-content-center mb-4">
+                        <div class="col-10 text-center">
+                            <div class="film-scanned">
+                                <img src="{{ asset('images/madiana/mes-films.png') }}" class="img-fluid rounded" alt="{{ $film->title }}">
+                            </div>
+                        </div>
+                    </div>
+
+                        @if($film)
+                        <div class="row justify-content-center mb-4">
+                            <div class="col-10 text-center">
+                                <div class="film-scanned" style="padding: 15px; border-radius: 10px;background-color: rgba(255, 255, 255, 0.05);border: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <img src="{{ asset('storage/'.$film->vignette) }}" class="img-fluid rounded" alt="{{ $film->title }}">
+                                    <h2 class="text-white mt-3">{{ $film->title }}</h2>
+                                    <!--p class="text-white-50">{{ $film->description }}</!--p-->
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         <!-- films vus -->
-                        <p>{{ $filmsVus->count() }} / {{ $total }} Films </p>
+                        <!--p>{{ $filmsVus->count() }} / {{ $total }} Films </!--p-->
                         @if($filmsVus->count() == 0)
-                            <p>img 0</p>
+                        <div class="row justify-content-center">
+                            <div class="col-10 text-center">
+                                <div class="film-scanned">
+                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
                         @endif
                         @if($filmsVus->count() == 1)
-                            <p>img 1</p>
+                        <div class="row justify-content-center">
+                            <div class="col-10 text-center">
+                                <div class="film-scanned">
+                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
                         @endif
                         @if($filmsVus->count() == 2)
-                            <p>img 2</p>
+                             <div class="row justify-content-center">
+                            <div class="col-10 text-center">
+                                <div class="film-scanned">
+                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
                         @endif
                         @if($filmsVus->count() == 3)
-                            <p>img 3</p>
+                            <div class="row justify-content-center">
+                            <div class="col-10 text-center">
+                                <div class="film-scanned">
+                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
                         @endif
                         @if($filmsVus->count() == 4)
-                            <p>img 4</p>
+                            <div class="row justify-content-center">
+                            <div class="col-10 text-center">
+                                <div class="film-scanned">
+                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
                         @endif
 
                         @if($filmsVus->count() == 5)
-                            <p>img 5</p>
+                          <div class="row justify-content-center">
+                            <div class="col-10 text-center">
+                                <div class="film-scanned">
+                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
                         @endif
 
                         @if($filmsVus->count() == 6)
-                            <p>img 6</p>
+                          <div class="row justify-content-center">
+                            <div class="col-10 text-center">
+                                <div class="film-scanned">
+                                    <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
                         @endif
+
+                          <div class="row justify-content-center mt-4">
+                                    <div class="col-12 col-sm-4 mg-top-5 text-center mg-bottom-40">
+                                        <button type="submit" style="background: transparent; border: none;" class="btn-submit-img">
+                                            <img src="{{ asset('images/madiana/selection-films.png') }}"
+                                                class="img-fluid"
+                                                alt="Selection de films">
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="row justify-content-center mt-3">
+                                    <div class="col-7 col-sm-3 mg-top-1 text-center mg-bottom-40">
+                                            <img src="{{ asset('images/madiana/bonne-chance.png') }}"
+                                                class="img-fluid"
+                                                alt="Selection de films">
+                                    </div>
+                                </div>
+                        
                         <!-- Barre de progression -->
                         <!--div class="row justify-content-center mb-4">
                             <div class="col-12">
@@ -105,8 +186,10 @@
                             </a>
                         </!--div-->
                     </div>
+                    
                 </div>
             </div>
+            
 
             <!-- Footer -->
             <div class="row justify-content-center">

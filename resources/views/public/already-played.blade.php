@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title','Rendez-vous Marathon')
+@section('title','Deja joué')
 
 @section('content')
-<link href="{{ asset('css/madiana-rendezvous.css') }}" rel="stylesheet">
+<link href="{{ asset('css/madiana-mes-films.css') }}" rel="stylesheet">
 
 <div class="container">
     <div class="row justify-content-center">
@@ -11,7 +11,7 @@
             <!-- Header -->
             <div class="row justify-content-center">
                 <div class="col">
-                    <img src="{{ asset('images/madiana/header.png') }}" class="img-fluid" alt="Marathon de Films d'Horreur">
+                    <img src="{{ asset('images/madiana/header.png') }}" class="img-fluid header-img" alt="Mon Marathon">
                 </div>
             </div>
 
@@ -19,18 +19,22 @@
             <div class="row justify-content-center">
                 <div class="col-10">
                     <div class="p-4">
-                        <!-- Titre et accroche -->
-                        <div class="row justify-content-center">
-                            <div class="col-11 text-center mg-top-10">
-                                  <!-- Image de dotation -->
+                        <!-- Message de patience -->
+                         <!-- Image de dotation -->
                         <div class="row justify-content-center">
                             <div class="col-12 text-center mg-top-20 mg-bottom-20">
-                                <img src="{{ asset('images/madiana/dotation-rdv.png') }}" class="img-fluid rounded" alt="Dotation">
+                                <img src="{{ asset('images/madiana/deja-joe.png') }}" class="img-fluid rounded" alt="Dotation">
                             </div>
                         </div>
+                        
+                        
+                        
+                    </div>
+                </div>
+            </div>
 
-                                <div class="row justify-content-center mt-4">
-                                    <div class="col-12 col-sm-4 mg-top-5 text-center mg-bottom-40">
+              <div class="row justify-content-center mt-4">
+                                    <div class="col-9 col-sm-4 mg-top-5 text-center mg-bottom-40">
                                         <button type="submit" style="background: transparent; border: none;" class="btn-submit-img">
                                             <img src="{{ asset('images/madiana/selection-films.png') }}"
                                                 class="img-fluid"
@@ -39,29 +43,13 @@
                                     </div>
                                 </div>
                                 
-                                <div class="row justify-content-center mt-1">
-                                    <div class="col-9 col-sm-3 mg-top-1 text-center mg-bottom-40">
+                                <div class="row justify-content-center mt-3">
+                                    <div class="col-7 col-sm-3 mg-top-1 text-center mg-bottom-40">
                                             <img src="{{ asset('images/madiana/bientot.png') }}"
                                                 class="img-fluid"
                                                 alt="Selection de films">
                                     </div>
                                 </div>
-                                <!--h2 class="text-white mb-3">Rendez-vous dans votre cinéma Madiana</-h2-->
-                                <!--p class="text-white">Pour le marathon de films d'horreur !</!--p-->
-                            </div>
-                        </div>
-
-                       
-
-                        <!-- Appel à l'action final -->
-                        <!--div class="text-center mt-4 p-3 cta-block">
-                            <p class="mb-2 text-white">Les QR codes seront disponibles uniquement dans le cinéma.</p>
-                            <p class="mb-3 text-white">Inscrivez-vous pour participer à la course !</p>
-                            <a href="{{ url('/inscription') }}" class="btn btn-danger btn-lg rounded-pill px-4">S'inscrire maintenant</a>
-                        </!--div-->
-                    </div>
-                </div>
-            </div>
 
             <!-- Footer -->
             <div class="row justify-content-center">

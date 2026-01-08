@@ -19,14 +19,6 @@
             <div class="row justify-content-center">
                 <div class="col-10">
                     <div class="p-4">
-                        <!-- Titre et accroche -->
-                        <!--div class="row justify-content-center">
-                            <div class="col-11 text-center mg-top-10">
-                                <h2 class="text-white mb-3">Marathon de Films d'Horreur</h2>
-                                <p class="text-white">Rejoignez-nous pour une nuit de frissons et de suspense !</p>
-                            </div>
-                        </!--div-->
-
                         <!-- Image de dotation -->
                         <div class="row justify-content-center">
                             <div class="col-12 text-center mg-top-20 mg-bottom-20">
@@ -36,12 +28,6 @@
 
                         <!-- Formulaire -->
                         <div style="" class="row justify-content-center">
-                            <!--div class="row justify-content-center">
-                                <div class="col-12 text-center mg-top-10 mg-bottom-20">
-                                    <h3 class="text-white">Inscrivez-vous maintenant</h3>
-                                </div>
-                            </!--div-->
-
                             <form method="POST" action="{{ route('inscription.store') }}">
                                 @csrf
                                 <input type="hidden" name="source" value="{{ $source ?? 'web' }}">
@@ -94,32 +80,32 @@
                                     </div>
                                 </div>
 
-                                <!--div class="row p-2">
+                                <!-- Champ pour l'âge -->
+                                <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <input type="text" class="form-control text-center mg-top-5 rounded-pill" name="zipcode" placeholder="Code postal"/>
+                                        <input type="number" style="background: rgba(255, 255, 255, 0.20); color:white;" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="age" placeholder="Âge" min="1" max="120" required/>
                                     </div>
-                                </!--div-->
+                                </div>
 
-                            <div class="row p-2">
-    <div class="col mg-top-5">
-        <label style="font-size: 1.8rem; " class="text-white">Souhaitez-vous être recontacté ?</label>
-        <select
-            class="form-select text-center rounded-pill input-white-big"
-            name="optin"
-            id="optinSelect"
-            required
-        >
-            <!-- option neutre par défaut -->
-            <option value="" selected disabled hidden>
-                — Choisissez une réponse —
-            </option>
+                                <div class="row p-2">
+                                    <div class="col mg-top-5">
+                                        <label style="font-size: 1.8rem; " class="text-white">Souhaitez-vous être recontacté ?</label>
+                                        <select
+                                            class="form-select text-center rounded-pill input-white-big"
+                                            name="optin"
+                                            id="optinSelect"
+                                            required
+                                        >
+                                            <!-- option neutre par défaut -->
+                                            <option value="" selected disabled hidden>
+                                                — Choisissez une réponse —
+                                            </option>
 
-            <option style="background: black" value="0">Non</option>
-            <option style="background: black" value="1">Oui</option>
-        </select>
-    </div>
-</div>
-
+                                            <option style="background: black" value="0">Non</option>
+                                            <option style="background: black" value="1">Oui</option>
+                                        </select>
+                                    </div>
+                                </div>
 
                                 <div class="row p-2 justify-content-center blockOptincanal" style="display: none;">
                                     <div class="col-12 mg-top-5">
@@ -135,25 +121,21 @@
 
                                 <div class="row justify-content-center mt-4">
                                     <div class="col-8 col-sm-4 mg-top-5 text-center mg-bottom-40">
-                                <button type="submit" style="background: transparent; border: none;" class="btn-submit-img">
-                                    <img src="{{ asset('images/madiana/valider_btn.png') }}"
-                                        class="img-fluid"
-                                        alt="S'inscrire">
-                                </button>
-                                   </div>
+                                        <button type="submit" style="background: transparent; border: none;" class="btn-submit-img">
+                                            <img src="{{ asset('images/madiana/valider_btn.png') }}"
+                                                class="img-fluid"
+                                                alt="S'inscrire">
+                                        </button>
+                                    </div>
                                 </div>
                             </form>
                         </div>
 
-                        <div class="text-center mt-3">
-                            <!--p class="text-white">Déjà inscrit ? 
-                                @if(request('film_slug'))
-                                    <a href="{{ route('scan', ['slug' => $film->slug ?? 'default']) }}?film_slug={{ request('film_slug') }}" class="text-warning">Connectez-vous</a>
-                                @else
-                                    <a href="{{ route('scan', ['slug' => $film->slug ?? 'default']) }}" class="text-warning">Connectez-vous</a>
-                                @endif
-                            </p-->
-                        </div>
+                        <!--div class="text-center mt-3">
+                            <p class="text-white text-muted">
+                                En participant, vous certifiez avoir plus de 14 ans.
+                            </p>
+                        </!--div-->
                     </div>
                 </div>
             </div>
@@ -169,12 +151,13 @@
 </div>
 
 <script>
-$(document).ready(function () {
+ $(document).ready(function () {
 
     const $form = $('form');
     const $optin = $('#optinSelect');
     const $contactMethod = $('#contactMethod');
     const $blockOptin = $('.blockOptincanal');
+    const $ageInput = $('input[name="age"]');
 
     // Affichage / masquage du choix du canal
     $optin.on('change', function () {
@@ -187,8 +170,32 @@ $(document).ready(function () {
         }
     });
 
+    // Validation de l'âge
+    $ageInput.on('input', function() {
+        const age = parseInt($(this).val());
+        const minAge = 14;
+        
+        if (age < minAge) {
+            $(this).addClass('is-invalid');
+            $(this).after('<div class="invalid-feedback">Vous devez avoir au moins ' + minAge + ' ans pour participer.</div>');
+        } else {
+            $(this).removeClass('is-invalid');
+            $(this).siblings('.invalid-feedback').remove();
+        }
+    });
+
     // Validation à la soumission
     $form.on('submit', function (e) {
+        // Validation de l'âge
+        const age = parseInt($ageInput.val());
+        const minAge = 14;
+        
+        if (age < minAge) {
+            e.preventDefault();
+            alert('Vous devez avoir au moins ' + minAge + ' ans pour participer.');
+            $ageInput.focus();
+            return false;
+        }
 
         // Opt-in non sélectionné
         if (!$optin.val()) {

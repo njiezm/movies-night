@@ -12,6 +12,7 @@ class Film extends Model
 
     public function participants()
     {
+        // Table pivot explicitement définie pour éviter les erreurs
         return $this->belongsToMany(Participant::class, 'participant_film');
     }
     
