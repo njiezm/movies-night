@@ -40,7 +40,7 @@
                                 </div>
                                 
                                 <div class="row justify-content-center mt-1">
-                                    <div class="col-9 col-sm-3 mg-top-1 text-center mg-bottom-40">
+                                    <div class="col-9 col-sm-3 mg-top-1 text-center">
                                             <img src="{{ asset('images/madiana/bientot.png') }}"
                                                 class="img-fluid"
                                                 alt="Selection de films">
