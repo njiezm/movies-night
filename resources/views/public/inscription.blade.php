@@ -4,6 +4,7 @@
 
 @section('content')
 <link href="{{ asset('css/madiana-inscription.css') }}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
 <div class="container">
     <div class="row justify-content-center">
@@ -80,16 +81,29 @@
                                     </div>
                                 </div>
 
-                                <!-- Champ pour l'âge -->
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <input type="number" style="background: rgba(255, 255, 255, 0.20); color:white;" class="form-control text-center mg-top-5 rounded-pill input-white-big" name="age" placeholder="Âge" min="1" max="120" required/>
+                                        <label style="font-size: 1.5rem;" class="text-white">Avez-vous plus de 14 ans ?</label>
+                                        <select
+                                            class="form-select text-center rounded-pill input-white-big"
+                                            name="is_over_14"
+                                            id="isOver14Select"
+                                            required
+                                        >
+                                            <!-- option neutre par défaut -->
+                                            <option value="" selected disabled hidden>
+                                                — Choisissez une réponse —
+                                            </option>
+
+                                            <option style="background: black" value="0">Non</option>
+                                            <option style="background: black" value="1">Oui</option>
+                                        </select>
                                     </div>
                                 </div>
 
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <label style="font-size: 1.8rem; " class="text-white">Souhaitez-vous être recontacté ?</label>
+                                        <label style="font-size: 1.5rem; " class="text-white">Souhaitez-vous être recontacté ?</label>
                                         <select
                                             class="form-select text-center rounded-pill input-white-big"
                                             name="optin"
@@ -109,7 +123,7 @@
 
                                 <div class="row p-2 justify-content-center blockOptincanal" style="display: none;">
                                     <div class="col-12 mg-top-5">
-                                        <label style="font-size: 1.8rem; " class="text-white">Comment souhaitez-vous être contacté ?</label>
+                                        <label style="font-size: 1.5rem; " class="text-white">Comment souhaitez-vous être contacté ?</label>
                                         <select style="background: rgba(255, 255, 255, 0.20);" class="form-select text-center rounded-pill input-white-big" name="contact_method" id="contactMethod">
                                             <option value="">Sélectionnez une option</option>
                                             <option style="background: black" value="1">SMS</option>
@@ -119,8 +133,8 @@
                                     </div>
                                 </div>
 
-                                <div class="row justify-content-center mt-4">
-                                    <div class="col-8 col-sm-4 mg-top-5 text-center mg-bottom-40">
+                                <div class="row justify-content-center mt-5">
+                                    <div class="col-7 col-sm-4 mg-top-5 text-center">
                                         <button type="submit" style="background: transparent; border: none;" class="btn-submit-img">
                                             <img src="{{ asset('images/madiana/valider_btn.png') }}"
                                                 class="img-fluid"
@@ -150,6 +164,8 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
  $(document).ready(function () {
 
@@ -157,7 +173,7 @@
     const $optin = $('#optinSelect');
     const $contactMethod = $('#contactMethod');
     const $blockOptin = $('.blockOptincanal');
-    const $ageInput = $('input[name="age"]');
+    const $isOver14 = $('#isOver14Select');
 
     // Affichage / masquage du choix du canal
     $optin.on('change', function () {
@@ -171,13 +187,21 @@
     });
 
     // Validation de l'âge
-    $ageInput.on('input', function() {
-        const age = parseInt($(this).val());
-        const minAge = 14;
-        
-        if (age < minAge) {
+    $isOver14.on('change', function() {
+        if ($(this).val() === '0') {
             $(this).addClass('is-invalid');
-            $(this).after('<div class="invalid-feedback">Vous devez avoir au moins ' + minAge + ' ans pour participer.</div>');
+            if ($(this).siblings('.invalid-feedback').length === 0) {
+                $(this).after('<div class="invalid-feedback">Vous devez avoir plus de 14 ans pour participer.</div>');
+            }
+            
+            // SweetAlert 
+            Swal.fire({
+                title: 'Âge requis',
+                text: 'Vous devez avoir plus de 14 ans pour participer.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#dc3545'
+            });
         } else {
             $(this).removeClass('is-invalid');
             $(this).siblings('.invalid-feedback').remove();
@@ -187,29 +211,47 @@
     // Validation à la soumission
     $form.on('submit', function (e) {
         // Validation de l'âge
-        const age = parseInt($ageInput.val());
-        const minAge = 14;
-        
-        if (age < minAge) {
+        if ($isOver14.val() === '0') {
             e.preventDefault();
-            alert('Vous devez avoir au moins ' + minAge + ' ans pour participer.');
-            $ageInput.focus();
+            Swal.fire({
+                title: 'Âge requis',
+                text: 'Vous devez avoir plus de 14 ans pour participer.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#dc3545'
+            }).then(() => {
+                $isOver14.focus();
+            });
             return false;
         }
 
         // Opt-in non sélectionné
         if (!$optin.val()) {
             e.preventDefault();
-            alert('Veuillez choisir si vous souhaitez être recontacté.');
-            $optin.focus();
+            Swal.fire({
+                title: 'Information manquante',
+                text: 'Veuillez choisir si vous souhaitez être recontacté.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#ffc107'
+            }).then(() => {
+                $optin.focus();
+            });
             return false;
         }
 
         // Opt-in = oui mais aucun canal choisi
         if ($optin.val() === '1' && !$contactMethod.val()) {
             e.preventDefault();
-            alert('Veuillez choisir un moyen de contact.');
-            $contactMethod.focus();
+            Swal.fire({
+                title: 'Information manquante',
+                text: 'Veuillez choisir un moyen de contact.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#ffc107'
+            }).then(() => {
+                $contactMethod.focus();
+            });
             return false;
         }
 

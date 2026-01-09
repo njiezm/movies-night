@@ -1,4 +1,11 @@
 /* Variables CSS */
+@font-face {
+    font-family: 'Itim';
+    src: url('../font/Itim-Regular.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 :root {
     --primary-color: #e50914;
     --secondary-color: #141414;

@@ -87,18 +87,18 @@
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    pointer-events: none; /* l'icône ne bloque pas le focus sur l'input */
+    pointer-events: none; 
     transition: color 0.3s;
-    color: #ccc; /* couleur par défaut */
+    color: #ccc; 
 }
 
 .input-group input:focus + .input-icon i,
 .input-group input:focus ~ .input-icon i {
-    color: white; /* icône devient blanche au focus */
+    color: white; 
 }
 
 .input-group input {
-    padding-left: 35px; /* pour laisser de la place à l'icône */
+    padding-left: 35px; 
 }
 
 </style>

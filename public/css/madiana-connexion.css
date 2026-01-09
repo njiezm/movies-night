@@ -1,7 +1,7 @@
 /* Variables CSS */
 @font-face {
-    font-family: 'Marykate';
-    src: url('../font/FontsFree-Net-Marykate-Regular.ttf') format('truetype');
+    font-family: 'Itim';
+    src: url('../font/Itim-Regular.otf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -20,7 +20,7 @@
 /* Styles généraux */
 body {
     background-color: #000;
-    font-family: 'Marykate', Arial, sans-serif;
+    font-family: 'Itim', Arial, sans-serif;
     line-height: 1.6;
     color: var(--text-color);
     margin: 0;

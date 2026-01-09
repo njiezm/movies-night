@@ -19,7 +19,6 @@
             <div class="row justify-content-center">
                 <div class="col-10">
                     <div class="p-4">
-                        <!-- Message de patience -->
                          <!-- Image de dotation -->
                         <div class="row justify-content-center">
                             <div class="col-12 text-center mg-top-20 mg-bottom-20">

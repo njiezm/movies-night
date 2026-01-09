@@ -50,10 +50,7 @@
                                 <!--p class="text-white">Pour le marathon de films d'horreur !</!--p-->
                             </div>
                         </div>
-
-                       
-
-                        <!-- Appel à l'action final -->
+   
                         <!--div class="text-center mt-4 p-3 cta-block">
                             <p class="mb-2 text-white">Les QR codes seront disponibles uniquement dans le cinéma.</p>
                             <p class="mb-3 text-white">Inscrivez-vous pour participer à la course !</p>

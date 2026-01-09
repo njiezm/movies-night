@@ -19,7 +19,6 @@
             <div class="row justify-content-center">
                 <div class="col-10">
                     <div class="p-4">
-                        <!-- Message de bienvenue -->
                         <div class="row justify-content-center">
                             <div class="col-11 text-center">
                                 <!-- Image de dotation -->
@@ -113,7 +112,6 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Ajout d'une validation simple avant la soumission
     document.getElementById('connexionForm').addEventListener('submit', function(e) {
         const telephone = document.querySelector('input[name="telephone"]').value;
         

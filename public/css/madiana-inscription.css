@@ -1,7 +1,7 @@
 /* Variables CSS */
 @font-face {
-    font-family: 'Marykate';
-    src: url('../font/FontsFree-Net-Marykate-Regular.ttf') format('truetype');
+    font-family: 'Itim';
+    src: url('../font/Itim-Regular.otf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -20,7 +20,7 @@
 /* Styles généraux */
 body {
     background-color: #000;
-    font-family: 'Marykate', Arial, sans-serif;
+    font-family: 'Itim', Arial, sans-serif;
     line-height: 1.6;
     color: var(--text-color);
     margin: 0;
@@ -35,7 +35,7 @@ body {
     background-position: top left, center;
 
     min-height: 100vh;
-    font-family: 'Marykate', sans-serif;
+    font-family: 'Itim', sans-serif;
 
     color: #fff;
     overflow-x: hidden;
@@ -158,14 +158,14 @@ body {
 .input-white-big {
     background: rgba(255, 255, 255, 0.20) !important;
     color: #fff !important;
-    font-size: 1.8rem; /* taille du texte */
-    font-weight: 600;
-    height: 55px; /* input plus haut */
+    font-size: 1.5rem; /* taille du texte */
+    /*font-weight: 600;*/
+    height: 55px; 
 }
 
 /* Placeholder en blanc */
 .input-white-big::placeholder {
     color: rgba(255, 255, 255, 0.8);
-    font-size: 1.8rem;
+    font-size: 1.5rem;
 }
 

@@ -15,7 +15,7 @@
 </head>
 <body>
     @if(!session('admin_authenticated'))
-        <!-- Page de connexion avec le design Madiana amélioré -->
+        <!-- Page de connexion -->
         <div class="login-wrapper">
             <div class="login-container">
                 <div class="login-card">
