@@ -84,7 +84,7 @@
                                 <!-- Champ pour la tranche d'âge -->
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <label style="font-size: 1.5rem;" class="text-white">Quelle est votre tranche d'âge ?</label>
+                                        <label style="font-size: 1.5rem;" class="text-white text-center">Quelle est votre tranche d'âge ?</label>
                                         <select
                                             class="form-select text-center rounded-pill input-white-big"
                                             name="age"
@@ -105,7 +105,7 @@
 
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <label style="font-size: 1.5rem; " class="text-white">Souhaitez-vous être recontacté ?</label>
+                                        <label style="font-size: 1.5rem; " class="text-white text-center">J’accepte de recevoir les offres et communications de Madiana</label>
                                         <select
                                             class="form-select text-center rounded-pill input-white-big"
                                             name="optin"
@@ -125,7 +125,7 @@
 
                                 <div class="row p-2 justify-content-center blockOptincanal" style="display: none;">
                                     <div class="col-12 mg-top-5">
-                                        <label style="font-size: 1.5rem; " class="text-white">Comment souhaitez-vous être contacté ?</label>
+                                        <label style="font-size: 1.5rem; " class="text-white text-center">Comment souhaitez-vous être contacté ?</label>
                                         <select style="background: rgba(255, 255, 255, 0.20);" class="form-select text-center rounded-pill input-white-big" name="contact_method" id="contactMethod">
                                             <option value="">Sélectionnez une option</option>
                                             <option style="background: black" value="1">SMS</option>
