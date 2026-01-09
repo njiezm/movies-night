@@ -59,6 +59,24 @@
                     </div>
                 </div>
             </div>
+             <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="p-4">
+                        <div class="row justify-content-center">
+                            <div class="col-12 text-center mg-top-10">
+                                <h2>
+                                    <a href="https://lien.fr"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style="color: #ffffff; text-decoration: underline;">
+                                        Politique de confidentialité
+                                    </a>
+                                </h2>
+                            </div>
+                        </div>         
+                    </div>
+                </div>
+            </div>
 
             <!-- Footer -->
             <div class="row justify-content-center">

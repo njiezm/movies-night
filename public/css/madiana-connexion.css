@@ -162,4 +162,9 @@ body {
     margin-top: 1rem; /* Un peu plus d'espace entre l'image et le titre */
 }
 
-/* ... (le reste de votre fichier CSS) ... */
+/* Placeholder en blanc */
+.input-white-big::placeholder {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.5rem;
+}
+

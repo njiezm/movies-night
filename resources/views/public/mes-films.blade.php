@@ -7,7 +7,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-10 col-xl-5 col-12 main_view">
+        <div class="col-md-12 col-xl-5 col-12 main_view">
             <!-- Header -->
             <div class="row justify-content-center">
                 <div class="col">
@@ -17,7 +17,7 @@
 
             <!-- Contenu principal -->
             <div class="row justify-content-center">
-                <div class="col-10">
+                <div class="col-12">
                     <div class="p-4">
                         <!-- Titre et accroche -->
                         <!--div class="row justify-content-center">
@@ -27,7 +27,7 @@
                             </div>
                         </div-->
                         <div class="row justify-content-center mb-4">
-                        <div class="col-10 text-center">
+                        <div class="col-12 text-center">
                             <div class="">
                                 <img src="{{ asset('images/madiana/mes-films.png') }}" class="img-fluid" alt="{{ $film->title }}">
                             </div>
@@ -36,7 +36,7 @@
 
                         @if($film)
                         <div class="row justify-content-center mb-4">
-                            <div class="col-10 text-center">
+                            <div class="col-11 text-center">
                                 <div class="film-scanned" style="padding: 15px; border-radius: 10px;background-color: rgba(255, 255, 255, 0.05);border: 1px solid rgba(255, 255, 255, 0.1);">
                                     <img src="{{ asset('storage/'.$film->vignette) }}" class="img-fluid rounded" alt="{{ $film->title }}">
                                     <h2 class="text-white mt-3">{{ $film->title }}</h2>
@@ -50,7 +50,7 @@
                         <!--p>{{ $filmsVus->count() }} / {{ $total }} Films </!--p-->
                         @if($filmsVus->count() == 0)
                         <div class="row justify-content-center">
-                            <div class="col-10 text-center">
+                            <div class="col-12 text-center">
                                 <div class="">
                                     <img src="{{ asset('images/madiana/0-6-f.png') }}" class="img-fluid">
                                 </div>
@@ -59,7 +59,7 @@
                         @endif
                         @if($filmsVus->count() == 1)
                         <div class="row justify-content-center">
-                            <div class="col-10 text-center">
+                            <div class="col-12 text-center">
                                 <div class="">
                                     <img src="{{ asset('images/madiana/1-6-f.png') }}" class="img-fluid">
                                 </div>
@@ -68,7 +68,7 @@
                         @endif
                         @if($filmsVus->count() == 2)
                              <div class="row justify-content-center">
-                            <div class="col-10 text-center">
+                            <div class="col-12 text-center">
                                 <div class="">
                                     <img src="{{ asset('images/madiana/2-6-f.png') }}" class="img-fluid">
                                 </div>
@@ -77,7 +77,7 @@
                         @endif
                         @if($filmsVus->count() == 3)
                             <div class="row justify-content-center">
-                            <div class="col-10 text-center">
+                            <div class="col-12 text-center">
                                 <div class="">
                                     <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
                                 </div>
@@ -86,7 +86,7 @@
                         @endif
                         @if($filmsVus->count() == 4)
                             <div class="row justify-content-center">
-                            <div class="col-10 text-center">
+                            <div class="col-12 text-center">
                                 <div class="">
                                     <img src="{{ asset('images/madiana/4-6-f.png') }}" class="img-fluid">
                                 </div>
@@ -96,7 +96,7 @@
 
                         @if($filmsVus->count() == 5)
                           <div class="row justify-content-center">
-                            <div class="col-10 text-center">
+                            <div class="col-12 text-center">
                                 <div class="">
                                     <img src="{{ asset('images/madiana/5-6-f.png') }}" class="img-fluid">
                                 </div>
@@ -106,16 +106,16 @@
 
                         @if($filmsVus->count() == 6)
                           <div class="row justify-content-center">
-                            <div class="col-10 text-center">
+                            <div class="col-12 text-center">
                                 <div class="">
                                     <img src="{{ asset('images/madiana/6-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
                         </div>
                         @endif
-                        @if(!$filmsVus->count() == 6)
-                                <div class="row justify-content-center mt-4">
-                                    <div class="col-12 col-sm-4 mg-top-5 text-center mg-bottom-40">
+                        @if($filmsVus->count() !=6)
+                                <div class="row justify-content-center mt-5 mb-5">
+                                    <div class="col-10 col-sm-4 mg-top-5 text-center mg-bottom-40">
                                         <button type="submit" style="background: transparent; border: none;" class="btn-submit-img">
                                             <img src="{{ asset('images/madiana/selection-films.png') }}"
                                                 class="img-fluid"
@@ -188,6 +188,24 @@
                         </!--div-->
                     </div>
                     
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="p-4">
+                        <div class="row justify-content-center">
+                            <div class="col-12 text-center mg-top-10">
+                                <h2>
+                                    <a href="https://lien.fr"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style="color: #ffffff; text-decoration: underline;">
+                                        Politique de confidentialité
+                                    </a>
+                                </h2>
+                            </div>
+                        </div>         
+                    </div>
                 </div>
             </div>
             

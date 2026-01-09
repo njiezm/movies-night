@@ -17,17 +17,32 @@
 
             <!-- Contenu principal -->
             <div class="row justify-content-center">
-                <div class="col-10">
+                <div class="col-12">
                     <div class="p-4">
                          <!-- Image de dotation -->
                         <div class="row justify-content-center">
                             <div class="col-12 text-center mg-top-20 mg-bottom-20">
                                 <img src="{{ asset('images/madiana/end.png') }}" class="img-fluid rounded" alt="Dotation">
                             </div>
-                        </div>
-                        
-                        
-                        
+                        </div>         
+                    </div>
+                </div>
+            </div>
+           <div class="row justify-content-center">
+                <div class="col-12">
+                    <div class="p-4">
+                        <div class="row justify-content-center">
+                            <div class="col-12 text-center mg-top-10">
+                                <h2>
+                                    <a href="https://lien.fr"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style="color: #ffffff; text-decoration: underline;">
+                                        Politique de confidentialité
+                                    </a>
+                                </h2>
+                            </div>
+                        </div>         
                     </div>
                 </div>
             </div>
