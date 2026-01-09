@@ -92,7 +92,7 @@ class AdminController extends Controller
             'limited_access_code' => Setting::get('limited_access_code', '654321'),
             'opening_date' => Setting::get('opening_date', now()->format('Y-m-d')),
             'closing_date' => Setting::get('closing_date', now()->addMonths(6)->format('Y-m-d')),
-            'min_age' => Setting::get('min_age', '14'),
+            'min_age' => Setting::get('min_age', '16'),
         ];
         
         return view('admin.settings.index', compact('settings'));

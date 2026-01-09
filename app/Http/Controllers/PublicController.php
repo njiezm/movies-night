@@ -35,13 +35,13 @@ class PublicController extends Controller
             'telephone' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',
             'zipcode' => 'nullable|string|max:10',
-            'age' => 'required|in:moins_de_14,14-18,plus_de_18',
+            'age' => 'required|in:moins_de_16,16-18,plus_de_18',
             'optin' => 'required|boolean',
         ]);
 
         // Vérification si l'utilisateur a au moins 14 ans
-        if ($request->age === 'moins_de_14') {
-            return back()->with('error', "Vous devez avoir au moins 14 ans pour participer.")->withInput();
+        if ($request->age === 'moins_de_16') {
+            return back()->with('error', "Vous devez avoir au moins 16 ans pour participer.")->withInput();
         }
 
         // Chiffrement

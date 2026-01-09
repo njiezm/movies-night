@@ -96,8 +96,8 @@
                                                 — Choisissez une réponse —
                                             </option>
 
-                                            <option style="background: black" value="moins_de_14">Moins de 14 ans</option>
-                                            <option style="background: black" value="14-18">14-18 ans</option>
+                                            <option style="background: black" value="moins_de_16">Moins de 16 ans</option>
+                                            <option style="background: black" value="16-18">16-18 ans</option>
                                             <option style="background: black" value="plus_de_18">Plus de 18 ans</option>
                                         </select>
                                     </div>
@@ -184,16 +184,16 @@
 
     // Validation de l'âge
     $ageSelect.on('change', function() {
-        if ($(this).val() === 'moins_de_14') {
+        if ($(this).val() === 'moins_de_16') {
             $(this).addClass('is-invalid');
             if ($(this).siblings('.invalid-feedback').length === 0) {
-                $(this).after('<div class="invalid-feedback">Vous devez avoir au moins 14 ans pour participer.</div>');
+                $(this).after('<div class="invalid-feedback">Vous devez avoir au moins 16 ans pour participer.</div>');
             }
             
             // SweetAlert 
             Swal.fire({
                 title: 'Âge requis',
-                text: 'Vous devez avoir au moins 14 ans pour participer.',
+                text: 'Vous devez avoir au moins 16 ans pour participer.',
                 icon: 'error',
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#dc3545'
@@ -207,11 +207,11 @@
     // Validation à la soumission
     $form.on('submit', function (e) {
         // Validation de l'âge
-        if ($ageSelect.val() === 'moins_de_14') {
+        if ($ageSelect.val() === 'moins_de_16') {
             e.preventDefault();
             Swal.fire({
                 title: 'Âge requis',
-                text: 'Vous devez avoir au moins 14 ans pour participer.',
+                text: 'Vous devez avoir au moins 16 ans pour participer.',
                 icon: 'error',
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#dc3545'

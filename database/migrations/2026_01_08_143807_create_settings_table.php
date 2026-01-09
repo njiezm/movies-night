@@ -24,7 +24,7 @@ return new class extends Migration
             ['key' => 'limited_access_code', 'value' => '654321'],
             ['key' => 'opening_date', 'value' => now()->format('Y-m-d')],
             ['key' => 'closing_date', 'value' => now()->addMonths(6)->format('Y-m-d')],
-            ['key' => 'min_age', 'value' => '14'],
+            ['key' => 'min_age', 'value' => '16'],
         ]);
     }
 

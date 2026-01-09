@@ -12,14 +12,14 @@ return new class extends Migration
     public function up(): void
         {
             Schema::table('participants', function (Blueprint $table) {
-                $table->string('age')->after('source')->default('14-18');
+                $table->string('age')->after('source')->default('16-18');
             });
 
             DB::table('participants')->update([
                 'age' => DB::raw("
                     CASE 
-                        WHEN is_over_14 = TRUE THEN 'plus_de_18'
-                        ELSE 'moins_de_14'
+                        WHEN age =  '14-18' THEN '16-18'
+                        ELSE 'moins_de_16'
                     END
                 ")
             ]);
