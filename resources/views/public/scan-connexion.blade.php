@@ -35,11 +35,11 @@
 
                         <div class="row justify-content-center">
                             <div class="col-12 text-center">
-                                <div class="row justify-content-center">
+                                <!--div class="row justify-content-center">
                                     <div class="col-8 text-center mb-4">
                                         <img src="{{ asset('images/madiana/express-register.png') }}" class="img-fluid">
                                     </div>
-                                 </div>
+                                 </!--div-->
                                 
                                  <div class="row justify-content-center mt-4">
                                     <div class="col-9 col-sm-6 text-center mg-bottom-40">
