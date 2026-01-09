@@ -98,6 +98,11 @@
                                 <i class="fas fa-trophy"></i> Dotations
                             </a>
                         </li>
+                        <li>
+                                    <a href="{{ route('admin.settings') }}" class="{{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
+                                        <i class="fas fa-cog"></i> Réglages
+                                    </a>
+                                </li>
                     @endif
                     <li>
                         <a href="{{ route('admin.logout') }}" class="logout-link">

@@ -81,13 +81,14 @@
                                     </div>
                                 </div>
 
+                                <!-- Champ pour la tranche d'âge -->
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
-                                        <label style="font-size: 1.5rem;" class="text-white">Avez-vous plus de 14 ans ?</label>
+                                        <label style="font-size: 1.5rem;" class="text-white">Quelle est votre tranche d'âge ?</label>
                                         <select
                                             class="form-select text-center rounded-pill input-white-big"
-                                            name="is_over_14"
-                                            id="isOver14Select"
+                                            name="age"
+                                            id="ageSelect"
                                             required
                                         >
                                             <!-- option neutre par défaut -->
@@ -95,8 +96,9 @@
                                                 — Choisissez une réponse —
                                             </option>
 
-                                            <option style="background: black" value="0">Non</option>
-                                            <option style="background: black" value="1">Oui</option>
+                                            <option style="background: black" value="moins_de_14">Moins de 14 ans</option>
+                                            <option style="background: black" value="14-18">14-18 ans</option>
+                                            <option style="background: black" value="plus_de_18">Plus de 18 ans</option>
                                         </select>
                                     </div>
                                 </div>
@@ -144,12 +146,6 @@
                                 </div>
                             </form>
                         </div>
-
-                        <!--div class="text-center mt-3">
-                            <p class="text-white text-muted">
-                                En participant, vous certifiez avoir plus de 14 ans.
-                            </p>
-                        </!--div-->
                     </div>
                 </div>
             </div>
@@ -173,7 +169,7 @@
     const $optin = $('#optinSelect');
     const $contactMethod = $('#contactMethod');
     const $blockOptin = $('.blockOptincanal');
-    const $isOver14 = $('#isOver14Select');
+    const $ageSelect = $('#ageSelect');
 
     // Affichage / masquage du choix du canal
     $optin.on('change', function () {
@@ -187,17 +183,17 @@
     });
 
     // Validation de l'âge
-    $isOver14.on('change', function() {
-        if ($(this).val() === '0') {
+    $ageSelect.on('change', function() {
+        if ($(this).val() === 'moins_de_14') {
             $(this).addClass('is-invalid');
             if ($(this).siblings('.invalid-feedback').length === 0) {
-                $(this).after('<div class="invalid-feedback">Vous devez avoir plus de 14 ans pour participer.</div>');
+                $(this).after('<div class="invalid-feedback">Vous devez avoir au moins 14 ans pour participer.</div>');
             }
             
             // SweetAlert 
             Swal.fire({
                 title: 'Âge requis',
-                text: 'Vous devez avoir plus de 14 ans pour participer.',
+                text: 'Vous devez avoir au moins 14 ans pour participer.',
                 icon: 'error',
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#dc3545'
@@ -211,16 +207,16 @@
     // Validation à la soumission
     $form.on('submit', function (e) {
         // Validation de l'âge
-        if ($isOver14.val() === '0') {
+        if ($ageSelect.val() === 'moins_de_14') {
             e.preventDefault();
             Swal.fire({
                 title: 'Âge requis',
-                text: 'Vous devez avoir plus de 14 ans pour participer.',
+                text: 'Vous devez avoir au moins 14 ans pour participer.',
                 icon: 'error',
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#dc3545'
             }).then(() => {
-                $isOver14.focus();
+                $ageSelect.focus();
             });
             return false;
         }

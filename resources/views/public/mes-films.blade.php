@@ -7,7 +7,7 @@
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8 col-xl-5 col-12 main_view">
+        <div class="col-md-10 col-xl-5 col-12 main_view">
             <!-- Header -->
             <div class="row justify-content-center">
                 <div class="col">
@@ -28,8 +28,8 @@
                         </div-->
                         <div class="row justify-content-center mb-4">
                         <div class="col-10 text-center">
-                            <div class="film-scanned">
-                                <img src="{{ asset('images/madiana/mes-films.png') }}" class="img-fluid rounded" alt="{{ $film->title }}">
+                            <div class="">
+                                <img src="{{ asset('images/madiana/mes-films.png') }}" class="img-fluid" alt="{{ $film->title }}">
                             </div>
                         </div>
                     </div>
@@ -51,7 +51,7 @@
                         @if($filmsVus->count() == 0)
                         <div class="row justify-content-center">
                             <div class="col-10 text-center">
-                                <div class="film-scanned">
+                                <div class="">
                                     <img src="{{ asset('images/madiana/0-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
@@ -60,7 +60,7 @@
                         @if($filmsVus->count() == 1)
                         <div class="row justify-content-center">
                             <div class="col-10 text-center">
-                                <div class="film-scanned">
+                                <div class="">
                                     <img src="{{ asset('images/madiana/1-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
@@ -69,7 +69,7 @@
                         @if($filmsVus->count() == 2)
                              <div class="row justify-content-center">
                             <div class="col-10 text-center">
-                                <div class="film-scanned">
+                                <div class="">
                                     <img src="{{ asset('images/madiana/2-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
@@ -78,7 +78,7 @@
                         @if($filmsVus->count() == 3)
                             <div class="row justify-content-center">
                             <div class="col-10 text-center">
-                                <div class="film-scanned">
+                                <div class="">
                                     <img src="{{ asset('images/madiana/3-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
@@ -87,7 +87,7 @@
                         @if($filmsVus->count() == 4)
                             <div class="row justify-content-center">
                             <div class="col-10 text-center">
-                                <div class="film-scanned">
+                                <div class="">
                                     <img src="{{ asset('images/madiana/4-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
@@ -97,7 +97,7 @@
                         @if($filmsVus->count() == 5)
                           <div class="row justify-content-center">
                             <div class="col-10 text-center">
-                                <div class="film-scanned">
+                                <div class="">
                                     <img src="{{ asset('images/madiana/5-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>
@@ -107,7 +107,7 @@
                         @if($filmsVus->count() == 6)
                           <div class="row justify-content-center">
                             <div class="col-10 text-center">
-                                <div class="film-scanned">
+                                <div class="">
                                     <img src="{{ asset('images/madiana/6-6-f.png') }}" class="img-fluid">
                                 </div>
                             </div>

@@ -28,77 +28,77 @@ class PublicController extends Controller
      * Enregistre un participant
      */
     public function storeInscription(Request $request)
-{
-    $request->validate([
-        'firstname' => 'required|string|max:255',
-        'lastname' => 'required|string|max:255',
-        'telephone' => 'required|string|max:20',
-        'email' => 'nullable|email|max:255',
-        'zipcode' => 'nullable|string|max:10',
-        'is_over_14' => 'required|boolean',
-        'optin' => 'required|boolean',
-    ]);
+    {
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'telephone' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'zipcode' => 'nullable|string|max:10',
+            'age' => 'required|in:moins_de_14,14-18,plus_de_18',
+            'optin' => 'required|boolean',
+        ]);
 
-    // Vérification si l'utilisateur a plus de 14 ans
-    if (!$request->boolean('is_over_14')) {
-        return back()->with('error', "Vous devez avoir plus de 14 ans pour participer.")->withInput();
+        // Vérification si l'utilisateur a au moins 14 ans
+        if ($request->age === 'moins_de_14') {
+            return back()->with('error', "Vous devez avoir au moins 14 ans pour participer.")->withInput();
+        }
+
+        // Chiffrement
+        $firstname = Genesys::Crypt(ucfirst(strtolower($request->firstname)));
+        $lastname  = Genesys::Crypt(ucfirst(strtolower($request->lastname)));
+        $telephone = Genesys::Crypt($request->telephone);
+        $email     = $request->email ? Genesys::Crypt(strtolower($request->email)) : null;
+
+        // Unicité
+        if (Participant::where('telephone', $telephone)->exists()) {
+            return back()->withErrors(['telephone' => 'Ce numéro est déjà inscrit'])->withInput();
+        }
+
+        if ($email && Participant::where('email', $email)->exists()) {
+            return back()->withErrors(['email' => 'Cet email est déjà inscrit'])->withInput();
+        }
+
+        // Optin
+        $optin = (int) $request->optin;
+        $bysms = false;
+        $byemail = false;
+
+        if ($optin === 1 && $request->has('contact_method')) {
+            $bysms   = in_array($request->contact_method, [1, 3]);
+            $byemail = in_array($request->contact_method, [2, 3]);
+        }
+
+        // Source
+        $source = $request->boolean('from_qr_scan') ? 'salle' : ($request->source ?? 'web');
+
+        // Slug sécurisé
+        $slug = Genesys::GenCodeAlphaNum(20);
+
+        $participant = Participant::create([
+            'firstname' => $firstname,
+            'lastname' => $lastname,
+            'telephone' => $telephone,
+            'email' => $email,
+            'zipcode' => $request->zipcode,
+            'slug' => $slug,
+            'optin' => $optin,
+            'bysms' => $bysms,
+            'byemail' => $byemail,
+            'source' => $source,
+            'age' => $request->age,
+        ]);
+
+        // Redirection post inscription
+        if ($request->boolean('from_qr_scan') && $request->filled('film_slug')) {
+            return redirect()->route('mes.films', [
+                'participant' => $participant->slug,
+                'film_slug' => $request->film_slug
+            ])->with('success', 'Inscription réussie !');
+        }
+
+        return redirect()->route('rendez.vous')->with('success', 'Inscription réussie !');
     }
-
-    // Chiffrement
-    $firstname = Genesys::Crypt(ucfirst(strtolower($request->firstname)));
-    $lastname  = Genesys::Crypt(ucfirst(strtolower($request->lastname)));
-    $telephone = Genesys::Crypt($request->telephone);
-    $email     = $request->email ? Genesys::Crypt(strtolower($request->email)) : null;
-
-    // Unicité
-    if (Participant::where('telephone', $telephone)->exists()) {
-        return back()->withErrors(['telephone' => 'Ce numéro est déjà inscrit'])->withInput();
-    }
-
-    if ($email && Participant::where('email', $email)->exists()) {
-        return back()->withErrors(['email' => 'Cet email est déjà inscrit'])->withInput();
-    }
-
-    // Optin
-    $optin = (int) $request->optin;
-    $bysms = false;
-    $byemail = false;
-
-    if ($optin === 1 && $request->has('contact_method')) {
-        $bysms   = in_array($request->contact_method, [1, 3]);
-        $byemail = in_array($request->contact_method, [2, 3]);
-    }
-
-    // Source
-    $source = $request->boolean('from_qr_scan') ? 'salle' : ($request->source ?? 'web');
-
-    // Slug sécurisé
-    $slug = Genesys::GenCodeAlphaNum(20);
-
-    $participant = Participant::create([
-        'firstname' => $firstname,
-        'lastname' => $lastname,
-        'telephone' => $telephone,
-        'email' => $email,
-        'zipcode' => $request->zipcode,
-        'slug' => $slug,
-        'optin' => $optin,
-        'bysms' => $bysms,
-        'byemail' => $byemail,
-        'source' => $source,
-        'is_over_14' => $request->boolean('is_over_14'),
-    ]);
-
-    // Redirection post inscription
-    if ($request->boolean('from_qr_scan') && $request->filled('film_slug')) {
-        return redirect()->route('mes.films', [
-            'participant' => $participant->slug,
-            'film_slug' => $request->film_slug
-        ])->with('success', 'Inscription réussie !');
-    }
-
-    return redirect()->route('rendez.vous')->with('success', 'Inscription réussie !');
-}
 
     /**
      * Page rendez-vous
@@ -114,7 +114,7 @@ class PublicController extends Controller
     }
 
     /**
-     * Films d’un participant (scan inclus)
+     * Films d'un participant (scan inclus)
      */
     public function mesFilms($participantSlug)
     {
@@ -141,15 +141,13 @@ class PublicController extends Controller
                 ) {
                     return redirect()
                         ->route('mes.films', ['participant' => $participant->slug])
-                        ->with('error', 'Ce film n’est pas disponible à cette date.');
+                        ->with('error', 'Ce film n\'est pas disponible à cette date.');
                 }
 
-              
                 if ($filmsVus->contains($film->id)) {
                     return redirect()->route('deja.joue', ['participant' => $participant->slug]);
                 }
 
-              
                 $participant->films()->attach($film->id);
                 $filmsVus = $participant->fresh()->films;
             }
@@ -192,13 +190,12 @@ class PublicController extends Controller
         $film = Film::where('slug', $slug)->firstOrFail();
         $now = Carbon::now()->startOfDay();
 
-
         if (
             ($film->start_date && $now->lt(Carbon::parse($film->start_date))) ||
             ($film->end_date && $now->gt(Carbon::parse($film->end_date)))
         ) {
             return redirect()->route('patience')
-                ->with('message', 'Ce film n’est pas disponible actuellement.');
+                ->with('message', 'Ce film n\'est pas disponible actuellement.');
         }
 
         return view('public.scan-connexion', compact('film'));

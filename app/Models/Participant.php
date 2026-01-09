@@ -9,7 +9,7 @@ class Participant extends Model
 {
     protected $fillable = [
         'lastname', 'firstname', 'email', 'telephone',
-        'zipcode', 'optin', 'bysms', 'byemail', 'slug', 'source', 'is_over_14',
+        'zipcode', 'optin', 'bysms', 'byemail', 'slug', 'source', 'age',
     ];
 
     // Relations
