@@ -149,67 +149,82 @@ class AdminController extends Controller
      * Enregistre un nouveau film
      */
     public function storeFilm(Request $request)
-    {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'nullable',
-            'vignette' => 'nullable|image',
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date'
-        ]);
+{
+    $request->validate([
+        'title' => 'required',
+        'description' => 'nullable',
+        'vignette' => 'nullable|image',
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date|after_or_equal:start_date'
+    ]);
 
-        // Slug unique
-        $slug = $this->generateUniqueSlug();
+    // Slug unique
+    $slug = $this->generateUniqueSlug();
 
-        // Upload vignette
-        $vignettePath = null;
-        if ($request->hasFile('vignette')) {
-            $vignettePath = $request->file('vignette')->store('vignettes', 'public');
-        }
+    // Upload vignette
+    $vignettePath = null;
+    if ($request->hasFile('vignette')) {
+        $vignettePath = $request->file('vignette')->store('vignettes', 'public');
+    }
 
-        $film = Film::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'slug' => $slug,
-            'vignette' => $vignettePath,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date
-        ]);
+    $film = Film::create([
+        'title' => $request->title,
+        'description' => $request->description,
+        'slug' => $slug,
+        'vignette' => $vignettePath,
+        'start_date' => $request->start_date,
+        'end_date' => $request->end_date
+    ]);
 
-        // Créer un tirage mensuel automatiquement pour ce film
-        $tirageDate = $film->end_date ?? now()->addMonth();
+    // Créer un tirage mensuel automatiquement pour ce film
+    $tirageDate = $film->end_date ?? now()->addMonth();
+    
+    // Vérifier d'abord qu'il existe des dotations mensuelles
+    $monthlyDotationExists = Dotation::where('is_big_tas', false)->exists();
+    
+    if (!$monthlyDotationExists) {
+        \Log::warning('Aucune dotation mensuelle disponible pour créer un tirage pour le film: ' . $film->title);
+        // Vous pouvez aussi retourner un message d'erreur si nécessaire
+    } else {
         $tirage = $this->createMonthlyDraw($tirageDate);
         
         if ($tirage) {
-            $tirage->update(['film_id' => $film->id]);
-        }
-
-        // Créer dossier qrcodes si absent
-        if (!file_exists(public_path('qrcodes'))) {
-            mkdir(public_path('qrcodes'), 0755, true);
-        }
-
-        // Génération QR code avec endroid/qr-code
-        $qrcodePath = "qrcodes/film-{$film->id}.png";
-        $qrLink = route('scan', $film->slug);
-        
-        try {
-            $qrCode = QrCode::create($qrLink)
-                ->setSize(300)
-                ->setMargin(10);
-                
-            $writer = new PngWriter();
-            $result = $writer->write($qrCode);
+            // Associer directement le tirage au film lors de la création
+            $tirage->film_id = $film->id;
+            $tirage->save();
             
-            $result->saveToFile(public_path($qrcodePath));
-            
-            $film->update(['qrcode' => $qrcodePath]);
-        } catch (\Exception $e) {
-            \Log::error('Erreur lors de la génération du QR code: ' . $e->getMessage());
+            \Log::info('Tirage mensuel créé avec succès pour le film: ' . $film->title . ' (ID: ' . $tirage->id . ')');
+        } else {
+            \Log::error('Échec de la création du tirage mensuel pour le film: ' . $film->title);
         }
-
-        return redirect()->route('admin.films')->with('success', 'Film ajouté avec succès !');
     }
+
+    // Créer dossier qrcodes si absent
+    if (!file_exists(public_path('qrcodes'))) {
+        mkdir(public_path('qrcodes'), 0755, true);
+    }
+
+    // Génération QR code avec endroid/qr-code
+    $qrcodePath = "qrcodes/film-{$film->id}.png";
+    $qrLink = route('scan', $film->slug);
+    
+    try {
+        $qrCode = QrCode::create($qrLink)
+            ->setSize(300)
+            ->setMargin(10);
+            
+        $writer = new PngWriter();
+        $result = $writer->write($qrCode);
+        
+        $result->saveToFile(public_path($qrcodePath));
+        
+        $film->update(['qrcode' => $qrcodePath]);
+    } catch (\Exception $e) {
+        \Log::error('Erreur lors de la génération du QR code: ' . $e->getMessage());
+    }
+
+    return redirect()->route('admin.films')->with('success', 'Film ajouté avec succès !');
+}
 
     /**
      * Affiche le formulaire d'édition de film
