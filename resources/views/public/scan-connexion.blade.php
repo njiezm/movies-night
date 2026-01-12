@@ -111,7 +111,7 @@
                                     <a href="https://lien.fr"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    style="color: #ffffff; text-decoration: underline;">
+                                    style="color: #ffffff; text-decoration: underline; font-size:20px">
                                         Politique de confidentialité
                                     </a>
                                 </h2>
