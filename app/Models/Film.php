@@ -20,4 +20,9 @@ class Film extends Model
     {
         return $this->hasOne(Tirage::class);
     }
+
+    public function tirages()
+    {
+        return $this->hasOne(Tirage::class);
+    }
 }
