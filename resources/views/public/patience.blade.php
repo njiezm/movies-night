@@ -27,7 +27,7 @@
                         </div>
                         
                          <div class="row justify-content-center mt-5 mb-5">
-                                    <div class="col-11 col-sm-4 mg-top-5 text-center mg-bottom-40">
+                                    <div class="col-11 col-sm-8 mg-top-5 text-center mg-bottom-40">
                                         <button type="submit" style="background: transparent; border: none;" class="btn-submit-img">
                                             <img src="{{ asset('images/madiana/selection-films.png') }}"
                                                 class="img-fluid"
@@ -37,7 +37,7 @@
                                 </div>
                                 
                                 <div class="row justify-content-center mt-3">
-                                    <div class="col-8 col-sm-3 mg-top-1 text-center mg-bottom-40">
+                                    <div class="col-8 col-sm-8 mg-top-1 text-center mg-bottom-40">
                                             <img src="{{ asset('images/madiana/bonne-chance.png') }}"
                                                 class="img-fluid"
                                                 alt="Selection de films">
@@ -57,7 +57,7 @@
                                     <a href="https://lien.fr"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    style="color: #ffffff; text-decoration: underline;">
+                                    style="color: #ffffff; text-decoration: underline; font-size:20px;">
                                         Politique de confidentialité
                                     </a>
                                 </h2>
