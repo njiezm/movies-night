@@ -102,9 +102,11 @@
                                 <i class="fas fa-download"></i>
                             </button>
                             @endif
-                            <button class="btn btn-sm btn-outline-danger delete-film-btn" data-id="{{ $film->id }}" title="Supprimer">
+                            <!-- on retire la fonctionalite de suppression -->
+                            <!--button class="btn btn-sm btn-outline-danger delete-film-btn" data-id="{{ $film->id }}" title="Supprimer">
                                 <i class="fas fa-trash"></i>
-                            </button>
+                            </!--button-->
+
                         </div>
                     </div>
                 </div>
