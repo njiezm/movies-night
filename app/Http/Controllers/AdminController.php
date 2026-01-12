@@ -549,21 +549,24 @@ class AdminController extends Controller
         $participants = [];
         
         if ($tirage->is_big_tas) {
-            $totalFilms = Film::count();
+        $totalFilms = Film::count();
 
-            $participants = Participant::whereIn('id', function($query) use ($totalFilms) {
+        $participants = Participant::where('age', 'plus_de_18') // Filtre sur la colonne age
+            ->whereIn('id', function($query) use ($totalFilms) {
                 $query->select('participant_id')
                     ->from('participant_film')
                     ->groupBy('participant_id')
-                    ->havingRaw('COUNT(*) = ?', [$totalFilms]);
-            })->get();
-        } 
+                    ->havingRaw('COUNT(*) = ?', [$totalFilms]); // Ceux qui ont vu tous les films
+            })
+            ->get();
+    }
+
         elseif ($tirage->film_id) {
             // Pour un tirage de film, on récupère les participants qui ont vu ce film
-            $participants = $tirage->film->participants;
+            $participants = $tirage->film->participants()->where('age', 'plus_de_18')->get();
         } else {
             // Pour un tirage classique, on récupère tous les participants
-            $participants = Participant::all();
+            $participants = Participant::where('age', 'plus_de_18')->get();
         }
         
         if ($participants->isEmpty()) {
