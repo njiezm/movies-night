@@ -8,6 +8,52 @@
   <meta content="telephone=no" name="format-detection"> 
   <title>DauphinTélécom</title> 
  </head>
+ <style type="text/css">
+    body {
+        font-family: Arial, sans-serif;
+        color: #000;
+        background-color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+    h3 {
+        color: #321834; /* rose vif */
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    h4 {
+        color: #321834;
+        margin-top: 20px;
+    }
+    p {
+        line-height: 1.5;
+        font-size: 14px;
+        margin: 10px 0;
+    }
+    ul {
+        padding-left: 20px;
+    }
+    li {
+        margin: 5px 0;
+    }
+    .btn {
+        display: inline-block;
+        background-color: #321834;
+        color: #fff !important;
+        text-decoration: none;
+        padding: 10px 15px;
+        border-radius: 4px;
+        margin-top: 15px;
+    }
+    img {
+        display: block;
+        margin: 0 auto 20px auto;
+        max-width: 100%;
+        height: auto;
+    }
+  
+</style>
+
  <body>
         <div style="color:#000 !important;">
             
@@ -29,7 +75,7 @@
         </ul>
 
         <p>
-            👉 <a href="#" class="btn">Voir la sélection des 6 films</a>
+          👉 <a href="#" class="btn">Voir la sélection des 6 films</a>
         </p>
 
         <p>Installez-vous confortablement, gardez l’œil ouvert… et que le frisson commence 🍿🩸</p>
