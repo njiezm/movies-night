@@ -54,7 +54,7 @@
                         <div class="row justify-content-center">
                             <div class="col-12 text-center mg-top-10">
                                 <h2>
-                                    <a href="https://lien.fr"
+                                                                        <a href="{{ asset('pdfs/POLITIQUE_DE_CONFIDENTIALITE_MADIANA__Marathondelhorreur_2026.pdf') }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style="color: #ffffff; text-decoration: underline; font-size:20px;">

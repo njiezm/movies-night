@@ -82,26 +82,27 @@
                                 </div>
 
                                <!-- Réglement -->
-                                    <div class="row p-2">
-                                        <div class="col mg-top-5">
-                                            <label style="font-size: 1.5rem;" class="text-white text-center">J'accepte le <a href="#" data-bs-toggle="modal" data-bs-target="#reglementModal">règlement</a> du jeu et confirme avoir plus de 16 ans ?</label>
-                                            <select
-                                                class="form-select text-center rounded-pill input-white-big"
-                                                name="reglement"
-                                                id="reglementSelect"
-                                                required
-                                            >
-                                                <!-- option neutre par défaut -->
-                                                <option value="" selected disabled hidden>
-                                                    — Choisissez une réponse —
-                                                </option>
+                                <div class="row p-2">
+                                    <div class="col mg-top-5">
+                                        <label style="font-size: 1.5rem;" class="text-white text-center">
+                                            J'accepte le <a href="{{ asset('pdfs/Reglement2026_MADIANA_Marathondelhoreur.pdf') }}" target="_blank" class=text-white >règlement</a> du jeu et confirme avoir plus de 16 ans ?
+                                        </label>
+                                        <select
+                                            class="form-select text-center rounded-pill input-white-big"
+                                            name="reglement"
+                                            id="reglementSelect"
+                                            required
+                                        >
+                                            <!-- option neutre par défaut -->
+                                            <option value="" selected disabled hidden>
+                                                — Choisissez une réponse —
+                                            </option>
 
-                                                <option style="background: black" value="1">Oui</option>
-                                                <option style="background: black" value="0">Non</option>
-                                            </select>
-                                        </div>
+                                            <option style="background: black" value="1">Oui</option>
+                                            <option style="background: black" value="0">Non</option>
+                                        </select>
                                     </div>
-
+                                </div>
                                 <!-- Champ pour la tranche d'âge -->
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
@@ -184,7 +185,7 @@
                         <div class="row justify-content-center">
                             <div class="col-12 text-center mg-top-10">
                                 <h2>
-                                    <a href="https://lien.fr"
+                                        <a href="{{ asset('pdfs/POLITIQUE_DE_CONFIDENTIALITE_MADIANA__Marathondelhorreur_2026.pdf') }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     style="color: #ffffff; text-decoration: underline;">
@@ -207,24 +208,7 @@
     </div>
 </div>
 
-<!-- Modal Règlement -->
-<div class="modal fade" id="reglementModal" tabindex="-1" aria-labelledby="reglementModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="background-color: #1a1a1a; color: white;">
-            <div class="modal-header">
-                <h5 class="modal-title" id="reglementModalLabel">Règlement du jeu</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <!-- Insérez ici le texte du règlement -->
-                <p>Contenu du règlement...</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
