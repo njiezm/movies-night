@@ -32,19 +32,25 @@ class PublicController extends Controller
     public function storeInscription(Request $request)
         {
             $request->validate([
-                'firstname' => 'required|string|max:255',
-                'lastname' => 'required|string|max:255',
-                'telephone' => 'required|string|max:20',
-                'email' => 'nullable|email|max:255',
-                'zipcode' => 'nullable|string|max:10',
-                'age' => 'required|in:moins_de_16,16-18,plus_de_18',
-                'optin' => 'required|boolean',
-            ]);
+            'firstname' => 'required|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'telephone' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'zipcode' => 'nullable|string|max:10',
+            'age' => 'required|in:moins_de_16,16-18,plus_de_18',
+            'optin' => 'required|boolean',
+            'reglement' => 'required|accepted', // Ceci exige que la valeur soit "1", "yes" ou "true"
+        ]);
 
-            // Vérification si l'utilisateur a au moins 16 ans
-            if ($request->age === 'moins_de_16') {
-                return back()->with('error', "Vous devez avoir au moins 16 ans pour participer.")->withInput();
-            }
+        // Vérification si l'utilisateur a au moins 16 ans
+        if ($request->age === 'moins_de_16') {
+            return back()->with('error', "Vous devez avoir au moins 16 ans pour participer.")->withInput();
+        }
+
+        // Vérification si le règlement a été accepté
+        if (!$request->reglement) {
+            return back()->with('error', "Vous devez accepter le règlement pour participer.")->withInput();
+        }
 
             // Chiffrement
             $firstname = Genesys::Crypt(ucfirst(strtolower($request->firstname)));
@@ -89,6 +95,8 @@ class PublicController extends Controller
                 'byemail' => $byemail,
                 'source' => $source,
                 'age' => $request->age,
+                'reglement' => $request->reglement,
+
             ]);
 
             

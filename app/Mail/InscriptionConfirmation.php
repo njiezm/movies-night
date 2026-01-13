@@ -31,7 +31,7 @@ class InscriptionConfirmation extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('info@gamewaksolutions.fr', "Madiana"), 
+            from: new Address('hello@wakmessenger.fr', "Madiana"), 
             subject: "Madiana – Le Marathon de l'horreur !",
         );
     }

@@ -8,9 +8,9 @@ use App\Models\Base\Genesys;
 class Participant extends Model
 {
     protected $fillable = [
-        'lastname', 'firstname', 'email', 'telephone',
-        'zipcode', 'optin', 'bysms', 'byemail', 'slug', 'source', 'age',
-    ];
+    'lastname', 'firstname', 'email', 'telephone',
+    'zipcode', 'optin', 'bysms', 'byemail', 'slug', 'source', 'age', 'reglement',
+];
 
     // Relations
     public function films()

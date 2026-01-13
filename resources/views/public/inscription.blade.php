@@ -81,6 +81,27 @@
                                     </div>
                                 </div>
 
+                               <!-- Réglement -->
+                                    <div class="row p-2">
+                                        <div class="col mg-top-5">
+                                            <label style="font-size: 1.5rem;" class="text-white text-center">J'accepte le <a href="#" data-bs-toggle="modal" data-bs-target="#reglementModal">règlement</a> du jeu et confirme avoir plus de 16 ans ?</label>
+                                            <select
+                                                class="form-select text-center rounded-pill input-white-big"
+                                                name="reglement"
+                                                id="reglementSelect"
+                                                required
+                                            >
+                                                <!-- option neutre par défaut -->
+                                                <option value="" selected disabled hidden>
+                                                    — Choisissez une réponse —
+                                                </option>
+
+                                                <option style="background: black" value="1">Oui</option>
+                                                <option style="background: black" value="0">Non</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
                                 <!-- Champ pour la tranche d'âge -->
                                 <div class="row p-2">
                                     <div class="col mg-top-5">
@@ -186,16 +207,35 @@
     </div>
 </div>
 
+<!-- Modal Règlement -->
+<div class="modal fade" id="reglementModal" tabindex="-1" aria-labelledby="reglementModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" style="background-color: #1a1a1a; color: white;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reglementModalLabel">Règlement du jeu</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Insérez ici le texte du règlement -->
+                <p>Contenu du règlement...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
  $(document).ready(function () {
-
     const $form = $('form');
     const $optin = $('#optinSelect');
     const $contactMethod = $('#contactMethod');
     const $blockOptin = $('.blockOptincanal');
     const $ageSelect = $('#ageSelect');
+    const $reglementSelect = $('#reglementSelect');
 
     // Affichage / masquage du choix du canal
     $optin.on('change', function () {
@@ -230,6 +270,28 @@
         }
     });
 
+    // Validation du règlement
+    $reglementSelect.on('change', function() {
+        if ($(this).val() === '0') {
+            $(this).addClass('is-invalid');
+            if ($(this).siblings('.invalid-feedback').length === 0) {
+                $(this).after('<div class="invalid-feedback">Vous devez accepter le règlement pour participer.</div>');
+            }
+            
+            // SweetAlert 
+            Swal.fire({
+                title: 'Règlement requis',
+                text: 'Vous devez accepter le règlement pour participer.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#dc3545'
+            });
+        } else {
+            $(this).removeClass('is-invalid');
+            $(this).siblings('.invalid-feedback').remove();
+        }
+    });
+
     // Validation à la soumission
     $form.on('submit', function (e) {
         // Validation de l'âge
@@ -243,6 +305,21 @@
                 confirmButtonColor: '#dc3545'
             }).then(() => {
                 $ageSelect.focus();
+            });
+            return false;
+        }
+
+        // Validation du règlement
+        if ($reglementSelect.val() === '0' || !$reglementSelect.val()) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Règlement requis',
+                text: 'Vous devez accepter le règlement pour participer.',
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#dc3545'
+            }).then(() => {
+                $reglementSelect.focus();
             });
             return false;
         }
@@ -276,9 +353,7 @@
             });
             return false;
         }
-
     });
-
 });
 </script>
 
