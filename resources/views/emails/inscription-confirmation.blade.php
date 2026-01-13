@@ -13,18 +13,28 @@
             
             
             <div style="margin-top: 20px">
-                  <img src="{{ asset('images/dauphintelecom/goldenticket/headermail.png') }}" style="max-width: 400px;" alt="Header Image">
-                <div>
-                    <h3>Bonjour {{ $firstname }},</h3> 
-                    <p>Merci pour votre participation au Marathon de l'horreur avec Madiana !</p>
-                   
-                  
-                    <p>
-                        Rendez-vous en salle pour tenter de remporter 1 an de cinéma... et de nombreuses surprises !
-                    </p>
-                    <p>Bonne chance 🍀</p>
-                    
-                </div>
+                  <img src="{{ asset('images/madiana/headermail.png') }}" style="max-width: 400px;" alt="Header Image">
+               <h3>Bonjour {{ $firstname }},</h3>
+        
+        <p>Merci pour votre inscription au <strong>Marathon de l’Horreur</strong> de Madiana !</p>
+        
+        <p>Votre participation est bien enregistrée. Il ne vous reste plus qu’à vivre l’expérience en salle… si vous l’osez 😱</p>
+        
+        <h4>Le principe est simple :</h4>
+        <ul>
+            <li>Découvrez la <strong>sélection des 6 films d’horreur</strong></li>
+            <li>Rendez-vous au Madiana pour les visionner</li>
+            <li><strong>Scannez le QR code</strong> affiché avant chaque séance pour valider votre participation</li>
+            <li>Tentez de gagner <strong>des places tous les mois</strong>, et peut-être <strong>1 an de cinéma</strong> si vous relevez le défi jusqu’au bout</li>
+        </ul>
+
+        <p>
+            👉 <a href="#" class="btn">Voir la sélection des 6 films</a>
+        </p>
+
+        <p>Installez-vous confortablement, gardez l’œil ouvert… et que le frisson commence 🍿🩸</p>
+        <p>Bonne chance et à très bientôt à Madiana !</p>
+
             </div>
             <div style="margin-top: 40px;">
                 L'équipe de Madiana
