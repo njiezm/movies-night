@@ -176,8 +176,11 @@ class AdminController extends Controller
         'end_date' => $request->end_date
     ]);
 
+
     // Créer un tirage mensuel automatiquement pour ce film
     $tirageDate = $film->end_date ?? now()->addMonth();
+
+    
     
     // Vérifier d'abord qu'il existe des dotations mensuelles
     $monthlyDotationExists = Dotation::where('is_big_tas', false)->exists();
@@ -566,19 +569,33 @@ class AdminController extends Controller
         if ($tirage->is_big_tas) {
         $totalFilms = Film::count();
 
-        $participants = Participant::where('age', 'plus_de_18') // Filtre sur la colonne age
-            ->whereIn('id', function($query) use ($totalFilms) {
+        $excludedWinnerIds = Tirage::where('is_big_tas', false)
+            ->whereNotNull('winner_id')
+            ->pluck('winner_id');
+
+        $participants = Participant::where('age', 'plus_de_18')
+            ->whereNotIn('id', $excludedWinnerIds)
+            ->whereIn('id', function ($query) use ($totalFilms) {
                 $query->select('participant_id')
                     ->from('participant_film')
                     ->groupBy('participant_id')
-                    ->havingRaw('COUNT(*) = ?', [$totalFilms]); // Ceux qui ont vu tous les films
+                    ->havingRaw('COUNT(*) = ?', [$totalFilms]);
             })
             ->get();
+
     }
 
         elseif ($tirage->film_id) {
-            // Pour un tirage de film, on récupère les participants qui ont vu ce film
-            $participants = $tirage->film->participants()->where('age', 'plus_de_18')->get();
+            // Pour un tirage de film, on récupère les participants qui ont vu ce film plus de 18 et n'ayanbt jaamis gagné
+           $excludedWinnerIds = Tirage::where('is_big_tas', false)
+                ->whereNotNull('winner_id')
+                ->pluck('winner_id');
+
+            $participants = $tirage->film->participants()
+                ->where('age', 'plus_de_18')
+                ->whereNotIn('participants.id', $excludedWinnerIds)
+                ->get();
+
         } else {
             // Pour un tirage classique, on récupère tous les participants
             $participants = Participant::where('age', 'plus_de_18')->get();
