@@ -513,30 +513,35 @@ class AdminController extends Controller
      * Met à jour un tirage
      */
     public function updateTirage(Request $request, Tirage $tirage)
-    {
-        $request->validate([
-            'date' => 'required|date',
-        ]);
-        
-        // Mettre à jour la date
-        $tirage->date = $request->date;
-        
-        // Mettre à jour le titre en fonction du type de tirage
-        if ($tirage->is_big_tas) {
-            $tirage->title = 'BIG TAS - Tirage pour les participants ayant vu tous les films';
-        } else {
-            $tirage->title = $this->formatMonthlyDrawTitle($request->date);
-        }
-        
-        // Mettre à jour le film si spécifié
-        if ($request->has('film_id')) {
-            $tirage->film_id = $request->film_id;
-        }
-        
-        $tirage->save();
-        
-        return redirect()->route('admin.tirages')->with('success', 'Tirage au sort mis à jour !');
+{
+    $request->validate([
+        'date' => 'required|date',
+    ]);
+    
+    // Mettre à jour la date
+    $tirage->date = $request->date;
+    
+    // Mettre à jour le titre en fonction du type de tirage
+    if ($tirage->is_big_tas) {
+        $tirage->title = 'BIG TAS - Tirage pour les participants ayant vu tous les films';
+    } else {
+        $tirage->title = $this->formatMonthlyDrawTitle($request->date);
     }
+    
+    // Mettre à jour le film si spécifié
+    if ($request->has('film_id')) {
+        $tirage->film_id = $request->film_id;
+    }
+    
+    // AJOUT : Mettre à jour la condition de récupération
+    if ($request->has('condition_recuperation')) {
+        $tirage->condition_recuperation = $request->condition_recuperation;
+    }
+    
+    $tirage->save();
+    
+    return redirect()->route('admin.tirages')->with('success', 'Tirage au sort mis à jour !');
+}
 
     /**
      * Supprime un tirage
