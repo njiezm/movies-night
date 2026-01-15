@@ -32,7 +32,7 @@ class InscriptionConfirmation extends Mailable
     {
         return new Envelope(
             from: new Address('hello@wakmessenger.fr', "Madiana"), 
-            subject: "Madiana – Le Marathon de l'horreur !",
+            subject: "Vous êtes inscrit(e) au Marathon de l'horreur !",
         );
     }
 

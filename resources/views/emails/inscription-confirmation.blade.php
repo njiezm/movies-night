@@ -55,8 +55,8 @@
 </style>
 
  <body>
+    <center>
         <div style="color:#000 !important;">
-            
             
             <div style="margin-top: 20px">
                   <img src="{{ asset('images/madiana/headermail.png') }}" style="max-width: 400px;" alt="Header Image">
@@ -86,5 +86,6 @@
                 L'équipe de Madiana
             </div>
         </div>
+    </center>
  </body>
 </html>
