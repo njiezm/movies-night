@@ -32,7 +32,7 @@
                                         <img src="{{ asset('images/madiana/selection-films.png') }}"
                                             class="img-fluid"
                                             alt="Sélection de films">
-                                    </a>
+                                        </a>
                                     </div>
                                 </div>
                                 

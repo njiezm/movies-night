@@ -266,4 +266,8 @@ class PublicController extends Controller
 
         return null;
     }
+
+    public function rootAdmin(){
+        // Rediriger vers la page de statistiques de l'admin
+    }
 }
