@@ -5,6 +5,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PublicController;
 
 // Routes d'administration avec authentification par code
+
+
 Route::prefix('admin')->group(function () {
     // Page de connexion
     Route::get('/login', function() {
