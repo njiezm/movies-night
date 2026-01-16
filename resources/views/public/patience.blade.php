@@ -28,11 +28,11 @@
                         
                          <div class="row justify-content-center mt-5 mb-5">
                                     <div class="col-11 col-sm-8 mg-top-5 text-center mg-bottom-40">
-                                        <button type="submit" style="background: transparent; border: none;" class="btn-submit-img">
-                                            <img src="{{ asset('images/madiana/selection-films.png') }}"
-                                                class="img-fluid"
-                                                alt="Selection de films">
-                                        </button>
+                                        <a href="https://madiana.com/events/12746-marathon-de-lhorreur-a-madiana/" target="_blank" class="d-inline-block btn-submit-img">
+                                        <img src="{{ asset('images/madiana/selection-films.png') }}"
+                                            class="img-fluid"
+                                            alt="Sélection de films">
+                                    </a>
                                     </div>
                                 </div>
                                 
