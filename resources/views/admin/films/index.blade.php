@@ -102,6 +102,12 @@
                                 <i class="fas fa-download"></i>
                             </button>
                             @endif
+                            @if(session('show_dotations'))
+                            <!-- Bouton Voir Participants -->
+                            <a href="{{ route('admin.film.participants', $film->id) }}" class="btn btn-sm btn-outline-warning" title="Voir les participants">
+                                <i class="fas fa-users"></i>
+                            </a>
+                            @endif
 
                             <!-- on retire la fonctionalite de suppression -->
                             @if(session('show_dotations'))
