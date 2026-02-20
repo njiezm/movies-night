@@ -925,4 +925,9 @@ public function getparticipantsFilm($idfilm)
 
     return view('admin.films.participants', compact('film', 'participants'));
 }
+
+public function allParticipants(){
+    $participants = Participant::all();
+    return view('admin.participants', compact('participants'));
+}
 }

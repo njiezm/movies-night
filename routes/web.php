@@ -36,7 +36,8 @@ Route::prefix('admin')->group(function () {
         Route::delete('/films/{film}', [AdminController::class, 'deleteFilm'])->name('admin.films.delete');
         Route::get('/films/{film}/data', [AdminController::class, 'getFilmData'])->name('admin.films.data');
         Route::get('/films/p/{idfilm}', [AdminController::class, 'getparticipantsFilm'])->name('admin.film.participants');
-        
+        Route::get('/participants', [AdminController::class,'allParticipants']);
+
         // Tirages
         Route::get('/tirages', [AdminController::class, 'tirages'])->name('admin.tirages');
         Route::get('/tirages/create', [AdminController::class, 'createTirage'])->name('admin.tirages.create');
