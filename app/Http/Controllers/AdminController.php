@@ -898,4 +898,31 @@ class AdminController extends Controller
             'is_big_tas' => true
         ]);
     }
+
+    /**
+ * Affiche les participants d'un film
+ */
+public function getparticipantsFilm($idfilm)
+{
+    // Récupérer le film
+    $film = Film::findOrFail($idfilm);
+
+    // Récupérer les participants associés
+    $participants = $film->participants()->get();
+
+    // Déchiffrer les informations sensibles
+    $participants = $participants->map(function($p) {
+        return [
+            'id' => $p->id,
+            'firstname' => Genesys::Decrypt($p->firstname),
+            'lastname' => Genesys::Decrypt($p->lastname),
+            'email' => $p->email ? Genesys::Decrypt($p->email) : null,
+            'telephone' => Genesys::Decrypt($p->telephone),
+            'age' => $p->age,
+            'created_at' => $p->created_at,
+        ];
+    });
+
+    return view('admin.films.participants', compact('film', 'participants'));
+}
 }

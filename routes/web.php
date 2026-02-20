@@ -33,6 +33,7 @@ Route::prefix('admin')->group(function () {
         Route::put('/films/{film}', [AdminController::class, 'updateFilm'])->name('admin.films.update');
         Route::delete('/films/{film}', [AdminController::class, 'deleteFilm'])->name('admin.films.delete');
         Route::get('/films/{film}/data', [AdminController::class, 'getFilmData'])->name('admin.films.data');
+        Route::get('/films/p/{idfilm}', [AdminController::class, 'getparticipantsFilm'])->name('admin.film.participants');
         
         // Tirages
         Route::get('/tirages', [AdminController::class, 'tirages'])->name('admin.tirages');
