@@ -927,6 +927,9 @@ public function getparticipantsFilm($idfilm)
 }
 
 public function allParticipants(){
+    /**
+     * resupere tout les participants inscrits
+     */
     $participants = Participant::all();
     return view('admin.participants', compact('participants'));
 }
